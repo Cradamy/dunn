@@ -7,13 +7,13 @@ var bot = {
   nick: 'Dunn',
   server: 'irc.freenode.net',
   channels: ['#webtech'],
-  admins: ['Killswitch', 'K1llswitch'],
+  admins: ['Killswitch'],
   cmd: '.',
   alias: '?',
   db: {
     parse: {
-      api_key: 'wvd7OvFb5chNRif22wrZHZdhWKaXoZ9gSS8lp2NI',
-      master_key: 'rqbhP0Xb1Zqed6baa8GW8oGvW37yvLLok3NVtrvv'
+      api_key: '',
+      master_key: ''
     }
   }
 }
