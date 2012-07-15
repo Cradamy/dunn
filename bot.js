@@ -1,5 +1,7 @@
 var irc = require('irc');
 var Parse = require('./Parse.js');
+var howLong = require('./ago.js');
+var uptime_start = new Date();
 
 var bot = {
   nick: 'Dunn',
@@ -10,8 +12,8 @@ var bot = {
   alias: '?',
   db: {
     parse: {
-      api_key: '',
-      master_key: ''
+      api_key: 'wvd7OvFb5chNRif22wrZHZdhWKaXoZ9gSS8lp2NI',
+      master_key: 'rqbhP0Xb1Zqed6baa8GW8oGvW37yvLLok3NVtrvv'
     }
   }
 }
@@ -33,32 +35,13 @@ client.addListener('message', function (user, channel, message) {
   if (user !== bot.nick)
   {
       db.insert('log', { channel: channel, user: user, message: message }, function (err, response) {
-      console.log('[' + channel + '] ' + user + ': ' + message);
+      // console.log('[' + channel + '] ' + user + ': ' + message);
     });
-  }
-
-  if (greet = message.match(/^(hi|hello|greetings|hai|sup|wassup|wussup|what'?s up|hola|howdy|good (evening?|morning?|afternoon)|yo{1,10}) (.*).?/i))
-  {
-    console.log(greet);
-    if (greet[3] === bot.nick.toLowerCase() || greet[3] === bot.nick)
-    {
-      client.say(channel, greet[1].capitalize() + ' ' + user + '.');
-    }
-  }
-  
-  if (mad = message.match(/^(he|u|yu)mad\.(.*)$/i))
-  {
-    client.say(channel, 'Yep, he mad.');
-  }
-  
-  if (user === 'ztag100' && message.match(/(fuck|shit|piss|ass|whore|skank|pussy|dick|nigger|nigga|bastard|faggot|tits|cunt|cock|slut|cum|jizz|dildo|douche|douche|blowjob|hoe|whore)/i))
-  {
-    client.say(channel, 'Watch your mouth, ztag100. I have just docked you a point of karma.');
   }
   
   if (message === bot.cmd + 'help')
   {
-    client.say(channel, user + ': Currently I log the channel, greet you if you greet me, and issue and revoke karma to users.');
+    client.say(channel, user + ': Currently I log the channel, and issue and revoke karma to users. PRO-TIP: type .code');
   }
   
   if (message === bot.cmd + 'about')
@@ -72,6 +55,10 @@ client.addListener('message', function (user, channel, message) {
     if (karma_to === user)
     {
       client.say(channel, user + ': Since you attempted to give yourself karma, I just took a point away from you.');
+    }
+    else if (karma_to === bot.nick)
+    {
+      client.say(channel, user + ': Thanks for trying to give me karma, but I hold all of it.. If I wanted to give myself karma, I could just take it from you. :)');
     }
     else
     {
@@ -88,6 +75,10 @@ client.addListener('message', function (user, channel, message) {
     if (karma_to === user)
     {
       client.say(channel, user + ': Well, since you want to do that, I guess I can\'t stop you. I have just taken a point from you.');
+    }
+    else if (karma_to === bot.nick)
+    {
+      client.say(channel, user + ': Just for that, I have removed 50 karma points from you and put it in my own pot. Muhahaha! 3:D');
     }
     else
     {
@@ -119,28 +110,31 @@ client.addListener('message', function (user, channel, message) {
         }
         else
         {
-          client.say(channel, user + ': The last time I seen ' + who + ' was at ' + response.results[0].createdAt + ' saying: <' + who + '> ' + response.results[0].message);
+          client.say(channel, user + ': The last time I seen ' + who + ' was ' + howLong.ago(response.results[0].createdAt) + ' ago saying: <' + who + '> ' + response.results[0].message);
         }
       });
     }
   }
   
-  if (message === bot.nick + ' sing to me')
-  {
-    var song = 'I ain\'t got no time to waste, save a horse just ride my face. Don\'t laugh at me, ' +
-               'for real god damnit, I wanna be the filling of a ' + bot.nick +' sandwich. ' +
-               'You be the bread and I\'ll bring my meat, and I\'ll slap your butt cheeks until I make a beat.';
-    client.say(channel, user + ': ' + song);
-  }
-  
-  if (love = message.match(/<3/i))
-  {
-    client.action(channel, 'can feel the love.');
-  }
-  
   if (message === bot.cmd + 'code')
   {
-    client.say(channel, 'You can view, and fork my code to contribute on GitHub @ http://www.github.com/joshmanders/dunn');
+    client.say(channel, user + ': You can view, and fork my code to contribute on GitHub @ http://www.github.com/killswitch/dunn');
+  }
+  
+  if (message === bot.cmd + 'uptime')
+  {
+    var uptime_now = new Date();
+    var uptime = uptime_now.getTime() - uptime_start.getTime();
+    client.say(channel, user + ': I have been up for ' + uptime + ' milliseconds.');
+  }
+  
+  if (quote = message.match(/\.quote add <(.*)> (.*)$/i))
+  {
+    quote_user = quote[1];
+    quote_msg = quote[2];
+    db.insert('quotes', { channel: channel, added_by: user, user: quote_user, message: quote_msg }, function (err, response) {
+       client.say(channel, user + ': Quote added.');
+    });
   }
   
 });
