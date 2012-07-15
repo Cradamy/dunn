@@ -34,9 +34,7 @@ client.addListener('message', function (user, channel, message) {
   
   if (user !== bot.nick)
   {
-      db.insert('log', { channel: channel, user: user, message: message }, function (err, response) {
-      // console.log('[' + channel + '] ' + user + ': ' + message);
-    });
+      db.insert('log', { channel: channel, user: user, message: message }, function (err, response) {});
   }
   
   if (message === bot.cmd + 'help')
@@ -54,7 +52,9 @@ client.addListener('message', function (user, channel, message) {
     karma_to = to[1];
     if (karma_to === user)
     {
-      client.say(channel, user + ': Since you attempted to give yourself karma, I just took a point away from you.');
+      db.insert('karma', { channel: channel, from: bot.nick, to: user, action: 'take' }, function (err, response) {
+          client.say(channel, user + ': Since you attempted to give yourself karma, I just took a point away from you.');
+      });
     }
     else if (karma_to === bot.nick)
     {
@@ -74,7 +74,9 @@ client.addListener('message', function (user, channel, message) {
     karma_to = to[1];
     if (karma_to === user)
     {
-      client.say(channel, user + ': Well, since you want to do that, I guess I can\'t stop you. I have just taken a point from you.');
+      db.insert('karma', { channel: channel, from: bot.nick, to: user, action: 'take' }, function (err, response) {
+        client.say(channel, user + ': Well, since you want to do that, I guess I can\'t stop you. I have just taken a point from you.');
+      });
     }
     else if (karma_to === bot.nick)
     {
@@ -103,7 +105,6 @@ client.addListener('message', function (user, channel, message) {
     else
     {
       db.findLatest('log', { user: who }, function (err, response) {
-        console.log(response);
         if (response.results.length === 0)
         {
           client.say(channel, user + ': I have not seen ' + who + '.');
@@ -128,12 +129,39 @@ client.addListener('message', function (user, channel, message) {
     client.say(channel, user + ': I have been up for ' + uptime + ' milliseconds.');
   }
   
-  if (quote = message.match(/\.quote add <(.*)> (.*)$/i))
+  if (message === bot.cmd + 'quote view')
   {
-    quote_user = quote[1];
-    quote_msg = quote[2];
+    db.find('quotes', { channel: channel }, function (err, response) {
+      var rquote = response.results[Math.floor(Math.random() * response.results.length)];
+      client.say(channel, '<' + rquote.user + '> ' + rquote.message + ' - Submitted by ' + rquote.added_by + ' ' + howLong.ago(rquote.createdAt) + ' ago.');
+    });
+  }
+  
+  if (aquote = message.match(/\.quote add <(.*)> (.*)$/i))
+  {
+    quote_user = aquote[1];
+    quote_msg = aquote[2];
     db.insert('quotes', { channel: channel, added_by: user, user: quote_user, message: quote_msg }, function (err, response) {
-       client.say(channel, user + ': Quote added.');
+      client.say(channel, user + ': Quote added.');
+      client.say(user, 'Your quote delete key: ' + response.objectId);
+      client.say(user, 'You can delete your quote by typing .quote del ' + response.objectId);
+      client.say(user, 'Make sure you keep that handy otherwise you wont be able to delete it.');
+    });
+  }
+  
+  if (dquote = message.match(/\.quote del (.*)$/i))
+  {
+    db.findLatest('quotes', { objectId: dquote[1]}, function (err, response) {
+      if (user == response.results[0].added_by)
+      {
+        db.delete('quotes', dquote[1], function (err, response) {
+          client.say(channel, user + ': Quote deleted.');
+        })
+      }
+      else
+      {
+        client.say(channel, user + ': you can not delete quotes you did not add.');
+      }
     });
   }
   
