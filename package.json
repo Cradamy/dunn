@@ -5,10 +5,11 @@
   "author": "Josh Manders",
   "contributors": [
     "Conrad Pankoff <deoxxa@fknsrs.biz> (http://www.fknsrs.biz/)"
+    "Naomi Kyoto <nakyoto@gmail.com> (http://github.com/naomik)"
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/joshmanders/dunn.git"
+    "url": "git://github.com/killswitch/dunn.git"
   },
   "engines": {
     "node": "~0.8.0",
