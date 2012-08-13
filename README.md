@@ -9,5 +9,5 @@ Author
 
 Contributors
 -----
-[Conrad Pankoff](http://www.fknsrs.biz/)
-[Naomi Kyoto](http://github.com/naomik)
+* [Conrad Pankoff](http://www.fknsrs.biz/)
+* [Naomi Kyoto](http://github.com/naomik)
