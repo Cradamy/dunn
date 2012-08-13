@@ -5,7 +5,7 @@ Open source Node.js powered IRC bot for #webtech on freenode.
 
 Author
 -----
-[Josh Manders](http://www.joshmanders.com).
+* [Josh Manders](http://www.joshmanders.com).
 
 Contributors
 -----
