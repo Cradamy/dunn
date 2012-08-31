@@ -3,8 +3,7 @@
  * @Description   Capitalizes everything.
  * @Trigger       .RAGE
  *
- * @Author        Emn1ty (Jonathan ARdis)
- * @Website       http://www.joshmanders.com
+ * @Author        Emn1ty (Jonathan Ardis)
  *
  */
  
@@ -25,7 +24,7 @@ Plugin.prototype.RAGE = function (msg) {
       user = irc.user(msg.prefix),
       message = msg.arguments[1],
       params = message.split(' '),
-      RAGE_MESSAGE = '';
+      RAGE_MESSAGE = '',
       symbols = ' %$#&@*!';
 
   params.shift();
