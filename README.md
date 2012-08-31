@@ -11,3 +11,4 @@ Contributors
 -----
 * [Conrad Pankoff](http://www.fknsrs.biz/)
 * [Naomi Kyoto](http://github.com/naomik)
+* [Jontahn Ardis](http://github.com/Emn1ty)
