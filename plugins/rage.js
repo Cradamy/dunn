@@ -1,43 +1,37 @@
 /*
- * @Plugin        RAGE
+ * @Plugin        rage
  * @Description   Capitalizes everything.
- * @Trigger       .RAGE
+ * @Trigger       .rage
  *
  * @Author        Emn1ty (Jonathan Ardis)
  *
  */
  
 Plugin = exports.Plugin = function (irc) {
-  this.trigger = 'RAGE';
+  this.trigger = 'rage';
   this.usage = 'EXPRESSES YOUR RAGE!';
   this.version = '0.1';
   this.author = 'Emn1ty';
   this.protected = false;
-  this.irc = irc;
-  this.irc.addTrigger(this, 'RAGE', this.RAGE);
+  
+  irc.addTrigger(this, 'rage', this.rage);
 };
 
-Plugin.prototype.RAGE = function (msg) {
-  var irc = this.irc,
-      channel = msg.arguments[0],
-      chanObj = irc.channels[channel],
-      user = irc.user(msg.prefix),
-      message = msg.arguments[1],
-      params = message.split(' '),
-      RAGE_MESSAGE = '',
-      symbols = ' %$#&@*!';
-
-  params.shift();
+Plugin.prototype.rage = function (irc, chan, nick, msg, params) {
+  
+  var RAGE_MESSAGE = '',
+      symbols = ' %$#&@*!';;
 
   if (params[0] == 'MOAR') {
     for(var i=0;i<150;i++) {
-        RAGE_MESSAGE += symbols.charAt(Math.floor(Math.random() * symbols.length));
+      RAGE_MESSAGE += symbols.charAt(Math.floor(Math.random() * symbols.length));
     }
-  } else {
-    for(var i=0;i<params.length;i++) {
-      RAGE_MESSAGE += toUpperCase(params[i])+' ';
-    }
+
   }
 
-  irc.send(chanObj && chanObj.name || user, user + ' RAGES!: ' + RAGE_MESSAGE + '!!!!!');
+  else {
+    RAGE_MESSAGE += params.join(' ').toUpperCase();
+  }
+
+  irc.send(chan && chan.name || nick, nick + ' RAGES!: ' + RAGE_MESSAGE + '!!!!!');
 };

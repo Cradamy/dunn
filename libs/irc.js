@@ -5,21 +5,21 @@ var sys = require('util'),
     channel = require('./channel.js');
 
 Server = exports.Server = function (config) {
-	this.initialize(config);
+  this.initialize(config);
 };
 
 sys.inherits(Server, process.EventEmitter);
 
 Server.prototype.initialize = function (config) {
-	this.host = config.host || '127.0.0.1';
-	this.port = config.port || 6667;
-	this.nick = config.nick || 'DunnBot';
-	this.username = config.username || 'DunnBot';
-	this.realname = config.realname || 'Powered by #webtech';
-	this.command = config.command || '.';
-	this.alias = config.alias || '?';
-	this.database = config.db || 'dunn';
-	this.admins = config.admins || [];
+  this.host = config.host || '127.0.0.1';
+  this.port = config.port || 6667;
+  this.nick = config.nick || 'DunnBot';
+  this.username = config.username || 'DunnBot';
+  this.realname = config.realname || 'Powered by #webtech';
+  this.command = config.command || '.';
+  this.alias = config.alias || '?';
+  this.database = config.db || 'dunn';
+  this.admins = config.admins || [];
   this.userchannels = config.channels || [];
 
   // carry over config object to allow plugins to access it
@@ -27,23 +27,23 @@ Server.prototype.initialize = function (config) {
 
   // channel constructor and channel hash
   this.channelObj = channel.Channel;
-	this.channels = {};
+  this.channels = {};
 
   // user constructor and user hash
   this.userObj = user.User;
   this.users = {};
 
   // hook and callback arrays
-	this.hooks = [];
-	this.triggers = [];
-	this.replies = [];
+  this.hooks = [];
+  this.triggers = [];
+  this.replies = [];
 
-	this.connection = null;
-	this.buffer = "";
-	this.encoding = "utf8";
-	this.timeout = 60*60*1000;
+  this.connection = null;
+  this.buffer = "";
+  this.encoding = "utf8";
+  this.timeout = 60*60*1000;
 
-	this.debug = config.debug || false;
+  this.debug = config.debug || false;
 
   /*
    * Hook for User/Channel inits
@@ -55,23 +55,22 @@ Server.prototype.initialize = function (config) {
     user.initialize(this);
   }
 
-	/*
-	 * Boot Plugins
-	 */
-	this.plugins = [];
-
-	for(var i = 0, z = config.plugins.length; i < z; i++) {
-		var p = config.plugins[i];
-		this.loadPlugin(p);
-	}
+  /*
+   * Boot Plugins
+   */
+  this.plugins = [];
+  var self = this;
+  config.plugins.forEach(function(plugin) {
+    self.loadPlugin(plugin);
+  });
 };
 
 Server.prototype.connect = function () {
-	var c = this.connection = net.createConnection(this.port, this.host);
+  var c = this.connection = net.createConnection(this.port, this.host);
     c.setEncoding(this.encoding);
     c.setTimeout(this.timeout);
 
-	this.addListener('connect', this.onConnect);
+  this.addListener('connect', this.onConnect);
     this.addListener('data', this.onReceive);
     this.addListener('eof', this.onEOF);
     this.addListener('timeout', this.onTimeout);
@@ -86,7 +85,7 @@ Server.prototype.disconnect = function (reason) {
 };
 
 Server.prototype.onConnect = function () {
-	// sys.puts('connected');
+  // sys.puts('connected');
 
   this.raw('NICK', this.nick);
   this.raw('USER', this.username, '0', '*', ':' + this.realname);
@@ -95,7 +94,7 @@ Server.prototype.onConnect = function () {
 };
 
 Server.prototype.onReceive = function (chunk) {
-	this.buffer += chunk;
+  this.buffer += chunk;
     while(this.buffer) {
         var offset = this.buffer.indexOf("\r\n");
         if (offset < 0) {
@@ -115,149 +114,159 @@ Server.prototype.onReceive = function (chunk) {
 };
 
 Server.prototype.onMessage = function (msg) {
-	if (this.debug) {
-		sys.puts('++ command: ' + msg.command);
-		sys.puts('++ arguments: ' + msg.arguments);
-		sys.puts('++ prefix: ' + msg.prefix);
-		sys.puts('++ lastarg: ' + msg.lastarg);
-	}
+  if (this.debug) {
+    sys.puts('++ command: ' + msg.command);
+    sys.puts('++ arguments: ' + msg.arguments);
+    sys.puts('++ prefix: ' + msg.prefix);
+    sys.puts('++ lastarg: ' + msg.lastarg);
+  }
 
-	var target = msg.arguments[0], // target
-		nick = (this.user(msg.prefix) || '').toLowerCase(), // nick
-        user = this.users[nick], // user
-		m, // message
-        command = msg.command, // command
-        users = this.users; // user hash
+  var target = msg.arguments[0], // target
+      nick = (this.user(msg.prefix) || '').toLowerCase(), // nick
+      user = this.users[nick], // user
+      m, // message
+      command = msg.command, // command
+      users = this.users; // user hash
 
-	switch(true){
-		case (command === 'PING'):
-			this.raw('PONG', msg.arguments);
-			break;
+  switch(true){
+    case (command === 'PING'):
+      this.raw('PONG', msg.arguments);
+      break;
 
-		case (command === 'PRIVMSG'):
-            if (user) {
-                user.update(msg.prefix);
-            }
-			// Look for triggers
-			m = msg.arguments[1];
-			if (m.substring( 0, 1 ) == this.command) {
-				var trigger = m.split(' ' )[0].substring( 1, m.length);
-				if (typeof this.triggers[trigger] != 'undefined') {
-					var trig = this.triggers[trigger];
+    case (command === 'PRIVMSG'):
+      if (user) {
+          user.update(msg.prefix);
+      }
 
-					if (!this.plugins[trig.plugin].protected || this.admins.indexOf(nick) != -1)
-					{
-					  trig.callback.apply(this.plugins[trig.plugin], arguments);
-				  }
-				}
-			}
-            if (user == this.nick) {
-                this.emit('private_message', msg);
-            } else {
-			    this.emit('message', msg);
-			}
-            break;
+      // Look for triggers
+      var params = msg.arguments[1].split(' '),
+          cmd = params.shift();
+      
+      if (cmd.substring(0, 1) == this.command) {
+        
+        var trigger = cmd.substring(1);
 
-		case (command === 'JOIN'):
-            if (user) {
-                user.update(msg.prefix);
-                user.join(target);
-            } else {
-                user = this.users[nick] = new this.userObj(this, nick);
-            }
-            user.join(target);
+        if (typeof this.triggers[trigger] != 'undefined') {
+          var trig = this.triggers[trigger];
 
-			this.emit('join', msg);
-			break;
+          if (!this.plugins[trig.plugin].protected || this.admins.indexOf(nick) != -1) {
+            trig.callback.apply(this.plugins[trig.plugin], [this, this.channels[msg.arguments[0]], nick, msg, params]);
+          }
+        }
+      }
 
-		case (command === 'PART'):
-            if (user) {
-                user.update(msg.prefix);
-                user.part(target);
-            }
+      if (user == this.nick) {
+          this.emit('private_message', msg);
+      }
 
-			this.emit('part', msg);
-			break;
+      else {
+        this.emit('message', msg);
+      }
 
-		case (command === 'QUIT'):
-            if (user) {
-                user.update(msg.prefix);
-                user.quit(msg)
-            }
+      break;
 
-			this.emit('quit', msg);
-			break;
+    case (command === 'JOIN'):
+      if (user) {
+        user.update(msg.prefix);
+        user.join(target);
+      }
 
-		case (command === 'NICK'):
-            if (user) {
-                user.update(msg.prefix);
-            }
+      else {
+          user = this.users[nick] = new this.userObj(this, nick);
+      }
 
-			this.emit('nick', msg);
-			break;
+      user.join(target);
+      this.emit('join', msg);
+      break;
 
-        case (/^\d+$/.test(command)):
-            this.emit('numeric', msg);
-            break;
-	}
+    case (command === 'PART'):
+      if (user) {
+        user.update(msg.prefix);
+        user.part(target);
+      }
 
-	this.emit(msg.command, msg);
-	this.emit('data', msg);
+      this.emit('part', msg);
+      break;
+
+    case (command === 'QUIT'):
+      if (user) {
+        user.update(msg.prefix);
+        user.quit(msg)
+      }
+
+      this.emit('quit', msg);
+      break;
+
+    case (command === 'NICK'):
+      if (user) {
+        user.update(msg.prefix);
+      }
+
+      this.emit('nick', msg);
+      break;
+
+    case (/^\d+$/.test(command)):
+      this.emit('numeric', msg);
+      break;
+  }
+
+  this.emit(msg.command, msg);
+  this.emit('data', msg);
 };
 
 Server.prototype.user = function (mask){
     if (!mask) {
         return;
     }
-	var match = mask.match(/([^!]+)![^@]+@.+/);
+  var match = mask.match(/([^!]+)![^@]+@.+/);
 
-	if (!match ) {
+  if (!match ) {
         return;
     }
-	return match[1];
+  return match[1];
 }
 
 Server.prototype.parse = function (text) {
-	if (typeof text  !== "string") {
-		return false;
+  if (typeof text  !== "string") {
+    return false;
     }
 
-	var tmp = text.split(" ");
+  var tmp = text.split(" ");
 
-	if (tmp.length < 2) {
-		return false;
-    }
+  if (tmp.length < 2) {
+    return false;
+  }
 
-	var prefix = null,
-        command = null,
-	    lastarg = null,
-        args = [];
+  var prefix = null,
+      command = null,
+      lastarg = null,
+      args = [];
 
-	for (var i = 0, j = tmp.length; i < j; i++) {
-		if (i == 0 && tmp[i].indexOf(":") == 0) {
-			prefix = tmp[0].substr(1);
+  for (var i = 0, j = tmp.length; i < j; i++) {
+    if (i == 0 && tmp[i].indexOf(":") == 0) {
+      prefix = tmp[0].substr(1);
         } else if (tmp[i] == "") {
-			continue;
+      continue;
         } else if (!command && tmp[i].indexOf(":") != 0) {
-			command = tmp[i].toUpperCase();
+      command = tmp[i].toUpperCase();
         } else if (tmp[i].indexOf(":") == 0) {
-			tmp[i ] = tmp[ i].substr(1);
-			tmp.splice(0, i);
-			args.push(tmp.join(" "));
-			lastarg = args.length - 1;
-			break;
-		} else {
-			args.push(tmp[i]);
+      tmp[i] = tmp[i].substr(1);
+      tmp.splice(0, i);
+      args.push(tmp.join(" "));
+      lastarg = args.length - 1;
+      break;
+    } else {
+      args.push(tmp[i]);
         }
-	}
+  }
 
-	return {
-		prefix: prefix,
-		command: command,
-		arguments: args,
-		lastarg: lastarg,
-		orig: text
-	};
+  return {
+    prefix: prefix,
+    command: command,
+    arguments: args,
+    lastarg: lastarg,
+    orig: text
+  };
 };
 
 Server.prototype.onEOF = function () {
@@ -296,119 +305,113 @@ Server.prototype.send = function (target, msg) {
 };
 
 Server.prototype.addListener = function (ev, f) {
-	var that = this;
-	return this.connection.addListener(ev, (function() {
-		return function() {
-			f.apply(that, arguments);
-		};
-	})());
+  var that = this;
+  return this.connection.addListener(ev, (function() {
+    return function() {
+      f.apply(that, arguments);
+    };
+  })());
 };
 
 Server.prototype.addPluginListener = function (plugin, ev, f) {
-	if (typeof this.hooks[plugin ] == 'undefined') {
+  if (typeof this.hooks[plugin] == 'undefined') {
         this.hooks[plugin] = [];
     }
 
-	var callback = (function() {
-		return function() {
-			f.apply(that, arguments);
-		};
-	})();
+  var scope = this.plugins[plugin];
 
-	this.hooks[plugin ].push({event: ev, callback: callback});
+  var callback = (function() {
+    return function() {
+      f.apply(scope, arguments);
+    };
+  })();
 
-	var that = this.plugins[plugin];
-	return this.on(ev, callback);
+  this.hooks[plugin].push({event: ev, callback: callback});
+
+  return this.on(ev, callback);
 };
 
 Server.prototype.unloadPlugin = function (name) {
-	if (typeof this.plugins[name] != 'undefined') {
-		delete this.plugins[name];
+  if (typeof this.plugins[name] != 'undefined') {
+    delete this.plugins[name];
 
-		if (typeof this.hooks[name] != 'undefined') {
+    if (typeof this.hooks[name] != 'undefined') {
 
-			for(var hook in this.hooks[name]) {
+      for(var hook in this.hooks[name]) {
 
-				this.removeListener(this.hooks[name ][ hook ].event, this.hooks[ name ][ hook].callback);
+        this.removeListener(this.hooks[name][hook].event, this.hooks[name][hook].callback);
 
-			}
+      }
 
-		}
+    }
 
-		if (typeof this.replies[name] != 'undefined') {
+    if (typeof this.replies[name] != 'undefined') {
 
-			for(var reply in this.replies[name]) {
+      for(var reply in this.replies[name]) {
 
-				this.removeListener(this.replies[name ][ reply ].event, this.replies[ name ][ reply].callback);
+        this.removeListener(this.replies[name][reply].event, this.replies[name][reply].callback);
 
-			}
+      }
 
-		}
+    }
 
-		for(var trig in this.triggers) {
+    for(var trig in this.triggers) {
 
-			if (this.triggers[trig].plugin == name) {
+      if (this.triggers[trig].plugin == name) {
 
-				delete this.triggers[trig];
+        delete this.triggers[trig];
 
-			}
+      }
 
-		}
+    }
 
-	}
+  }
 
 
 };
 
 Server.prototype.loadPlugin = function (name) {
-    this.unloadPlugin(name);
-	var that = this;
-	fs.readFile('./plugins/' + name + '.js', 'utf8', function( err, data) {
-		if (err) {
-			sys.puts(err);
-		} else {
-			eval(data);
-			that.plugins[name] = new Plugin(that);
+  
+  console.log("loading plugin: " + name);
 
-			/*
-			 * Hooks
-			 */
-            ['connect', 'data', 'numeric', 'message', 'join', 'part', 'quit', 'nick', 'privateMessage'].forEach(function(event) {
-                var onEvent = 'on' + event.charAt(0).toUpperCase() + event.substr(1),
-                    callback = this.plugins[name][onEvent];
+  this.unloadPlugin(name);
 
-                if (typeof callback == 'function') {
-                    this.addPluginListener(name, event, callback);
-                }
-            }, that);
-		}
-	});
+  var that = this,
+    path = __dirname + '/../plugins/' + name + '.js';
+  
+  // load plugin
+  if (fs.existsSync(path)) {
+
+    // require
+    plugin = require(path);
+
+    // invoke
+    that.plugins[name] = new plugin.Plugin(that);
+
+    // hooks
+    ['connect', 'data', 'numeric', 'message', 'join', 'part', 'quit', 'nick', 'privateMessage'].forEach(function(event) {
+      var onEvent = 'on' + event.charAt(0).toUpperCase() + event.substr(1),
+        callback = this.plugins[name][onEvent];
+
+      if (typeof callback == 'function') {
+        this.addPluginListener(name, event, callback);
+      }
+
+    }, that);
+
+    return true;
+  }
+
+  // invalid plugin
+  else {
+    sys.puts("Plugin not found: " + name);
+    return false;
+  }
+
 };
 
 Server.prototype.addTrigger = function (plugin, trigger, callback) {
-	if (typeof this.triggers[trigger] == 'undefined') {
-		this.triggers[trigger ] = { plugin: plugin.trigger, callback: callback};
-	}
-};
-
-/*
- * DEPRECATED: use "onNumeric" hooks in your plugins
- *      Will be removed
- */
-Server.prototype.onReply = function (plugin, ev, f) {
-	if (typeof this.replies[plugin ] == 'undefined') this.replies[ plugin] = [];
-
-	var callback = (function() {
-
-		return function() {
-			f.apply(that, arguments);
-		};
-
-	} )();
-
-	this.replies[plugin ].push({ event: ev, callback: callback});
-
-	var that = this.plugins[plugin];
-	return this.on(ev, callback);
-
+  if (typeof this.triggers[trigger] == 'undefined') {
+    this.triggers[trigger] = { plugin: plugin.trigger, callback: callback};
+  }
 };

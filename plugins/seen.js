@@ -23,28 +23,28 @@ Plugin = exports.Plugin = function (irc) {
   this.irc.addTrigger(this, 'seen', this.whereThey);
 };
 
-Plugin.prototype.whereThey = function (msg) {
-  var irc = this.irc,
-      channel = msg.arguments[0],
-      chanObj = irc.channels[channel],
-      user = irc.user(msg.prefix),
-      message = msg.arguments[1],
-      params = message.split(' ');
+Plugin.prototype.whereThey = function (irc, chan, nick, msg, params) {
 
-  params.shift();
   if (params.length > 0) {
-    if (params[0] !== user || params[0] !== irc.nick) {
-      this.db.logs.find({ nick: params[0], channel: channel }).sort({ date: -1 }).limit(1, function (err, seen) {
+    if (params[0] !== nick || params[0] !== irc.nick) {
+
+      this.db.logs.find({ nick: params[0], channel: chan.name }).sort({ date: -1 }).limit(1, function (err, seen) {
+        
+        // seen
         if (seen.length > 0) {
-          irc.send(chanObj && chanObj.name || user, user + ': The last time I seen ' + params[0] + ' was ' + howLong.ago(seen[0].date) + '.');
+          irc.send(chan && chan.name || nick, nick + ': The last time I seen ' + params[0] + ' was ' + howLong.ago(seen[0].date) + '.');
         }
+
+        // unseen
         else {
-          irc.send(chanObj && chanObj.name || user, user + ': Sorry, I have not seen ' + params[0] + '.');
+          irc.send(chan && chan.name || nick, nick + ': Sorry, I have not seen ' + params[0] + '.');
         }
       });
     }
   }
+  
+  // usage
   else {
-    irc.send(chanObj && chanObj.name || user, user + ': [USAGE] ' + this.usage);
+    irc.send(chan && chan.name || nick, nick + ': [USAGE] ' + this.usage);
   }
 };
