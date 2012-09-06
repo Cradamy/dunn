@@ -14,25 +14,11 @@ Plugin = exports.Plugin = function (irc) {
   this.version = '0.1';
   this.author = 'naomi';
   this.protected = false;
-  this.irc = irc;
-  this.irc.addTrigger(this, 'nsfw', this.nsfw);
+
+  irc.addTrigger(this, 'nsfw', this.nsfw);
 };
 
-Plugin.prototype.nsfw = function (msg) {
-  
-  // boilerplate!
-  var irc = this.irc,
-      channel = msg.arguments[0],
-      chanObj = irc.channels[channel],
-      user = irc.user(msg.prefix),
-      message = msg.arguments[1],
-      params = message.split(' ')
-  ;
-
-  // boilerplate param disposal!
-  params.shift();
-  
-  // BEGIN ACTUAL PLUGIN :P
+Plugin.prototype.nsfw = function (irc, chan, nick, msg, params) {
   
   // create query param
   var q = params.map(function(e){
@@ -40,5 +26,5 @@ Plugin.prototype.nsfw = function (msg) {
     }).join('+');
   
   // return
-  irc.send(chanObj && chanObj.name || user, user + ': http://nsfw.heroku.com/search?q=' + q);
+  irc.send(chan && chan.name || nick, nick + ': http://nsfw.heroku.com/search?q=' + q);
 };
