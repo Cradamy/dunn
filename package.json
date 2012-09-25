@@ -1,10 +1,10 @@
 {
   "name": "dunn",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "IRC bot for #webtech on freenode",
-  "author": "Josh Manders",
+  "author": "Josh Manders <josh@joshmanders.com> (http://www.joshmanders.com)",
   "contributors": [
-    "Conrad Pankoff <deoxxa@fknsrs.biz> (http://www.fknsrs.biz/)"
+    "Conrad Pankoff <deoxxa@fknsrs.biz> (http://www.fknsrs.biz)"
     "Naomi Kyoto <nakyoto@gmail.com> (http://github.com/naomik)"
   ],
   "repository": {
