@@ -1,7 +1,6 @@
 /*
  * @Plugin        Dunn
  * @Description   Random triggers based on things having to do with Dunn himself.
- * @Trigger       .(about|code)
  *
  * @Author        Killswitch (Josh Manders)
  * @Website       http://www.joshmanders.com
@@ -9,19 +8,49 @@
  *
  */
 Plugin = exports.Plugin = function (irc) {
-  this.trigger = 'dunn';
-  this.usage = 'Random triggers based on things having to do with Dunn himself.';
-  this.version = '0.1';
-  this.author = 'Killswitch';
-  this.protected = false;
-  irc.addTrigger(this, 'about', this.about);
-  irc.addTrigger(this, 'code', this.code);
+  this.ircObj = irc;
+  irc.addTrigger('about', this.about);
+  irc.addTrigger('code', this.code);
+  irc.addTrigger('users', this.users);
 };
 
-Plugin.prototype.about = function (irc, chan, nick, msg, params) {
-  irc.send(chan && chan.name || nick, nick + ': My name is Dunn, I am written in Node.js and utilize MongoDB as my data storage. I was written by ' + this.author + '.');
+Plugin.prototype.onNumeric = function(irc) {
+  if (irc.command !== '376') {
+      return;
+  }
+  for (var i = 0; i < this.ircObj.userChannels.length; i++) {
+    var channelName = this.ircObj.userChannels[i], password;
+    if (typeof(channelName) == "object") {
+      password = channelName.password;
+      channelName = channelName.name;
+    }
+    var chan = new this.ircObj.channelObj(this.ircObj, channelName, true, password);
+    this.ircObj.channels[chan.name] = chan;
+  }
 };
 
-Plugin.prototype.code = function (irc, chan, nick, msg, params) {
-  irc.send(chan && chan.name || nick, nick + ': You can view, and fork my code to contribute on GitHub @ http://www.github.com/killswitch/dunn.');
+Plugin.prototype.onMessage = function (irc) {
+  if (irc.arguments[1].match(/dunn dunn/i))
+  {
+      this.ircObj.send(irc.arguments[0], 'dunnnnnnnnnn');
+  }
+};
+
+Plugin.prototype.about = function (irc, channel, nick, params, message, raw) {
+  irc.send(channel, nick + ': My name is Dunn, I am written in Node.js and utilize MongoDB as my data storage. I was written by Killswitch.');
+};
+
+Plugin.prototype.code = function (irc, channel, nick, params, message, raw) {
+  irc.send(channel, nick + ': You can view, and fork my code to contribute on GitHub @ http://www.github.com/killswitch/dunn.');
+};
+
+Plugin.prototype.users = function (irc, channel, nick) {
+  var users = 'Current channel users:';
+  Object.keys(irc.users).forEach(function (user) {
+    if (user != irc.nick.toLowerCase() && user != nick)
+    {
+      users += ' ' + user;
+    }
+  });
+  irc.send(channel, users + '.');
 };
