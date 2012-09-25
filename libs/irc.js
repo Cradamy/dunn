@@ -20,7 +20,7 @@ Server.prototype.initialize = function (config) {
   this.alias = config.alias || '?';
   this.database = config.db || 'dunn';
   this.admins = config.admins || [];
-  this.userchannels = config.channels || [];
+  this.userChannels = config.channels || [];
 
   // carry over config object to allow plugins to access it
   this.config = config || {};
@@ -85,11 +85,8 @@ Server.prototype.disconnect = function (reason) {
 };
 
 Server.prototype.onConnect = function () {
-  // sys.puts('connected');
-
   this.raw('NICK', this.nick);
   this.raw('USER', this.username, '0', '*', ':' + this.realname);
-
   this.emit('connect');
 };
 
@@ -149,9 +146,7 @@ Server.prototype.onMessage = function (msg) {
         if (typeof this.triggers[trigger] != 'undefined') {
           var trig = this.triggers[trigger];
 
-          if (!this.plugins[trig.plugin].protected || this.admins.indexOf(nick) != -1) {
-            trig.callback.apply(this.plugins[trig.plugin], [this, this.channels[msg.arguments[0]], nick, msg, params]);
-          }
+          trig.callback.apply(this.plugins[trig.plugin], [this, this.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase(), params, msg.arguments[1], msg.orig]);
         }
       }
 
@@ -173,6 +168,7 @@ Server.prototype.onMessage = function (msg) {
 
       else {
           user = this.users[nick] = new this.userObj(this, nick);
+          this.raw('NS id ' + this.config.identPass);
       }
 
       user.join(target);
@@ -410,8 +406,8 @@ Server.prototype.loadPlugin = function (name) {
 
 };
 
-Server.prototype.addTrigger = function (plugin, trigger, callback) {
+Server.prototype.addTrigger = function (trigger, callback) {
   if (typeof this.triggers[trigger] == 'undefined') {
-    this.triggers[trigger] = { plugin: plugin.trigger, callback: callback};
+    this.triggers[trigger] = { plugin: trigger, callback: callback};
   }
 };
