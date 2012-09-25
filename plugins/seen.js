@@ -14,7 +14,7 @@ var mongodb = require('mongojs'),
  
 Plugin = exports.Plugin = function (irc) {
   this.irc = irc;
-  this.db = mongodb.connect(irc.database, ['logs');
+  this.db = mongodb.connect(irc.database, ['logs']);
   this.irc.addTrigger('seen', this.seen);
 };
 
