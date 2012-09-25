@@ -13,5 +13,5 @@ Plugin = exports.Plugin = function (irc) {
 };
 
 Plugin.prototype.example = function (irc, channel, nick, params, message) {
-  irc.send(channel, user + ': You can view this example plugin at https://raw.github.com/killswitch/dunn/master/plugins/example.js');
+  irc.send(channel, nick + ': You can view this example plugin at https://raw.github.com/killswitch/dunn/master/plugins/example.js');
 };
