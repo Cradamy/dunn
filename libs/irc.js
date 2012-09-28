@@ -146,7 +146,12 @@ Server.prototype.onMessage = function (msg) {
         if (typeof this.triggers[trigger] != 'undefined') {
           var trig = this.triggers[trigger];
 
-          trig.callback.apply(this.plugins[trig.plugin], [this, this.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase(), params, msg.arguments[1], msg.orig]);
+          if (typeof this.channels[msg.arguments[0]] != "undefined") {
+            //room message recieved
+            trig.callback.apply(this.plugins[trig.plugin], [this, this.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase(), params, msg.arguments[1], msg.orig]);
+          } else {
+            //PM recieved
+          }
         }
       }
 
