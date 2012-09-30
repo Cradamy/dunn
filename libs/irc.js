@@ -123,7 +123,7 @@ Server.prototype.ctcp = function(nick, target, msg, command) {
       plugins.push(trig);
     }
 
-    this.raw("NOTICE", nick+" \1VERSION DunnBot, running ["+(plugins.join(", "))+"] plugins\1");
+    this.raw("NOTICE", nick, ":\1VERSION DunnBot, running ["+(plugins.join(", "))+"] plugins\1");
     this.emit("ctcp-version", nick, target);
   }
 }
