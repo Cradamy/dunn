@@ -10,8 +10,7 @@
  *
  */
  
-var mongodb = require('mongojs'),
-    howLong = require('../libs/ago.js');
+var mongodb = require('mongojs');
  
 var self = this;
 Plugin = exports.Plugin = function (irc) {
