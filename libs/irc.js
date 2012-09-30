@@ -110,6 +110,24 @@ Server.prototype.onReceive = function (chunk) {
     }
 };
 
+//untested, but it does send something
+Server.prototype.ctcp = function(nick, target, msg, command) {
+  msg = msg.slice(1); msg = msg.slice(0, msg.lastIndexOf('\1'));
+  var parts = msg.split(" ");
+  this.emit('ctcp', nick, target, msg, command);
+  this.emit('ctcp-'+command, nick, target, msg);
+
+  if(command === "PRIVMSG" && msg == "VERSION") {
+    var plugins = [];
+    for (var trig in this.triggers) {
+      plugins.push(trig);
+    }
+
+    this.raw("NOTICE", nick+" \1VERSION DunnBot, running ["+(plugins.join(", "))+"] plugins\1");
+    this.emit("ctcp-version", nick, target);
+  }
+}
+
 Server.prototype.onMessage = function (msg) {
   if (this.debug) {
     sys.puts('++ command: ' + msg.command);
@@ -130,9 +148,20 @@ Server.prototype.onMessage = function (msg) {
       this.raw('PONG', msg.arguments);
       break;
 
+    case (command == "NOTICE"):
+      if(msg.arguments[1][0] === "\1" && msg.arguments[1].lastIndexOf('\1') > 0) {
+        this.ctcp(nick, target, msg.arguments[1], command);
+      }
+      this.emit("notice", msg);
+      break;
+
     case (command === 'PRIVMSG'):
       if (user) {
           user.update(msg.prefix);
+      }
+
+      if(msg.arguments[1][0] === "\1" && msg.arguments[1].lastIndexOf('\1') > 0) {
+        this.ctcp(nick, target, msg.arguments[1], command);
       }
 
       // Look for triggers
