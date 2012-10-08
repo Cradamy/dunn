@@ -45,6 +45,8 @@ Server.prototype.initialize = function (config) {
 
   this.debug = config.debug || false;
 
+  this.heap = [];
+
   /*
    * Hook for User/Channel inits
    */
@@ -64,6 +66,35 @@ Server.prototype.initialize = function (config) {
     self.loadPlugin(plugin);
   });
 };
+
+Server.prototype.sendHeap = function(err, send) {
+  var https = require("https"), that = this;
+
+  var reqdata = "contents="+encodeURIComponent(err)+"&private=true&language=Plain+Text";
+
+  var req = https.request({
+    host: "www.refheap.com",
+    port: 443,
+    path: "/api/paste",
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Content-Length": reqdata.length
+    }
+  }, function(res) {
+    res.data = "";
+
+    res.on("data", function(chunk) {
+      res.data += chunk
+    }).on("end", function() {
+      var data = JSON.parse(res.data);
+      if(typeof send != "string") that.heap.push(data.url);
+      else {
+        that.send(send, "Error: "+data.url);
+      }
+    });
+  }).write(reqdata);
+}
 
 Server.prototype.connect = function () {
   var c = this.connection = net.createConnection(this.port, this.host);
@@ -185,9 +216,22 @@ Server.prototype.onMessage = function (msg) {
 
           if (typeof this.channels[msg.arguments[0]] != "undefined") {
             //room message recieved
-            trig.callback.apply(this.plugins[trig.plugin], [this, this.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase(), params, msg.arguments[1], msg.orig]);
+
+            try {
+              trig.callback.apply(this.plugins[trig.plugin], [this, this.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase(), params, msg.arguments[1], msg.orig]);
+            } catch(err) {
+              this.sendHeap(err.stack, this.channels[msg.arguments[0]].name.toLowerCase());
+              return false;
+            }
           } else {
             //PM recieved
+          }
+        } else if(trigger == "heaps") {
+          if(this.heap.length > 0) {
+            this.send(this.channels[msg.arguments[0]].name.toLowerCase(), this.heap.join(" "));
+            this.heap = [];
+          } else {
+            this.send(this.channels[msg.arguments[0]].name.toLowerCase(), "No heaps");
           }
         }
       }
@@ -403,9 +447,13 @@ Server.prototype.unloadPlugin = function (name) {
 
     }
 
-
     if(typeof require.cache[__dirname.substr(0, __dirname.length-5) + "/plugins/" + name + ".js"] != "undefined") {
       delete require.cache[__dirname.substr(0, __dirname.length-5) + "/plugins/" + name + ".js"]; //requires absolute path
+    }
+    
+    //windows
+    if(typeof require.cache[__dirname.substr(0, __dirname.length-5) + "\\plugins\\" + name + ".js"] != "undefined") {
+      delete require.cache[__dirname.substr(0, __dirname.length-5) + "\\plugins\\" + name + ".js"];
     }
   }
 
@@ -425,8 +473,12 @@ Server.prototype.loadPlugin = function (name) {
   if (fs.existsSync(path)) {
 
     // require
-    plugin = require(path);
-
+    try {
+      plugin = require(path);
+    } catch(err) {
+      this.sendHeap(err.stack);
+      return false;
+    }
     // invoke
     that.plugins[name] = new plugin.Plugin(that);
 
@@ -457,3 +509,7 @@ Server.prototype.addTrigger = function (trigger, callback) {
     this.triggers[trigger] = { plugin: trigger, callback: callback};
   }
 };
+
+process.on('uncaughtException', function (error) {
+   console.log(error.stack); //prevents from crashing
+});
