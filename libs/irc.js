@@ -110,7 +110,15 @@ Server.prototype.onReceive = function (chunk) {
     }
 };
 
-//untested, but it does send something
+Server.prototype.kick = function(channel, nick, reason) {
+  if(typeof channel == "undefined" || typeof nick == "undefined") return;
+
+  if(typeof reason == "undefined") reason = "";
+  else reason = " :"+reason;
+
+  this.raw("KICK", channel + " " + nick + reason);
+}
+
 Server.prototype.ctcp = function(nick, target, msg, command) {
   msg = msg.slice(1); msg = msg.slice(0, msg.lastIndexOf('\1'));
   var parts = msg.split(" ");
@@ -395,6 +403,10 @@ Server.prototype.unloadPlugin = function (name) {
 
     }
 
+
+    if(typeof require.cache[__dirname.substr(0, __dirname.length-5) + "/plugins/" + name + ".js"] != "undefined") {
+      delete require.cache[__dirname.substr(0, __dirname.length-5) + "/plugins/" + name + ".js"]; //requires absolute path
+    }
   }
 
 
