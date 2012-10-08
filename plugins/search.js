@@ -1,7 +1,7 @@
 /*
  * @Plugin        Search
  * @Description   Allows you to search, also minify links
- * @Trigger       .reload
+ * @Trigger       .g
  *
  * @Author        buttcactus (Aaron Ahmed)
  * @Website       http://www.digitalkitsune.net
