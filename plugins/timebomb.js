@@ -31,7 +31,8 @@ Plugin.prototype.timebomb = function (irc, channel, nick, params, message, raw) 
   }
 
   if (params.length > 0) {
-    if(params[0] == irc.nick) {
+    params[0] = params[0].toLowerCase();
+    if(params[0] == irc.nick.toLowerCase()) {
       irc.send(channel, "I'm afraid I can not do that, Dave");
       params[0] = nick;
     } if(typeof irc.users[params[0]] == "undefined") {
