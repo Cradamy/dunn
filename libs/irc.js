@@ -2,7 +2,8 @@ var sys = require('util'),
     net = require('net'),
     fs = require('fs'),
     user = require ('./user.js' ),
-    channel = require('./channel.js');
+    channel = require('./channel.js'),
+    update = require("./update.js");
 
 Server = exports.Server = function (config) {
   this.initialize(config);
@@ -21,6 +22,10 @@ Server.prototype.initialize = function (config) {
   this.database = config.db || 'dunn';
   this.admins = config.admins || [];
   this.userChannels = config.channels || [];
+  this.update = config.update || true;
+  this.updateChannel = config.updateChannel || (config.channels[0] || "");
+  this.announceUpdate = config.announceUpdate || true;
+  this.updateInterval = config.updateInterval || 2000; //ms
 
   // carry over config object to allow plugins to access it
   this.config = config || {};
@@ -32,6 +37,13 @@ Server.prototype.initialize = function (config) {
   // user constructor and user hash
   this.userObj = user.User;
   this.users = {};
+
+  // updater
+  if(require("fs").existsSync(__dirname + "/../.git/refs/head/master")) {
+    this.updateSHA = "";
+    this.updateTimer = 0;
+    update.Update(this);
+  }
 
   // hook and callback arrays
   this.hooks = [];
