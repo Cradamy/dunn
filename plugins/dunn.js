@@ -11,7 +11,6 @@ Plugin = exports.Plugin = function (irc) {
   this.ircObj = irc;
   irc.addTrigger('about', this.about);
   irc.addTrigger('code', this.code);
-  irc.addTrigger('users', this.users);
 };
 
 Plugin.prototype.onNumeric = function(irc) {
@@ -42,15 +41,4 @@ Plugin.prototype.about = function (irc, channel, nick, params, message, raw) {
 
 Plugin.prototype.code = function (irc, channel, nick, params, message, raw) {
   irc.send(channel, nick + ': You can view, and fork my code to contribute on GitHub @ http://www.github.com/killswitch/dunn.');
-};
-
-Plugin.prototype.users = function (irc, channel, nick) {
-  var users = 'Current channel users:';
-  Object.keys(irc.users).forEach(function (user) {
-    if (user != irc.nick.toLowerCase() && user != nick)
-    {
-      users += ' ' + user;
-    }
-  });
-  irc.send(channel, users + '.');
 };
