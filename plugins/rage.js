@@ -6,7 +6,7 @@
  * @Author        Emn1ty (Jonathan Ardis)
  *
  */
- 
+
 Plugin = exports.Plugin = function (irc) {
   this.trigger = 'RAGE';
   this.usage = 'EXPRESSES YOUR RAGE!';
@@ -25,19 +25,25 @@ Plugin.prototype.RAGE = function (msg) {
       message = msg.arguments[1],
       params = message.split(' '),
       RAGE_MESSAGE = '',
-      symbols = ' %$#&@*!';
+      symbols = ' %$#&@*!',
+      message_return = '';
 
   params.shift();
-
-  if (params[0] == 'MOAR') {
-    for(var i=0;i<150;i++) {
-        RAGE_MESSAGE += symbols.charAt(Math.floor(Math.random() * symbols.length));
-    }
+  if (params[0] == '') {
+    message_return = user + ', WHY U NO WORDS?!?';
   } else {
-    for(var i=0;i<params.length;i++) {
-      RAGE_MESSAGE += toUpperCase(params[i])+' ';
+    if (params[0] == 'MOAR') {
+      for(var i=0;i<150;i++) {
+          RAGE_MESSAGE += symbols.charAt(Math.floor(Math.random() * symbols.length));
+      }
+    } else {
+      for(var i=0;i<params.length;i++) {
+        RAGE_MESSAGE += toUpperCase(params[i])+' ';
+      }
     }
+    message_return = user + ' RAGES! ' + RAGE_MESSAGE + '!!!!!';
   }
 
-  irc.send(chanObj && chanObj.name || user, user + ' RAGES!: ' + RAGE_MESSAGE + '!!!!!');
+
+  irc.send(chanObj && chanObj.name || user, message_return);
 };
