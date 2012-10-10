@@ -8,27 +8,14 @@
  */
 
 Plugin = exports.Plugin = function (irc) {
-  this.trigger = 'RAGE';
-  this.usage = 'EXPRESSES YOUR RAGE!';
-  this.version = '0.1';
-  this.author = 'Emn1ty';
-  this.protected = false;
-  this.irc = irc;
-  this.irc.addTrigger('RAGE', this.RAGE);
+  this.irc.addTrigger('rage', this.RAGE);
 };
 
-Plugin.prototype.RAGE = function (msg) {
-  var irc = this.irc,
-      channel = msg.arguments[0],
-      chanObj = irc.channels[channel],
-      user = irc.user(msg.prefix),
-      message = msg.arguments[1],
-      params = message.split(' '),
-      RAGE_MESSAGE = '',
+Plugin.prototype.RAGE = function (irc, channel, nick, params, message) {
+  var RAGE_MESSAGE = '',
       symbols = ' %$#&@*!',
       message_return = '';
 
-  params.shift();
   if (params[0] == '') {
     message_return = user + ', WHY U NO WORDS?!?';
   } else {
@@ -45,5 +32,5 @@ Plugin.prototype.RAGE = function (msg) {
   }
 
 
-  irc.send(chanObj && chanObj.name || user, message_return);
+  irc.send(channel, message_return);
 };
