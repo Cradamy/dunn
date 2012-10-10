@@ -12,7 +12,7 @@
 
 Plugin = exports.Plugin = function (irc) {
   irc.addTrigger('info', this.pull);
-  irc.addTrigger('info', this.parsePlugins);
+  irc.addTrigger('info-reparse', this.parsePlugins);
   this.plugins = {};
   this.pluginsRaw = {};
 };
