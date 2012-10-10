@@ -35,7 +35,7 @@ Update.prototype.watch = function() {
 		res.on("data", function(d) { data += d; }).
 			  on("end", function() {
 			  	data = JSON.parse(data)[0];
-			  	if(data.sha.indexOf(irc.updateSHA) !== -1) {
+			  	if(irc.updateSHA.indexOf(data.sha) !== -1) {
 			  		if(irc.updateAnnounce) {
 			  			irc.send(irc.updateChannel, "New commit; "+data.sha.substr(0, 10)+" - "+data.commit.message);
 			  		}
