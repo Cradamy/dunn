@@ -1,6 +1,7 @@
 /*
  * @Plugin        Example
  * @Description   Just an example plugin to show how to extend Dunn
+ * @Triggers      .example
  *
  * @Author        Killswitch (Josh Manders)
  * @Website       http://www.joshmanders.com

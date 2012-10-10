@@ -1,6 +1,8 @@
 /*
  * @Plugin        Dunn
  * @Description   Random triggers based on things having to do with Dunn himself.
+ * @Triggers      .about
+ * @Triggers      .code
  *
  * @Author        Killswitch (Josh Manders)
  * @Website       http://www.joshmanders.com

@@ -1,6 +1,7 @@
 /*
  * @Plugin        Triggers
  * @Description   Displays all loaded triggers
+ * @Triggers      .plugins
  *
  * @Author        Killswitch (Josh Manders)
  * @Website       http://www.joshmanders.com
