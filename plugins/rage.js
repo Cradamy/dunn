@@ -14,7 +14,7 @@ Plugin = exports.Plugin = function (irc) {
   this.author = 'Emn1ty';
   this.protected = false;
   this.irc = irc;
-  this.irc.addTrigger(this, 'RAGE', this.RAGE);
+  this.irc.addTrigger('RAGE', this.RAGE);
 };
 
 Plugin.prototype.RAGE = function (msg) {
