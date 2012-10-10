@@ -1,8 +1,7 @@
 /*
  * @Plugin        Karma
  * @Description   Karma system based on Stack Overflow's Reputation system.
- * @Triggers      .karma
- * @Triggers      [name]++
+ * @Trigger      .karma
  *
  * @Author        Killswitch (Josh Manders)
  * @Website       http://www.joshmanders.com

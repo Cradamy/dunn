@@ -1,7 +1,7 @@
 /*
 * @Plugin        NSFW search
 * @Description   get your nsfw fix
-* @Triggers      .nsfw
+* @Trigger       .nsfw
 *
 * @Author        naomi (Naomi Kyoto)
 * @Website       http://github.com/naomik
