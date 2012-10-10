@@ -8,7 +8,7 @@
  */
 
 Plugin = exports.Plugin = function (irc) {
-  this.irc.addTrigger('rage', this.RAGE);
+  irc.addTrigger('rage', this.RAGE);
 };
 
 Plugin.prototype.RAGE = function (irc, channel, nick, params, message) {
