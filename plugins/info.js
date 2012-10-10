@@ -27,7 +27,7 @@ Plugin.prototype.parsePlugins = (irc, channel, nick, params, message) {
 		var pluginT = {};
 		for(var x = 0; x < lines.length; x++) {
 			var line = lines[x];
-			if(line.indexOf("*/") !== -1 || line.indexOf("*") == -1) {
+			if(line.indexOf("*/") !== -1 || (line.trim().length > 0 && line.indexOf("*") == -1)) {
 				x = lines.length+1;
 			} else {
 				var tag = "";
