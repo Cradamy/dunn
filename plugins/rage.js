@@ -25,7 +25,7 @@ Plugin.prototype.RAGE = function (irc, channel, user, params, message) {
       }
     } else {
       for(var i=0;i<params.length;i++) {
-        RAGE_MESSAGE += toUpperCase(params[i])+' ';
+        RAGE_MESSAGE += params[i].toUpperCase()+' ';
       }
     }
     message_return = user + ' RAGES! ' + RAGE_MESSAGE + '!!!!!';
