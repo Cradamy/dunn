@@ -11,7 +11,7 @@ Plugin = exports.Plugin = function (irc) {
   irc.addTrigger('rage', this.RAGE);
 };
 
-Plugin.prototype.RAGE = function (irc, channel, nick, params, message) {
+Plugin.prototype.RAGE = function (irc, channel, user, params, message) {
   var RAGE_MESSAGE = '',
       symbols = ' %$#&@*!',
       message_return = '';
