@@ -1,9 +1,12 @@
 var sys = require('util'),
     net = require('net'),
     fs = require('fs'),
+    path = require('path'),
     user = require ('./user.js' ),
     channel = require('./channel.js'),
     update = require("./update.js");
+
+var existsSync = fs.existsSync || path.existsSync;
 
 Server = exports.Server = function (config) {
   this.initialize(config);
@@ -39,7 +42,7 @@ Server.prototype.initialize = function (config) {
   this.users = {};
 
   // updater
-  if(require("fs").existsSync(__dirname + "/../.git/refs/head/master")) {
+  if(existsSync(__dirname + "/../.git/refs/head/master")) {
     this.updateSHA = "";
     this.updateTimer = 0;
     update.Update(this);

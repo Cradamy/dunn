@@ -10,6 +10,7 @@
  *
  */
 
+var https = require("https");
 var self;
 Plugin = exports.Plugin = function (irc) {
   irc.addTrigger('git', this.git);
@@ -29,14 +30,14 @@ Plugin.prototype.issues = function(irc, channel, nick, params, message) {
 		var data = "";
 		res.on("data", function(d) { data += d; }).
 			  on("end", function() {
-			  	data = JSON.parse(data)[0];
+			  	data = JSON.parse(data);
 			  	if(data.length) {
 			  		if(data.length < num) num = data.length;
 			  		if(num == 0) num = data.length;
 
 			  		data = data.reverse();
 
-			  		while(num > -1) {
+			  		while(num > 0) {
 			  			var issue = data[num-1];
 			  			irc.send(channel, "Issue "+issue.number+"; "+issue.title+" "+issue.url);
 			  			num--;
@@ -51,7 +52,7 @@ Plugin.prototype.issues = function(irc, channel, nick, params, message) {
 }
 
 Plugin.prototype.pullMonitor = function() {
-	var chans = self.chans;
+	var chans = self.pullchans;
 
 	while(chans.length) {
 		self.pull(chans.shift);
@@ -85,11 +86,11 @@ Plugin.prototype.git = function (irc, channel, nick, params, message) {
 	switch(params[0]) {
 		default:
 		case "help":
-			irc.send(channel, ".git pull - adds this channel to the announce list, .git-issues [limit]/.git issue [limit] - lists latest issues (by limit), .git last - show last commit");
+			irc.send(channel, ".git pull - adds this channel to the announce list, .git-issues [limit]/.git issues [limit] - lists latest issues (by limit), .git last - show last commit");
 		break;
 
 		case "pull":
-			self.chans.push(channel);
+			self.pullchans.push(channel);
 		break;
 
 		case "issues":
@@ -102,7 +103,7 @@ Plugin.prototype.git = function (irc, channel, nick, params, message) {
 				res.on("data", function(d) { data += d; }).
 					  on("end", function() {
 					  	data = JSON.parse(data)[0];
-					  	irc.send(irc.channel, data.sha.substr(0, 10)+" - "+data.commit.message+" "+data.url);
+					  	irc.send(channel, data.sha.substr(0, 10)+" - "+data.commit.message+" "+data.url);
 					  });
 			}).on("error", function(e) {
 				irc.sendHeap(e, irc.channel);

@@ -13,16 +13,25 @@
 Plugin = exports.Plugin = function (irc) {
   irc.addTrigger('info', this.pull);
   irc.addTrigger('info-reparse', this.parsePlugins);
+  this.irc = irc;
   this.plugins = {};
   this.pluginsRaw = {};
+  this.parsePlugins();
 };
 
-Plugin.prototype.parsePlugins = (irc, channel, nick, params, message) {
+Plugin.prototype.onMessage = function(msg) {
+	var channel = msg.arguments[0];
+	var message = msg.arguments[1];
+	if(message == "DunnCommand") this.irc.send(channel, "Command prefix is: "+this.irc.command);
+}
+
+Plugin.prototype.parsePlugins = function(irc, channel, nick, params, message) {
+	this.pluginsRaw = {};
 	var fs = require("fs");
 	var files = fs.readdirSync(__dirname);
 
 	for (var i = 0; i < files.length; i++) {
-		var file = fs.readFileSync(files[i]).toString();
+		var file = fs.readFileSync(__dirname + "/" + files[i]).toString();
 		var lines = file.split("\n");
 		var pluginT = {};
 		for(var x = 0; x < lines.length; x++) {
@@ -79,20 +88,13 @@ Plugin.prototype.parsePlugins = (irc, channel, nick, params, message) {
 }
 
 Plugin.prototype.pull = function(irc, channel, nick, params, message) {
-	if(this.plugins.length == 0) {
-		this.parsePlugins();
-	}
 
 	if(params.length == 0) {
 		irc.send(channel, "Usage: .info plugin");
 	} else {
 		var plugin = 0;
 		params = params.join(" ");
-		if(typeof this.plugins[params] != "undefined") {
-			plugin = this.pluginsRaw[this.plugins[params]];
-		} if(typeof this.plugins["."+params] != "undefined") {
-			plugin = this.pluginsRaw[this.plugins[params]];
-		} else if(typeof this.pluginsRaw[params] != "undefined") {
+		if(typeof this.pluginsRaw[params] != "undefined") {
 			plugin = this.pluginsRaw[params];
 		} else {
 			irc.send(channel, "No such plugin");
@@ -104,7 +106,7 @@ Plugin.prototype.pull = function(irc, channel, nick, params, message) {
 			for(var key in plugin) {
 				var content = plugin[key];
 				if(typeof content != "string") content = content.join(", ");
-				message += key + ": "+content+" ";
+				message += key.trim() + ": "+content.trim()+"; ";
 			}
 			irc.send(channel, message.trim());
 		}
