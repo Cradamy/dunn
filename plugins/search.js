@@ -20,7 +20,7 @@ Plugin.prototype.google = function(irc, channel, nick, params, message, raw) {
 
 		http.request({
 			host: "ajax.googleapis.com",
-			path: "/ajax/services/search/web?v=1.0&q="+params.join(" ")
+			path: "/ajax/services/search/web?v=1.0&q="+encodeURIComponent(params.join(" "))
 		}, function(res) {
 			var data = "";
 
@@ -28,7 +28,7 @@ Plugin.prototype.google = function(irc, channel, nick, params, message, raw) {
 				data += chunk;
 			}).on("end", function() {
 				data = JSON.parse(data);
-				irc.send(channel, data.responseData.results[0].url);
+				irc.send(channel, decodeURIComponent(data.responseData.results[0].url));
 			});
 		}).on("error", function(err) {
 			irc.sendHeap(err.stack, channel);
