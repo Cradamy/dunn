@@ -25,7 +25,7 @@ Plugin.prototype.onMessage = function (msg) {
       	"YES",
       	"NO", 
       	"YES YES YES YES YES YES",
-      	"NO NO NO NO NO"
+      	"NO NO NO NO NO NO"
       ];
   if(message.substr(0, botNick.length).toLowerCase() == botNick) {
   	if(message.substr(message.length-1) == "?" || message.substr(message.length-1)) {
