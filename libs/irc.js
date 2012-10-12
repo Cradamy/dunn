@@ -51,6 +51,7 @@ Server.prototype.initialize = function (config) {
   // hook and callback arrays
   this.hooks = [];
   this.triggers = [];
+  this.messagehandlers = {};
   this.replies = [];
 
   this.connection = null;
@@ -247,6 +248,27 @@ Server.prototype.onMessage = function (msg) {
             this.heap = [];
           } else {
             this.send(this.channels[msg.arguments[0]].name.toLowerCase(), "No heaps");
+          }
+        }
+      } else {
+        var msgHandlers = this.messagehandlers;
+        for(msgTrigger in msgHandlers) {
+          if(match = msg.arguments[1].toLowerCase().match(msgTrigger)) {
+            msgHandler = msgHandlers[msgTrigger];
+
+            if (typeof this.channels[msg.arguments[0]] != "undefined") {
+              //room message recieved
+
+              try {
+                msgHandler.callback.apply(msgHandler.plugin, [this, this.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase(), match, msg.arguments[1], msg.orig]);
+              } catch(err) {
+                this.sendHeap(err.stack, this.channels[msg.arguments[0]].name.toLowerCase());
+                return false;
+              }
+            } else {
+              //PM recieved
+            }
+            msgHandlers = [];
           }
         }
       }
@@ -522,6 +544,12 @@ Server.prototype.loadPlugin = function (name) {
 Server.prototype.addTrigger = function (trigger, callback) {
   if (typeof this.triggers[trigger] == 'undefined') {
     this.triggers[trigger] = { plugin: trigger, callback: callback};
+  }
+};
+
+Server.prototype.addMessageHandler = function (identifier, trigger, callback) {
+  if (typeof this.messagehandlers[trigger] == 'undefined') {
+    this.messagehandlers[trigger] = { plugin: trigger, callback: callback};
   }
 };
 

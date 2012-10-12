@@ -1,6 +1,6 @@
 /*
- * @Plugin        bit
- * @Description   BIT! Tron. BIT!
+ * @Plugin        pinky
+ * @Description   Pinky and the Brain replies
  *
  * @Author        buttcactus
  * @Website       http://www.digitalkitsune.net
@@ -11,15 +11,13 @@
  */
  
 Plugin = exports.Plugin = function (irc) {
-  this.irc = irc;
+  irc.addMessageHandler("are you thinking what i am thinking?", this.pinky);
+  irc.addMessageHandler("are you thinking what i'm thinking?", this.pinky);
+  irc.addMessageHandler("are you thinking what im thinking?", this.pinky);
 };
 
-Plugin.prototype.onMessage = function (msg) {
-  var irc = this.irc,
-      channel = msg.arguments[0],
-      message = msg.arguments[1],
-      botNick = this.irc.nick.toLowerCase(),
-      replies = [
+Plugin.prototype.pinky = function(irc, channel, nick, match, message, raw) {
+    var replies = [
         "I think so, %u, but where are we going to find a duck and a hose at this hour?",
         "I think so, but where will we find an open tattoo parlor at this time of night?",
         "Wuh, I think so, %u, but if we didn't have ears, we'd look like weasels.",
@@ -97,8 +95,5 @@ Plugin.prototype.onMessage = function (msg) {
         "I think so, %u, but Zero Mostel times anything will still give you Zero Mostel.",
         "I think so, %u, but if we have nothing to fear but fear itself, why does Elanore Roosevelt wear that spooky mask?",
         "I think so, %u, but what if the hippopotamus won't wear the beach thong?"];
-      if(message.toLowerCase().indexOf("are you thinking what i'm thinking?") != -1 |
-         message.toLowerCase().indexOf("are you pondering what i'm pondering?") != -1) {
-        irc.send(channel, replies[Math.floor(Math.random()*replies.length)].replace("%u", this.irc.user(msg.prefix)))
-      }
+    irc.send(channel, replies[Math.floor(Math.random()*replies.length)].replace("%u", nick))
 }
