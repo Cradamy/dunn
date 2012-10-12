@@ -8,28 +8,15 @@
  */
 
 Plugin = exports.Plugin = function (irc) {
-  this.trigger = 'RAGE';
-  this.usage = 'EXPRESSES YOUR RAGE!';
-  this.version = '0.1';
-  this.author = 'Emn1ty';
-  this.protected = false;
-  this.irc = irc;
-  this.irc.addTrigger(this, 'RAGE', this.RAGE);
+  irc.addTrigger('rage', this.RAGE);
 };
 
-Plugin.prototype.RAGE = function (msg) {
-  var irc = this.irc,
-      channel = msg.arguments[0],
-      chanObj = irc.channels[channel],
-      user = irc.user(msg.prefix),
-      message = msg.arguments[1],
-      params = message.split(' '),
-      RAGE_MESSAGE = '',
+Plugin.prototype.RAGE = function (irc, channel, user, params, message) {
+  var RAGE_MESSAGE = '',
       symbols = ' %$#&@*!',
       message_return = '';
 
-  params.shift();
-  if (params[0] == '') {
+  if (params[0] == '' || typeof params[0] != 'undefined') {
     message_return = user + ', WHY U NO WORDS?!?';
   } else {
     if (params[0] == 'MOAR') {
@@ -38,12 +25,12 @@ Plugin.prototype.RAGE = function (msg) {
       }
     } else {
       for(var i=0;i<params.length;i++) {
-        RAGE_MESSAGE += toUpperCase(params[i])+' ';
+        RAGE_MESSAGE += params[i].toUpperCase()+' ';
       }
     }
     message_return = user + ' RAGES! ' + RAGE_MESSAGE + '!!!!!';
   }
 
 
-  irc.send(chanObj && chanObj.name || user, message_return);
+  irc.send(channel, message_return);
 };

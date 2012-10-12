@@ -2,13 +2,14 @@ var config = {
 	host: 'irc.freenode.net',
 	port: 6667,
 	nick: 'dunnBot',
+	identPass: 'youridpasshere',
 	username: 'dunnBot',
 	realname: 'Powered by #webtech',
 	command: '.',
-	db: 'dunn',
-	channels: ['#dunn'],
-	plugins: ['dunn', 'global', 'reload', 'log', 'seen', 'plugins'],
-	admins: ['killswitch']
+	db: 'dunnBot',
+	channels: ['#yourchannel'],
+	plugins: ['dunn', 'example', 'karma', 'log', 'nsfw', 'triggers', 'rage', 'seen'],
+	admins: ['yournick']
 };
 
 module.exports = config;

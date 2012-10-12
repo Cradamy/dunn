@@ -13,38 +13,29 @@ var mongodb = require('mongojs'),
     howLong = require('../libs/ago.js');
  
 Plugin = exports.Plugin = function (irc) {
-  this.trigger = 'seen';
-  this.usage = 'Type ' + irc.command + this.trigger + ' <user> to see when that user was last active.';
-  this.version = '0.1';
-  this.author = 'Killswitch';
-  this.protected = false;
   this.irc = irc;
-  this.db = mongodb.connect(irc.database, ['logs', 'userList']);
-  this.irc.addTrigger(this, 'seen', this.whereThey);
+  this.db = mongodb.connect(irc.database, ['logs']);
+  this.irc.addTrigger('seen', this.seen);
 };
 
-Plugin.prototype.whereThey = function (msg) {
-  var irc = this.irc,
-      channel = msg.arguments[0],
-      chanObj = irc.channels[channel],
-      user = irc.user(msg.prefix),
-      message = msg.arguments[1],
-      params = message.split(' ');
-
-  params.shift();
+Plugin.prototype.seen = function (irc, channel, nick, params, message, raw) {
+  var users;
+  Object.keys(irc.users).forEach(function (user) {
+  if (user != irc.nick.toLowerCase() && user != nick)
+    {
+      users += ' ' + user;
+    }
+  });
   if (params.length > 0) {
-    if (params[0] !== user || params[0] !== irc.nick) {
+    if (params[0] !== nick || params[0] !== irc.nick || users.indexOf(params[0]) != -1) {
       this.db.logs.find({ nick: params[0], channel: channel }).sort({ date: -1 }).limit(1, function (err, seen) {
         if (seen.length > 0) {
-          irc.send(chanObj && chanObj.name || user, user + ': The last time I seen ' + params[0] + ' was ' + howLong.ago(seen[0].date) + '.');
+          irc.send(channel, nick + ': The last time I seen ' + params[0] + ' was ' + howLong.ago(seen[0].date) + ' ago.');
         }
         else {
-          irc.send(chanObj && chanObj.name || user, user + ': Sorry, I have not seen ' + params[0] + '.');
+          irc.send(channel, nick + ': Sorry, I have not seen ' + params[0] + '.');
         }
       });
     }
-  }
-  else {
-    irc.send(chanObj && chanObj.name || user, user + ': [USAGE] ' + this.usage);
   }
 };
