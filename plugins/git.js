@@ -103,7 +103,7 @@ Plugin.prototype.git = function (irc, channel, nick, params, message) {
 				res.on("data", function(d) { data += d; }).
 					  on("end", function() {
 					  	data = JSON.parse(data)[0];
-					  	irc.send(channel, data.sha.substr(0, 10)+" - "+data.commit.message+" "+data.url);
+					  	irc.send(channel, data.sha.substr(0, 10)+" - "+data.commit.message+" https://github.com/killswitch/dunn/commit/"+data.sha);
 					  });
 			}).on("error", function(e) {
 				irc.sendHeap(e, irc.channel);
