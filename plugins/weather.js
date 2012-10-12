@@ -3,9 +3,8 @@
  * @Description   Gets weather based on given zipcode
  * @Trigger       .weather
  *
- * @Author        Killswitch (Josh Manders)
- * @Website       http://www.joshmanders.com
- * @Copyright     Josh Manders 2012
+ * @Author        Emn1ty (Jonathan Ardis)
+ * @Copyright     Jonathan Ardis 2012
  *
  */
 
