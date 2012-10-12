@@ -547,7 +547,7 @@ Server.prototype.addTrigger = function (trigger, callback) {
   }
 };
 
-Server.prototype.addMessageHandler = function (identifier, trigger, callback) {
+Server.prototype.addMessageHandler = function (trigger, callback) {
   if (typeof this.messagehandlers[trigger] == 'undefined') {
     this.messagehandlers[trigger] = { plugin: trigger, callback: callback};
   }
