@@ -1,7 +1,7 @@
 /*
  * @Plugin        RAGE
  * @Description   Capitalizes everything.
- * @Trigger       .RAGE
+ * @Trigger       .rage
  *
  * @Author        Emn1ty (Jonathan Ardis)
  *
@@ -16,7 +16,7 @@ Plugin.prototype.RAGE = function (irc, channel, user, params, message) {
       symbols = ' %$#&@*!',
       message_return = '';
 
-  if (params[0] == '') {
+  if (params < 1) {
     message_return = user + ', WHY U NO WORDS?!?';
   } else {
     if (params[0] == 'MOAR') {
