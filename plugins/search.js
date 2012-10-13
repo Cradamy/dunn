@@ -16,7 +16,6 @@ Plugin = exports.Plugin = function(irc) {
   this.irc.addTrigger('g', this.google);
   this.irc.addTrigger('gi', this.image);
   this.irc.addTrigger('gif', this.gif);
-  this.search = this.search;
 };
 
 Plugin.prototype.google = function(irc, channel, nick, params, message, raw) {
