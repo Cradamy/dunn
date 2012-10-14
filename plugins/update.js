@@ -17,7 +17,7 @@ var https = require("https"),
 var irc = 0, child, self;
 
 Plugin = exports.Plugin = function (i) {
-	i.addTrigger('karma', this.check);
+	i.addTrigger('update', this.check);
 	irc = i;
 	self = this;
 }
@@ -34,7 +34,7 @@ Plugin.prototype.check = function(irc, channel, nick, params, message, raw) {
 						irc.send(irc.updateChannel, "Failed to execute git pull");
 						return;
 					} else {
-
+						process.exit(0); //assuming forever
 					}
 				});
 	  	}
