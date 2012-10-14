@@ -67,10 +67,36 @@ Plugin.prototype.onMessage = function (msg) {
       });
     }
   }
+
+  if (to = message.match(/^(\w+)\-\-;?$/i)) {
+    var user = to[1].toLowerCase();
+    if (user != botNick && user != nick && users.indexOf(user) != -1) {
+      karma.find({ to: user, from: nick, channel: channel, action: 'take' }).sort({ date: -1 }).limit(1, function (err, check) {
+        var fifteenMinsAgo = new Date().fifteenMinsAgo(),
+            now = new Date();
+        if (check.length > 0) {
+          if ((check[0].date <= now) && (check[0].date >= fifteenMinsAgo))  {
+            irc.send(channel, nick + ': Can not take karma from the same person in a 15 minute span.');
+          }
+          else {
+            karma.save({ to: user, from: nick, channel: channel, action: 'take', date: new Date() });
+            irc.send(channel, nick + ': Karma taken from ' + user);
+          }
+        }
+        else {
+          karma.save({ to: user, from: nick, channel: channel, action: 'take', date: new Date() });
+          irc.send(channel, nick + ': Karma taken from ' + user);
+        }
+      });
+    }
+  }
 };
 
 Plugin.prototype.karma = function (irc, channel, nick, params, message, raw) {
-  this.db.karma.find({ to: nick, channel: channel, action: 'give' }, function (err, karma) {
-    irc.send(channel, nick + ': You have ' + karma.length + ' total karma.');
+  var db = this.db;
+  db.karma.find({ to: nick, channel: channel, action: 'give' }, function (err, karma) {
+    db.karma.find({ to: nick, channel: channel, action: 'take'}, function(err, karma2) {
+      irc.send(channel, nick + ': You have ' + (karma.length - karma2.length) + ' total karma.');
+    });
   });
 };
