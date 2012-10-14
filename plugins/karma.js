@@ -26,6 +26,7 @@ Plugin = exports.Plugin = function (irc) {
   irc.addTrigger('karma', this.karma);
   this.db = mongodb.connect(irc.database, ['karma']);
   this.irc = irc;
+  this.threshold = irc.config.karmaThreshold || 5;
 };
 
 Plugin.prototype.onMessage = function (msg) {
@@ -34,7 +35,8 @@ Plugin.prototype.onMessage = function (msg) {
       channel = msg.arguments[0],
       message = msg.arguments[1],
       botNick = this.irc.nick.toLowerCase(),
-      karma = this.db.karma;
+      karma = this.db.karma,
+      threshold = this.threshold;
   Object.keys(irc.users).forEach(function (user) {
   if (user != irc.nick.toLowerCase() && user != nick)
     {
@@ -54,16 +56,11 @@ Plugin.prototype.onMessage = function (msg) {
         if (check.length > 0) {
           if ((check[0].date <= now) && (check[0].date >= fifteenMinsAgo))  {
             irc.send(channel, nick + ': Can not give karma to the same person in a 15 minute span.');
-          }
-          else {
-            karma.save({ to: user, from: nick, channel: channel, action: 'give', date: new Date() });
-            irc.send(channel, nick + ': Karma given to ' + user);
+            return;
           }
         }
-        else {
-          karma.save({ to: user, from: nick, channel: channel, action: 'give', date: new Date() });
-          irc.send(channel, nick + ': Karma given to ' + user);
-        }
+        karma.save({ to: user, from: nick, channel: channel, action: 'give', date: new Date() });
+        irc.send(channel, nick + ': Karma given to ' + user);
       });
     }
   }
@@ -77,16 +74,20 @@ Plugin.prototype.onMessage = function (msg) {
         if (check.length > 0) {
           if ((check[0].date <= now) && (check[0].date >= fifteenMinsAgo))  {
             irc.send(channel, nick + ': Can not take karma from the same person in a 15 minute span.');
+            return;
           }
-          else {
+        }
+
+        karma.find({ to: nick, channel: channel, action: 'give' }, function (err, k) {
+          karma.find({ to: nick, channel: channel, action: 'take'}, function(err, k2) {
+            if(k.length - k2.length < threshold) {
+              irc.send(channel, nick + ": You need at least "+threshold+" karma inorder to take karma.");
+              return;
+            }
             karma.save({ to: user, from: nick, channel: channel, action: 'take', date: new Date() });
             irc.send(channel, nick + ': Karma taken from ' + user);
-          }
-        }
-        else {
-          karma.save({ to: user, from: nick, channel: channel, action: 'take', date: new Date() });
-          irc.send(channel, nick + ': Karma taken from ' + user);
-        }
+          });
+        });
       });
     }
   }
