@@ -17,7 +17,7 @@ var https = require("https"),
 var irc = 0, child, self;
 
 Plugin = exports.Plugin = function (i) {
-	i.addTrigger('update', this.check);
+	i.addTrigger('update', this.check, true);
 	irc = i;
 	self = this;
 }

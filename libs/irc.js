@@ -3,8 +3,7 @@ var sys = require('util'),
     fs = require('fs'),
     path = require('path'),
     user = require ('./user.js' ),
-    channel = require('./channel.js'),
-    update = require("./update.js");
+    channel = require('./channel.js');
 
 var existsSync = fs.existsSync || path.existsSync;
 
@@ -218,6 +217,13 @@ Server.prototype.onMessage = function (msg) {
 
         if (typeof this.triggers[trigger] != 'undefined') {
           var trig = this.triggers[trigger];
+
+          if(trig.admin) {
+            if(this.admins.indexOf(nick.toLowerCase()) == -1) {
+              this.send(this.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase() + ": Insufficient permissions");
+              return false;
+            }
+          }
 
           if (typeof this.channels[msg.arguments[0]] != "undefined") {
             //room message recieved
@@ -530,9 +536,11 @@ Server.prototype.loadPlugin = function (name) {
 
 };
 
-Server.prototype.addTrigger = function (trigger, callback) {
+Server.prototype.addTrigger = function (trigger, callback, admin) {
   if (typeof this.triggers[trigger] == 'undefined') {
-    this.triggers[trigger] = { plugin: trigger, callback: callback};
+    if(typeof admin == "undefined") admin = 0;
+    admin = parseInt(admin);
+    this.triggers[trigger] = { plugin: trigger, callback: callback, admin: admin};
   }
 };
 

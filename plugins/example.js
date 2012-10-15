@@ -11,6 +11,7 @@
  
 Plugin = exports.Plugin = function (irc) {
   irc.addTrigger('example', this.example);
+  irc.addTrigger('admin-example', this.example, 1);
 };
 
 Plugin.prototype.example = function (irc, channel, nick, params, message) {
