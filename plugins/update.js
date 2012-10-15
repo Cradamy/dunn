@@ -14,12 +14,13 @@ var https = require("https"),
 		fs = require("fs"),
 		sys = require("sys"),
 		exec = require("child_process").exec;
-var irc = 0, child, self;
-
+var updateSHA;
 Plugin = exports.Plugin = function (i) {
-	i.addTrigger('update', this.check, true);
-	irc = i;
-	self = this;
+	console.log(__dirname + "/../.git/refs/heads/master", fs.existsSync(__dirname + "/../.git/refs/heads/master"));
+	if(fs.existsSync(__dirname + "/../.git/refs/heads/master")) {
+		updateSHA = fs.readFileSync(__dirname + "/../.git/refs/heads/master").toString().split("\n")[0];
+		i.addTrigger('update', this.check, 1);
+	}
 }
 
 Plugin.prototype.check = function(irc, channel, nick, params, message, raw) {
@@ -27,11 +28,12 @@ Plugin.prototype.check = function(irc, channel, nick, params, message, raw) {
 		var data = "";
 		res.on("data", function(d) { data += d; }).on("end", function() {
 			data = JSON.parse(data)[0];
-	  	if(irc.updateSHA.indexOf(data.sha) !== -1) {
-	  		irc.send(irc.updateChannel, "New commit; "+data.sha.substr(0, 10)+" - "+data.commit.message);
+	  	if(updateSHA.trim().indexOf(data.sha.trim()) === -1) {
+	  		irc.send(channel, "New commit; "+data.sha.substr(0, 10)+" - "+data.commit.message);
 	  		child = exec("git pull", function(error, stdout, strerr) {
 					if(error) {
-						irc.send(irc.updateChannel, "Failed to execute git pull");
+						irc.send(channel, "Failed to execute git pull");
+						irc.sendHeap(stdout+"\n"+strerr, channel);
 						return;
 					} else {
 						process.exit(0); //assuming forever
@@ -40,6 +42,6 @@ Plugin.prototype.check = function(irc, channel, nick, params, message, raw) {
 	  	}
 	  })
 	}).on("error", function(e) {
-		irc.sendHeap(e, irc.updateChannel);
+		irc.sendHeap(e, channel);
 	}).end();
 }
