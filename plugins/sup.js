@@ -11,9 +11,9 @@
  */
  
 Plugin = exports.Plugin = function (irc) {
-  irc.addMessageHandler("what's up?", this.sup);
-  irc.addMessageHandler("what is up?", this.sup);
-  irc.addMessageHandler("sup?", this.sup);
+  irc.addMessageHandler("what's up", this.sup);
+  irc.addMessageHandler("what is up", this.sup);
+  // irc.addMessageHandler("sup", this.sup);
 };
 
 Plugin.prototype.sup = function(irc, channel, nick, match, message, raw) {
