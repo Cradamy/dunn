@@ -26,7 +26,7 @@ Plugin.prototype.weather = function (irc, channel, nick, params, message) {
         wind = weather.windspeedKmph+'kph ('+weather.windspeedMiles+'mph) Winds',
         desc = weather.weatherDesc.value,
         clouds = weather.cloudcover+'% Cloudcover';
-        weatherMessage = desc+' | '+temp' | '+clouds' | '+humidty' | '+wind;
+        weatherMessage = desc+' | '+temp+' | '+clouds+' | '+humidty+' | '+wind;
         irc.send(channel, nick +': '+weatherMessage);
     });
   } else {
