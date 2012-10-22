@@ -24,6 +24,7 @@ Plugin = exports.Plugin = function (i) {
 }
 
 Plugin.prototype.check = function(irc, channel, nick, params, message, raw) {
+	irc.send(channel, "Checking...");
 	var req = https.request(require("url").parse("https://api.github.com/repos/killswitch/dunn/commits"), function(res) {
 		var data = "";
 		res.on("data", function(d) { data += d; }).on("end", function() {
@@ -39,7 +40,9 @@ Plugin.prototype.check = function(irc, channel, nick, params, message, raw) {
 						process.exit(0); //assuming forever
 					}
 				});
-	  	}
+	  	} else {
+	  		irc.send(channel, "No updates");
+		}
 	  })
 	}).on("error", function(e) {
 		irc.sendHeap(e, channel);
