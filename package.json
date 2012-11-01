@@ -1,12 +1,12 @@
 {
   "name": "dunn",
-  "version": "0.2.2",
+  "version": "0.2.5",
   "description": "IRC bot for #webtech on freenode",
   "author": "Josh Manders <josh@joshmanders.com> (http://www.joshmanders.com)",
   "contributors": [
     "Conrad Pankoff <deoxxa@fknsrs.biz> (http://www.fknsrs.biz)",
     "Naomi Kyoto <nakyoto@gmail.com> (http://github.com/naomik)",
-	"Jonathan Ardis (http://github.com/Emn1ty)",
+    "Jonathan Ardis (http://github.com/Emn1ty)",
     "Aaron Ahmed <gr33nmous3@gmail.com> (http://github.com/draceros)"
   ],
   "repository": {
