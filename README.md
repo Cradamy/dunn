@@ -20,12 +20,5 @@ Contributors
 for you
 4. Put all channels you want him to join in the channels as an array:
 ['#webtech','#web','#whatever']
-5. Install node.js on your server
-
-Note: If you use anything like logging, seen, karma, or anything you set the
-third param in the plugin's irc.addTrigger() then you'll need mongodb
-installed.
-
-6. `node dunnbot.js`
-
-Note: That will connect him and join the channels.
+5. Install node.js on your server *Note*: If you use anything like logging, seen, karma, or anything you set the third param in the plugin's irc.addTrigger() then you'll need mongodb installed.
+6. `node dunnbot.js` *Note*: That will connect him and join the channels.
