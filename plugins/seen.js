@@ -30,7 +30,10 @@ Plugin.prototype.seen = function (irc, channel, nick, params, message, raw) {
     if (params[0] !== nick || params[0] !== irc.nick || users.indexOf(params[0]) != -1) {
       this.db.logs.find({ nick: params[0], channel: channel }).sort({ date: -1 }).limit(1, function (err, seen) {
         if (seen.length > 0) {
-          irc.send(channel, nick + ': The last time I seen ' + params[0] + ' was ' + howLong.ago(seen[0].date) + ' ago.');
+          var ago = howLong.ago(seen[0].date);
+          var msg = nick + ': The last time I seen ' + params[0] + ' was ';
+          msg += ago === "just now" ? ago +'.' : ago + ' ago.'
+          irc.send(channel,  msg);
         }
         else {
           irc.send(channel, nick + ': Sorry, I have not seen ' + params[0] + '.');
