@@ -20,7 +20,7 @@ Contributors
 3. `identPass` isn't required so you can leave that blank
 4. Insert all channels you want Dunn to join in the channels as an array: `['#webtech','#web','#whatever']`
 5. Put your nick is in the admins array otherwise admin commands (e.g update) won't work for you
-6. Install node.js *0.8 or later* on your server *Note*: If you use anything like logging, seen, karma, or anything you set the third param in the plugin's irc.addTrigger() then you'll need mongodb installed.
+6. Install node.js *0.8 or newer* on your server *Note*: If you use anything like logging, seen, karma, or anything you set the third param in the plugin's irc.addTrigger() then you'll need mongodb installed.
 7. Use [forever.js](https://github.com/nodejitsu/forever) to keep him running without a terminal blocked. That way when you issue the `.update` command he runs the command to git pull, then `forever restart dunnbot.js`
 8. To fire up your shiny new robot issue this from a command line: `forever start dunnbot.js`
 9. To shut your robot down issue: `forever stop dunnbot.js`
