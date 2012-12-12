@@ -17,6 +17,7 @@ Plugin.prototype.onMessage = function (msg) {
   		channel = msg.arguments[0],
       message = msg.arguments[1],
       botNick = this.irc.nick.toLowerCase(),
+      nickExp = new RegExp("^" + botNick + "\\b", "i");
       replies = [
       	"YES",
       	"NO", 
@@ -27,9 +28,7 @@ Plugin.prototype.onMessage = function (msg) {
       	"YES YES YES YES YES YES",
       	"NO NO NO NO NO NO"
       ];
-  if(message.substr(0, botNick.length).toLowerCase() == botNick) {
-  	if(message.substr(message.length-1) == "?" || message.substr(message.length-1)) {
-  		irc.send(channel, replies[Math.floor(Math.random()*replies.length)]);
-  	}
+  if(nickExp.test(message)) { //did they mention Dunn?
+  	irc.send(channel, replies[Math.floor(Math.random()*replies.length)]);
   }
 }
