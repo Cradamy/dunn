@@ -17,7 +17,7 @@ Plugin.prototype.onMessage = function (msg) {
   		channel = msg.arguments[0],
       message = msg.arguments[1],
       botNick = this.irc.nick.toLowerCase(),
-      nickExp = new RegExp("^" + botNick + "\\b", "i");
+      nickExp = new RegExp("^" + botNick + "\\b", "i"),
       replies = [
       	"YES",
       	"NO", 
