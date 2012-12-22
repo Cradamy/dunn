@@ -502,7 +502,7 @@ Server.prototype.loadPlugin = function (name) {
     path = __dirname + '/../plugins/' + name + '.js';
   
   // load plugin
-  if (fs.existsSync(path)) {
+  if (existsSync(path)) {
 
     // require
     try {
