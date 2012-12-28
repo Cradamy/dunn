@@ -1,6 +1,3 @@
-//@TODO setup interval on onConnect
-//@TODO teardown interval on onQuit
-
 /*
  * @Plugin        Remind
  * @Description   .remind [me] [to] MESSAGE in X {minutes, hours} [and X {minutes, hours}]
@@ -15,7 +12,6 @@
  
 var mongodb =		require('mongojs'),
 		sys			=		require('util'), //for debugging
-		_				=		require('lodash'),
 		trigger =		'remind';
 
 		
@@ -31,16 +27,20 @@ Plugin = exports.Plugin = function (irc) {
  */
 Plugin.prototype.onConnect = function(){
 	//set interval
-	var boundFAS = _.bind(this.fetchAndSend,this); //setInterval loses context
+	var boundFAS = this.fetchAndSend.bind(this); //setInterval loses context
 	this.interval = setInterval(boundFAS,10000);//every TEN seconds
+};
+
+/**
+ * clear interval on quit/part
+ */
+Plugin.prototype.onQuit = Plugin.prototype.onPart = function(){
+	clearInterval(this.interval);
 };
 
 Plugin.prototype.fetchAndSend = function(){
 	//check for messages
 	var that = this;
-	if(!this.collection){ 
-		//return false; //mongo connection not set up yet...
-	}
 	this.collection.find({time: { $lt : new Date() } }).forEach(function(err, doc){
 		//send if found
 		if( null !== doc ){
