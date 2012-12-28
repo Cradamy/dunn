@@ -18,7 +18,8 @@
     "npm": "~1.1.1"
   },
   "dependencies": {
-    "mongojs": "~0.4.3"
+    "mongojs": "~0.4.3",
+    "lodash": "~1.0.0-rc.3"
   },
   "devDependencies": {},
   "optionalDependencies": {}

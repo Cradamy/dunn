@@ -15,7 +15,7 @@
  
 var mongodb =		require('mongojs'),
 		sys			=		require('util'), //for debugging
-		moment	=		require('moment'),
+		_				=		require('lodash'), //for debugging
 		trigger =		'remind';
 
 		
@@ -26,39 +26,63 @@ Plugin = exports.Plugin = function (irc) {
 	this.collection = this.db.collection('reminders');
 };
 
+/**
+ * setup interval to check for messages each minute
+ */
 Plugin.prototype.onConnect = function(){
-	
+	//set interval
+	var boundFAS = _.bind(this.fetchAndSend,this); //setInterval loses context
+	this.interval = setInterval(boundFAS,10000);//every TEN seconds
 };
 
+Plugin.prototype.fetchAndSend = function(){
+	//check for messages
+	var that = this;
+	if(!this.collection){ 
+		//return false; //mongo connection not set up yet...
+	}
+	this.collection.find({time: { $lt : new Date() } }).forEach(function(err, doc){
+		//send if found
+		if( null !== doc ){
+			that.irc.send(doc.channel, doc.nick + ': ' + doc.message);
+			//remove
+			that.collection.remove( { _id : doc._id } );
+		}
+	});
+};
+
+/**
+ * main function, triggered by `trigger`
+ */
 Plugin.prototype.remind = function (irc, channel, nick, params, message) {
+	if(message.length === irc.command.length+trigger.length){
+		//just `.remind`: send usage message
+		irc.send(channel,'remind plugin usage: "'+irc.command+trigger+' [me to] check the dumplings in 1 hour [and 10 minutes]".  hours & minutes supported');
+		return false;
+	}
 	try {
 	//strip the command/trigger ('.remind me to asdf in..' -> 'me to asdf in..') 
 	var prefixLen = (irc.command.length+trigger.length+1);
 	message = message.substr(prefixLen);
 
 	//get time string and message
-	sys.puts('remind msg: ' + message);
 	var parts = this.parseMsg(message);
 
 	//create date for storage
 	var timeOffset = this.parseDateStr(parts.timeStr);
-	var futureTimestamp = this.roundTime(new Date()).getTime();
-	futureTimestamp += timeOffset;
+	var futureTimestamp = new Date().getTime() + timeOffset;
 	
-	sys.puts(new Date(futureTimestamp));
-	sys.puts(parts.contents);
-
 	//add entry 
 	this.collection.save({
 		nick		:	nick,
+		channel	:	channel,
 		message	:	parts.contents,
-		time		:	futureTimestamp,
-		created	: new Date().getTime()
+		time		:	new Date(futureTimestamp),
+		created	: new Date()
 	});
 	
-	//send response
+	//send confirmation
   irc.send(channel, 'Ok ' + nick +', I\'ll remind you.');
-
 	}catch(e){
 		irc.send(channel, nick + ': Sorry, there was a problem: ' + e.message);
 	}
@@ -151,15 +175,4 @@ Plugin.prototype.parseDateStr= function(dateStr){
 	});
 
 	return timeOffset;
-};
-
-/**
- *	remove seonds from time using Math.floor
- *	@param	Date dateObj
- *	@return	Date with seconds set to 00
- *	@see		https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/getTime
- */
-Plugin.prototype.roundTime = function(dateObj){
-	dateObj = dateObj || new Date();
-	return new Date(Math.floor(dateObj.getTime()/60000)*60000);
 };
