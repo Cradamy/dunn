@@ -3,7 +3,7 @@
 
 /*
  * @Plugin        Remind
- * @Description   .remind [me] [to] MESSAGE in X {minutes, hours} [and X {minutes, hours}
+ * @Description   .remind [me] [to] MESSAGE in X {minutes, hours} [and X {minutes, hours}]
  * @Trigger       .remind
  *
  * @Author        Sequoia McDowell
@@ -15,7 +15,7 @@
  
 var mongodb =		require('mongojs'),
 		sys			=		require('util'), //for debugging
-		_				=		require('lodash'), //for debugging
+		_				=		require('lodash'),
 		trigger =		'remind';
 
 		
