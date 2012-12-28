@@ -42,5 +42,5 @@ Plugin.prototype.about = function (irc, channel, nick, params, message, raw) {
 };
 
 Plugin.prototype.code = function (irc, channel, nick, params, message, raw) {
-  irc.send(channel, nick + ': You can view, and fork my code to contribute on GitHub @ http://www.github.com/killswitch/dunn.');
+  irc.send(channel, nick + ': You can view, and fork me in my code hole to contribute on GitHub @ http://www.github.com/killswitch/dunn.');
 };
