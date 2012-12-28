@@ -149,7 +149,7 @@ Plugin.prototype.parseDateStr= function(dateStr){
 				break;
 			case "hours":
 			case "hour":
-				milliseconds = housMS;
+				milliseconds = hoursMS;
 				break;
 			default: //units
 				units = parseInt(str,10);
