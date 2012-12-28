@@ -8,7 +8,7 @@ var config = {
 	command: '.',
 	db: 'dunnBot',
 	channels: ['#yourchannel'],
-	plugins: ['dunn', 'example', 'karma', 'log', 'nsfw', 'triggers', 'rage', 'seen'],
+	plugins: ['dunn', 'example', 'karma', 'log', 'nsfw', 'triggers', 'rage', 'seen', 'remind'],
 	admins: ['yournick']
 };
 
