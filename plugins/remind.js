@@ -28,7 +28,7 @@ Plugin = exports.Plugin = function (irc) {
 Plugin.prototype.onConnect = function(){
 	//set interval
 	var boundFAS = this.fetchAndSend.bind(this); //setInterval loses context
-	this.interval = setInterval(boundFAS,10000);//every TEN seconds
+	this.interval = setInterval(boundFAS,1000);//every ONE second
 };
 
 /**
