@@ -10,10 +10,11 @@
  */
 
 var mongodb = require('mongojs'),
-    howLong = require('../libs/ago.js');
+    howLong = require('../libs/ago.js'),
+    timeLimitMinutes = 1;
 
 Date.prototype.KarmaLimit = function () {
-  this.setMinutes(this.getMinutes() - 1);
+  this.setMinutes(this.getMinutes() - timeLimitMinutes);
   return this;
 }
 
@@ -50,7 +51,7 @@ Plugin.prototype.onMessage = function (msg) {
             now = new Date();
         if (check.length > 0) {
           if ((check[0].date <= now) && (check[0].date >= KarmaLimit))  {
-            irc.send(channel, nick + ': Can not give karma to the same person in a ' + KarmaLimit + ' minute span.');
+            irc.send(channel, nick + ': Can not give karma to the same person in a ' + timeLimitMinutes + ' minute span.');
             return;
           }
         }
