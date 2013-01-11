@@ -337,7 +337,7 @@ Server.prototype.user = function (mask){
   if (!match ) {
         return;
     }
-  return match[1];
+  return match[1].toLowerCase();
 }
 
 Server.prototype.parse = function (text) {
