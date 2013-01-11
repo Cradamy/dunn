@@ -25,7 +25,7 @@ User.prototype.update = function(mask) {
         this.ident = match[2];
         this.host = match[3];
     }
-    this.nick = this.nick.replace(/\+|@/, '');
+    this.nick = this.nick.replace(/\+|@/, '').toLowerCase();
 };
 
 User.prototype.changeNick = function(newnick) {
