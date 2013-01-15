@@ -1,6 +1,6 @@
 {
   "name": "dunn",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "IRC bot for #webtech on freenode",
   "author": "Josh Manders <josh@joshmanders.com> (http://www.joshmanders.com)",
   "contributors": [
@@ -9,17 +9,23 @@
     "Jonathan Ardis (http://github.com/Emn1ty)",
     "Aaron Ahmed <gr33nmous3@gmail.com> (http://github.com/draceros)"
   ],
+  "keywords": [
+    "irc",
+    "bot",
+    "dunn"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/killswitch/dunn.git"
   },
+    "bugs": {
+    "url": "https://github.com/killswitch/dunn/issues"
+  },
   "engines": {
-    "node": "~0.8.0",
-    "npm": "~1.1.1"
+    "node": "0.8.x",
+    "npm": "1.x.x"
   },
   "dependencies": {
-    "mongojs": "~0.4.3"
-  },
-  "devDependencies": {},
-  "optionalDependencies": {}
+    "mongojs": "0.4.x"
+  }
 }
