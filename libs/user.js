@@ -1,14 +1,14 @@
 var sys = require('util');
 
-User = exports.User = function(irc, /* fully qualified irc hostmask - nick!ident@host */ mask) {
-	this.irc = irc;
+var User = exports.User = function(irc, /* fully qualified irc hostmask - nick!ident@host */ mask) {
+    this.irc = irc;
     this.channels = [];
     this.passive = true;
     this.nick = '';
     this.ident = '';
     this.host = '';
 
-    this.update(mask)
+    this.update(mask);
 };
 
 User.prototype.update = function(mask) {
@@ -89,7 +89,7 @@ User.prototype.part = function(/* string or Channel object */ channel) {
         }
     }
     console.log(chan.users.join(' '));
-    if (this.channels.length == 0 && this.nick !== irc.nick) {
+    if (this.channels.length === 0 && this.nick !== irc.nick) {
         delete allusers[this.nick];
     }
 };
@@ -105,13 +105,13 @@ User.prototype.quit = function(msg) {
             chan.users.splice(idx, 1);
         }
     }
-	 delete this.irc.users[this.nick];
+     delete this.irc.users[this.nick];
 };
 
 User.prototype.isOn = function(channel) {
     var chans = this.channels;
 
-    return !(chans.indexOf(channel) === -1);
+    return chans.indexOf(channel) > -1;
 };
 
 User.prototype.msg = function(target, msg) {
@@ -119,5 +119,5 @@ User.prototype.msg = function(target, msg) {
 };
 
 User.prototype.send = function(msg) {
-	this.irc.send(this.nick, msg);
+    this.irc.send(this.nick, msg);
 };

@@ -1,5 +1,6 @@
 var sys = require('util'),
     net = require('net'),
+    events = require('events'),
     fs = require('fs'),
     path = require('path'),
     user = require ('./user.js' ),
@@ -7,11 +8,11 @@ var sys = require('util'),
 
 var existsSync = fs.existsSync || path.existsSync;
 
-Server = exports.Server = function (config) {
+var Server = exports.Server = function (config) {
   this.initialize(config);
 };
 
-sys.inherits(Server, process.EventEmitter);
+sys.inherits(Server, events.EventEmitter);
 
 Server.prototype.initialize = function (config) {
   this.host = config.host || '127.0.0.1';
@@ -89,7 +90,7 @@ Server.prototype.sendHeap = function(err, send) {
     res.data = "";
 
     res.on("data", function(chunk) {
-      res.data += chunk
+      res.data += chunk;
     }).on("end", function() {
       var data = JSON.parse(res.data);
       if(typeof send != "string") that.heap.push(data.url);
@@ -98,7 +99,7 @@ Server.prototype.sendHeap = function(err, send) {
       }
     });
   }).write(reqdata);
-}
+};
 
 Server.prototype.connect = function () {
   var c = this.connection = net.createConnection(this.port, this.host);
@@ -152,10 +153,10 @@ Server.prototype.kick = function(channel, nick, reason) {
   else reason = " :"+reason;
 
   this.raw("KICK", channel + " " + nick + reason);
-}
+};
 
 Server.prototype.ctcp = function(nick, target, msg, command) {
-  msg = msg.slice(1); msg = msg.slice(0, msg.lastIndexOf('\1'));
+  msg = msg.slice(1); msg = msg.slice(0, msg.lastIndexOf('\x01'));
   var parts = msg.split(" ");
   this.emit('ctcp', nick, target, msg, command);
   this.emit('ctcp-'+command, nick, target, msg);
@@ -166,10 +167,10 @@ Server.prototype.ctcp = function(nick, target, msg, command) {
       plugins.push(trig);
     }
 
-    this.raw("NOTICE", nick, ":\1VERSION DunnBot, running ["+(plugins.join(", "))+"] plugins\1");
+    this.raw("NOTICE", nick, ":\x01VERSION DunnBot, running ["+(plugins.join(", "))+"] plugins\x01");
     this.emit("ctcp-version", nick, target);
   }
-}
+};
 
 Server.prototype.onMessage = function (msg) {
   if (this.debug) {
@@ -192,7 +193,7 @@ Server.prototype.onMessage = function (msg) {
       break;
 
     case (command == "NOTICE"):
-      if(msg.arguments[1][0] === "\1" && msg.arguments[1].lastIndexOf('\1') > 0) {
+      if(msg.arguments[1][0] === "\x01" && msg.arguments[1].lastIndexOf('\x01') > 0) {
         this.ctcp(nick, target, msg.arguments[1], command);
       }
       this.emit("notice", msg);
@@ -203,7 +204,7 @@ Server.prototype.onMessage = function (msg) {
           user.update(msg.prefix);
       }
 
-      if(msg.arguments[1][0] === "\1" && msg.arguments[1].lastIndexOf('\1') > 0) {
+      if(msg.arguments[1][0] === "\x01" && msg.arguments[1].lastIndexOf('\x01') > 0) {
         this.ctcp(nick, target, msg.arguments[1], command);
       }
 
@@ -246,9 +247,10 @@ Server.prototype.onMessage = function (msg) {
           }
         }
       } else {
-        var msgHandlers = this.messagehandlers;
-        for(msgTrigger in msgHandlers) {
-          if(match = msg.arguments[1].toLowerCase().match(msgTrigger)) {
+        var msgHandlers = this.messagehandlers, msgTrigger, match;
+        for (msgTrigger in msgHandlers) {
+          match = msg.arguments[1].toLowerCase().match(msgTrigger);
+          if (match) {
             msgHandler = msgHandlers[msgTrigger];
 
             if (typeof this.channels[msg.arguments[0]] != "undefined") {
@@ -338,7 +340,7 @@ Server.prototype.user = function (mask){
         return;
     }
   return match[1];
-}
+};
 
 Server.prototype.parse = function (text) {
   if (typeof text  !== "string") {
@@ -357,13 +359,13 @@ Server.prototype.parse = function (text) {
       args = [];
 
   for (var i = 0, j = tmp.length; i < j; i++) {
-    if (i == 0 && tmp[i].indexOf(":") == 0) {
+    if (i === 0 && tmp[i].indexOf(":") === 0) {
       prefix = tmp[0].substr(1);
-        } else if (tmp[i] == "") {
+        } else if (tmp[i] === "") {
       continue;
-        } else if (!command && tmp[i].indexOf(":") != 0) {
+        } else if (!command && tmp[i].indexOf(":") !== 0) {
       command = tmp[i].toUpperCase();
-        } else if (tmp[i].indexOf(":") == 0) {
+        } else if (tmp[i].indexOf(":") === 0) {
       tmp[i] = tmp[i].substr(1);
       tmp.splice(0, i);
       args.push(tmp.join(" "));

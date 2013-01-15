@@ -33,36 +33,36 @@ exports.initialize = function (irc) {
     });
 };
 
-Channel = exports.Channel = function (irc, room, join, password) {
-	this.irc = irc;
-	this.name = room.toLowerCase();
-	this.inRoom = false;
-	this.password = password;
+var Channel = exports.Channel = function (irc, room, join, password) {
+  this.irc = irc;
+  this.name = room.toLowerCase();
+  this.inRoom = false;
+  this.password = password;
   this.users = [];
 
-	if (join) {
+  if (join) {
         this.join();
     }
 };
 
 Channel.prototype.join = function () {
-	var chans = this.irc.channels,
-	    name = this.name.toLowerCase();
+  var chans = this.irc.channels,
+      name = this.name.toLowerCase();
 
   chans[name] = this;
-	this.irc.raw('JOIN', name, this.password);
-	this.inRoom = true;
+  this.irc.raw('JOIN', name, this.password);
+  this.inRoom = true;
 };
 
 Channel.prototype.part = function (msg) {
-	var user = null,
+  var user = null,
       users = [].concat(this.users),
       userCount = users.length,
       allusers = this.irc.users,
       chans = this.irc.channels;
 
-	this.irc.raw('PART', this.name, ':' + msg);
-	this.inRoom = false;
+  this.irc.raw('PART', this.name, ':' + msg);
+  this.inRoom = false;
 
   for(var i=0; i<userCount;i++) {
     user = allusers[users[i]];
@@ -74,5 +74,5 @@ Channel.prototype.part = function (msg) {
 };
 
 Channel.prototype.send = function (msg) {
-	this.irc.send(this.name, msg);
+  this.irc.send(this.name, msg);
 };
