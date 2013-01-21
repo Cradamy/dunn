@@ -95,7 +95,7 @@ Plugin.prototype.karma = function (irc, channel, nick, params, message, raw) {
     nick = params[0];
   }
   
-  db.karma.find({ to: nick, channel: channel, action: 'give' }, function (err, karma) {
+  db.karma.find({ to: nick.toLowerCase(), channel: channel, action: 'give' }, function (err, karma) {
     db.karma.find({ to: nick, channel: channel, action: 'take'}, function(err, karma2) {
       irc.send(channel, nick + ': You have ' + (karma.length - karma2.length) + ' total karma.');
     });
