@@ -45,6 +45,11 @@ Plugin.prototype.onMessage = function (msg) {
   }
   if (to = message.match(/^(\w+)\+\+;?$/i)) {
     var user = to[1].toLowerCase();
+    if (user === 'ztag100')
+    {
+        irc.send(channel, 'You abuse karma no more.');
+        return;
+    }
     if (user != botNick && user != nick && users.indexOf(user) != -1) {
       karma.find({ to: user, from: nick, channel: channel, action: 'give' }).sort({ date: -1 }).limit(1, function (err, check) {
         var KarmaLimit = new Date().KarmaLimit(),
@@ -63,6 +68,11 @@ Plugin.prototype.onMessage = function (msg) {
 
   if (to = message.match(/^(\w+)\-\-;?$/i)) {
     var user = to[1].toLowerCase();
+    if (nick === 'ztag100')
+    {
+        irc.send(channel, 'You abuse karma no more.');
+        return;
+    }
     if (user != botNick && user != nick && users.indexOf(user) != -1) {
       karma.find({ to: user, from: nick, channel: channel, action: 'take' }).sort({ date: -1 }).limit(1, function (err, check) {
         var KarmaLimit = new Date().KarmaLimit(),
