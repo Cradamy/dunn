@@ -45,9 +45,9 @@ Plugin.prototype.onMessage = function (msg) {
   }
   if (to = message.match(/^(\w+)\+\+;?$/i)) {
     var user = to[1].toLowerCase();
-    if (user === 'ztag100')
+    if (nick !== 'killswitch')
     {
-        irc.send(channel, 'You abuse karma no more.');
+        irc.send(channel, 'ztag100 can only get karma from admins until he has learned to not abuse it.');
         return;
     }
     if (user != botNick && user != nick && users.indexOf(user) != -1) {
