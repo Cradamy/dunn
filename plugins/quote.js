@@ -54,8 +54,9 @@ var Quote = function (irc) {
     
     helpMe = function (channel, message) {
         if (message.length === 1) {
-            irc.send(channel, '- ' + helpText + ' [nick/id <nick/id>] -- Get a random quote from user or a specific one with an id-number, if both are omitted a random quote is grabbed.');
-            irc.send(channel, '- ' + helpText + ' add <user>: <quote> -- Set a quote, both name and quote are needed.');
+            irc.send(channel, '- ' + helpText + ' <id> -- Get a a specific quote with an id-number.');
+            irc.send(channel, '- ' + helpText + ' <nick> -- Get a random quote from nick.');
+            irc.send(channel, '- ' + helpText + ' add <nick> <quote> -- Add a quote.');
             irc.send(channel, '- ' + helpText + ' rm <id-number> -- Removes a quote if you\'re the creator and/or admin.');
             irc.send(channel, 'Use "' + helpText + ' help user" for admin help');
         } else if (message[1] === 'user') {
@@ -71,7 +72,7 @@ var Quote = function (irc) {
 
     sendQuoteToIrc = function (channel, nick, doc) {
         if (typeof(doc) === 'object' && doc.hasOwnProperty('idNumber')) {
-            irc.send(channel, '(' + doc.idNumber + ') ' + doc.nick + ': ' + doc.quote);
+            irc.send(channel, '(' + doc.idNumber + ') <' + doc.nick + '> ' + doc.quote);
         } else {
             irc.send(channel, nick + ': ' + doc);
         }
@@ -201,38 +202,31 @@ var Quote = function (irc) {
         });
     },
 
-    getQuote = function (channel, nick, message, command) {
-        var getter = message[1];
-        if (command === 'nick') {
-            self.emit('getQuoteByNick', channel, nick, getter);
-        } else if (command === 'id') {
+    getQuote = function (channel, nick, message) {
+        var getter = message[0];
+        if (getter.match(/^\d/)) {
             self.emit('getQuoteById', channel, nick, getter);
         } else {
-            self.emit('getRandomQuote', channel, nick);
+            self.emit('getQuoteByNick', channel, nick, getter);
         }
     },
 
 
     getIdNumber = function (channel, callback) {
-        quoteUserDb.update({special: '_idNumber', channel: channel}, { $inc: {number: 1} }, { upsert: true }, function (err) {
-            if (!err) {
-                quoteUserDb.findOne({special: '_idNumber', channel: channel}, function (err, id) {
-                    if (!err) {
-                        callback(null, id.number);
-                    } else {
-                        callback(err, null);
-                    }
-                });
+        quoteUserDb.findAndModify({ query: { special: '_idNumber' }, update: { $inc: { number: 1 } }, upsert: true, new: true }, function (err, id) {
+            if (!err && id) {
+                callback(null, id.number);
             } else {
                 callback(err, null);
             }
+            
         });
     },
 
     addQuote = function (channel, nick, message) {
         quoteUserDb.findOne({name: nick, channel: channel}, function (err, user) {
             if (!err && (user || ircAdmins.has(nick))) {
-                var quoteduser = message[1].replace(':',''),
+                var quoteduser = message[1].replace(':','').replace('<','').replace('>','').replace(' ',''),
                     searchname = quoteduser.toLowerCase(),
                     quoteMsg = message.slice(2).join(' ');
                 getIdNumber(channel, function (err, idNumber) {
@@ -290,15 +284,15 @@ var Quote = function (irc) {
 
     parseMessage = function (channel, nick, msg) {
         if (msg !== helpText) {
-            var message = msg.substr(helpTxtLen).split(' '),
+            var message = msg.substr(helpTxtLen).trim().split(' '),
                 msgLen = message.length,
                 command = message[0].substr(0,4).trim();
                 
-            if ((command === 'nick' || command === 'id') && msgLen > 1) {
-                self.emit('getQuote', channel, nick, message, command);
+            if (msgLen === 1) {
+                self.emit('getQuote', channel, nick, message);
             } else if (command === 'add' && msgLen > 2) {
                 self.emit('addQuote', channel, nick, message);
-            } else if (command === 'rm' && msgLen > 1) {
+            } else if ((command === 'rm' || command === 'remove') && msgLen > 1) {
                 self.emit('rmQuote', channel, nick, message);
             } else if (command === 'user' && msgLen > 1) {
                 self.emit('adminAction', channel, nick, message);

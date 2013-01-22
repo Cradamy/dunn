@@ -307,7 +307,7 @@ Server.prototype.onMessage = function (msg) {
     case (command === 'QUIT'):
       if (user) {
         user.update(msg.prefix);
-        user.quit(msg)
+        user.quit(msg);
       }
 
       this.emit('quit', msg);
@@ -501,7 +501,8 @@ Server.prototype.loadPlugin = function (name) {
   this.unloadPlugin(name);
 
   var that = this,
-    path = __dirname + '/../plugins/' + name + '.js';
+    path = __dirname + '/../plugins/' + name + '.js',
+    plugin;
   
   // load plugin
   if (existsSync(path)) {
