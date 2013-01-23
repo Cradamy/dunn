@@ -288,7 +288,9 @@ var Quote = function (irc) {
                 msgLen = message.length,
                 command = message[0].substr(0,4).trim();
                 
-            if (msgLen === 1) {
+            if (command === 'help') {
+                self.emit('help', channel, message);
+            } else if (msgLen === 1) {
                 self.emit('getQuote', channel, nick, message);
             } else if (command === 'add' && msgLen > 2) {
                 self.emit('addQuote', channel, nick, message);
@@ -296,8 +298,6 @@ var Quote = function (irc) {
                 self.emit('rmQuote', channel, nick, message);
             } else if (command === 'user' && msgLen > 1) {
                 self.emit('adminAction', channel, nick, message);
-            } else if (command === 'help') {
-                self.emit('help', channel, message);
             } else {
                 self.emit('quoteError', channel, nick, invalidAction);
             }
