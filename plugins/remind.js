@@ -12,7 +12,9 @@
  
 var mongodb =		require('mongojs'),
 		sys			=		require('util'), //for debugging
-		trigger =		'remind';
+		trigger =		'remind',
+		boundFetchAndSend, //holds fetchAndSend with plugin `this` context
+		timerMS =		1000; //how frequently to fetch and send messages
 
 		
 Plugin = exports.Plugin = function (irc) {
@@ -27,15 +29,15 @@ Plugin = exports.Plugin = function (irc) {
  */
 Plugin.prototype.onConnect = function(){
 	//set interval
-	var boundFAS = this.fetchAndSend.bind(this); //setInterval loses context
-	this.interval = setInterval(boundFAS,1000);//every ONE second
+	boundFetchAndSend = this.fetchAndSend.bind(this); //setInterval loses context
+	boundFetchAndSend();
 };
 
 /**
  * clear interval on quit/part
  */
 Plugin.prototype.onQuit = Plugin.prototype.onPart = function(){
-	clearInterval(this.interval);
+	clearTimeout(this.timeout);
 };
 
 Plugin.prototype.fetchAndSend = function(){
@@ -49,6 +51,7 @@ Plugin.prototype.fetchAndSend = function(){
 			that.collection.remove( { _id : doc._id } );
 		}
 	});
+	this.timeout = setTimeout(boundFetchAndSend,timerMS);//every ONE second
 };
 
 /**
