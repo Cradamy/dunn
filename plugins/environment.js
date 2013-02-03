@@ -10,7 +10,7 @@
 
 Plugin = exports.Plugin = function (irc) {
   irc.addTrigger('plugins', this.plugins);
-  irc.addTrigger('triggers', this.triggers);
+  irc.addTrigger('triggers', this.plugins);
 };
 
 Plugin.prototype.plugins = function (irc, channel, nick, params, message, raw) {
@@ -19,12 +19,4 @@ Plugin.prototype.plugins = function (irc, channel, nick, params, message, raw) {
     plugins.push(plugin);
   }
   irc.send(channel, nick + ': Loaded plugins are: ' + plugins.join(', ') + '.');
-};
-
-Plugin.prototype.triggers = function (irc, channel, nick, params, message, raw) {
-  var trggrs = [];
-  for (var trig in irc.triggers) {
-    trggrs.push(trig);
-  }
-  irc.send(channel, nick + ': Loaded triggers are: ' + trggrs.join(', ') + '.');
 };
