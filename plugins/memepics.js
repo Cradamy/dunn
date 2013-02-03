@@ -1,6 +1,6 @@
 /*
- * @Plugin        Bad Luck Brian
- * @Description   For those moments of glorious fail.
+ * @Plugin        Meme Pics
+ * @Description   Serving up your favorite memes.
  * @Trigger       .brian
  * @Author        cgcardona
  *
