@@ -27,20 +27,21 @@ Plugin.prototype.triggers = function (irc, channel, nick, params, message, raw) 
     plugins.push(plugin);
 
   var fs = require('fs');
-  var outerStr = '';
+  var loadedTriggerString = '';
   plugins.forEach(function(elmnt){
     var linesArray = fs.readFileSync(__dirname + '/' + elmnt + '.js').toString().split('\n');
     for(var i = 0; i < 10; i++)
     {
-      var tmpStr = '';
+      var tmpTriggerString = '';
       if(linesArray[i].match(/@Trigger/g))
       {
         var splitLines = linesArray[i].split('@Trigger');
-        tmpStr += splitLines[1].replace(/^\s\s*/, '').replace(/\s\s*$/, '') + ', ';
+        tmpTriggerString += splitLines[1].replace(/^\s\s*/, '').replace(/\s\s*$/, '') + ', ';
       }
 
-      outerStr += tmpStr;
+      loadedTriggerString += tmpTriggerString;
     }
   });
-  irc.send(channel,outerStr);
+  var cleanString = loadedTriggerString.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+  irc.send(channel, nick + ': Loaded triggers are: ' + cleanString.substring(0, cleanString.length - 1));
 };
