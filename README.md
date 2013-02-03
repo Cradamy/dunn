@@ -28,9 +28,12 @@ Contributors
 
 ## See Dunn play
 
-Wanna see Dunnbot in all his glory? Of course you do! Point your IRC Client to
-Freenode and checkout
+Wanna see Dunnbot in all his glory? Of course you do! Point your IRC Client to [Freenode](http://freenode.net/) and checkout
 
 * #webtech
 * #audiofile
 * #openbigdata
+
+## Legal
+
+We need to add some legal info here
