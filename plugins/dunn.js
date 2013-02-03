@@ -11,6 +11,7 @@
  */
 Plugin = exports.Plugin = function (irc) {
   this.ircObj = irc;
+  botNick = this.ircObj.nick,
   irc.addTrigger('about', this.about);
   irc.addTrigger('code', this.code);
 };
@@ -38,7 +39,7 @@ Plugin.prototype.onMessage = function (irc) {
 };
 
 Plugin.prototype.about = function (irc, channel, nick, params, message, raw) {
-  irc.send(channel, nick + ': My name is Dunn, I am written in Node.js and utilize MongoDB as my data storage. I was written by Killswitch.');
+  irc.send(channel, nick + ': My name is ' + botNick + ', I am written in Node.js and utilize MongoDB as my data storage. I was written by Killswitch.');
 };
 
 Plugin.prototype.code = function (irc, channel, nick, params, message, raw) {

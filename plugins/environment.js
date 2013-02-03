@@ -22,9 +22,25 @@ Plugin.prototype.plugins = function (irc, channel, nick, params, message, raw) {
 };
 
 Plugin.prototype.triggers = function (irc, channel, nick, params, message, raw) {
-  var trggrs = [];
-  for (var trig in irc.triggers) {
-    trggrs.push(trig);
-  }
-  irc.send(channel, nick + ': Loaded triggers are: ' + trggrs.join(', ') + '.');
+  var plugins = [];
+  for (var plugin in irc.plugins)
+    plugins.push(plugin);
+
+  var fs = require('fs');
+  var outerStr = '';
+  plugins.forEach(function(elmnt){
+    var linesArray = fs.readFileSync(__dirname + '/' + elmnt + '.js').toString().split('\n');
+    for(var i = 0; i < 10; i++)
+    {
+      var tmpStr = '';
+      if(linesArray[i].match(/@Trigger/g))
+      {
+        var splitLines = linesArray[i].split('@Trigger');
+        tmpStr += splitLines[1].replace(/^\s\s*/, '').replace(/\s\s*$/, '') + ', ';
+      }
+
+      outerStr += tmpStr;
+    }
+  });
+  irc.send(channel,outerStr);
 };
