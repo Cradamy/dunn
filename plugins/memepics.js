@@ -24,6 +24,7 @@ var memes = {
   "joseph"              : [54,42],
   "oag"                 : [1152019,4915715],
   "trollface"           : [68,269],
+  "y_u_no"              : [2,166088],
   "insanity_wolf"       : [45, 20]
 };
 
