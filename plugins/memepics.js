@@ -40,6 +40,7 @@ Plugin = exports.Plugin = function (irc) {
   var self = this;
   for(var meme in memes) {
     console.log("loading meme: " + meme);
+
     irc.addTrigger(meme, function(i,c,u,p,m) {
       var meme = m.replace(i.command, "").split(" ")[0].trim();
       self.memeFunc(i,c,u,p,m,memes[meme]);
