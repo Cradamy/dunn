@@ -55,7 +55,7 @@ Plugin.prototype.memeSwitch = function(irc, channel, user, params, message) {
   }
 
   var meme = params.shift();
-  if(memes[meme] !== undefined) return this.meme(irc, channel, user, params, message, memes[meme]);
+  if(memes[meme] !== undefined) return this.memeFunc(irc, channel, user, params, message, memes[meme]);
   else return irc.send("Meme " + meme + " not found");
 }
 
@@ -105,7 +105,8 @@ Plugin.prototype.memeFunc = function (irc, channel, user, params, message, gener
   {
     var msgs = this.getLines(params);
 
-    var url = 'http://version1.api.memegenerator.net/Instance_Create?username=w3bt3chirc&password=W3bT3ch1Rc507&languageCode=en&generatorID='+generatorID[0]+'&imageID='+generatorID[1]+'&text0=' + msgs[0] + '&text1=' + msgs[1];
+    var url = 'http://version1.api.memegenerator.net/Instance_Create?username=w3bt3chirc&password=W3bT3ch1Rc507&languageCode=en&generatorID='+generatorID[0]+'&imageID='+generatorID[1];
+    url += '&text0=' + msgs[0] + '&text1=' + msgs[1];
 
     var http = require('http');
     var request = http.get(url, function(res)
