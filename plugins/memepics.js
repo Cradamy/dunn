@@ -109,7 +109,8 @@ Plugin.prototype.getLines = function(params) {
     msg2 = splitParams[1];
   }
 
-  return [msg1.trim(),msg2.trim()];
+  if(typeof msg1 != "undefined" && typeof msg2 != "undefined") return [msg1.trim(),msg2.trim()];
+  else return ["", msg1.trim()];
 }
 
 var http = require("http");
@@ -154,13 +155,13 @@ Plugin.prototype.addMeme = function(irc, channel, user, params, message) {
       irc.send(channel, "Cannot remove "+params[1]);
     }
   } else {
-    irc.send(channel, "Usage: " + irc.command + "addMeme <auto|remove> query");
+    irc.send(channel, "Usage: " + irc.command + "addMeme <add|remove> query");
   }
 }
 
 Plugin.prototype.memeFunc = function (irc, channel, user, params, message, generatorID) {
   if(params < 1)
-    irc.send(channel, user + ', Attemps to bad luck brian someone. Forgets to add message.');
+    irc.send(channel, user + ', ain\'t nobody got time fo\' your stupidity.');
   else
   {
     var msgs = this.getLines(params);
