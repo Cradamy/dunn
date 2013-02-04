@@ -1,9 +1,7 @@
 /*
  * @Plugin        Meme Pics
  * @Description   Serving up your favorite memes.
- * @Trigger       .brian, .scumbag_steve, .grumpy_cat, .first_world_problem,
- * @Trigger       .stoner, .good_guy, .morpheus, .all_the_things, .prepare_yourself, .yo_dawg,
- * @Trigger       .what_if, .i_dont_always, .skeptical, .josesph, .oag, .trollface, .insanity_wolf
+ * @Trigger       .brian, .scumbag_steve, .grumpy_cat, .first_world_problem, .stoner, .good_guy, .morpheus, .all_the_things, .prepare_yourself, .yo_dawg, .what_if, .i_dont_always, .skeptical, .josesph, .oag, .trollface, .insanity_wolf
  * @Author        cgcardona
  * @Contributor   polar-bear 
  *
