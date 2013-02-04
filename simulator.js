@@ -126,13 +126,13 @@ ircServer.prototype.onMessage = function(msg) {
         }
       }
 
-     trig.callback.apply(this.plugins[trig.plugin], [this, sandbunn.channel, sandbunn.user, msgs.splice(1), argm, msg]); 
+     trig.callback.apply(this.plugins[trig.plugin], [this, sandbunn.channel, sandbunn.user, msgs.splice(1), argm.arguments[1], msg]); 
     }
   } else if(msghandlers.length > 0) {
     msghandlers.forEach(function(h) {
       var ha = this.messagehandlers[h];
 
-      ha.callback.apply(this.plugins[ha.plugin], [this, sandbunn.channel, sandbunn.user, msgs.splice(1), argm, msg]);
+      ha.callback.apply(this.plugins[ha.plugin], [this, sandbunn.channel, sandbunn.user, msgs.splice(1), argm.arguments[1], msg]);
     }, this);
   }
 

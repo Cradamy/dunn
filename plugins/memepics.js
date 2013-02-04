@@ -41,7 +41,7 @@ Plugin = exports.Plugin = function (irc) {
   for(var meme in memes) {
     console.log("loading meme: " + meme);
     irc.addTrigger(meme, function(i,c,u,p,m) {
-      var meme = m.arguments[1].replace(i.command, "");
+      var meme = m.replace(i.command, "");
       self.memeFunc(i,c,u,p,m,memes[meme]);
     }); 
   }
