@@ -26,6 +26,7 @@
     "npm": "1.x.x"
   },
   "dependencies": {
-    "mongojs": "0.4.x"
+    "mongojs": "0.4.x",
+    "commander": "*"
   }
 }
