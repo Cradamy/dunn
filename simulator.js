@@ -51,7 +51,7 @@ ircServer.prototype.init = function(program) {
   this.hooks = [];
   this.triggers = [];
   this.plugins = [];
-  this.messagehandlers = [];
+  this.messagehandlers = {};
   this.replies = [];
   this.connection = null;
   this.buffer = "";
@@ -84,7 +84,9 @@ ircServer.prototype.onMessage = function(msg) {
   while(msgs.length) argm.arguments.push(msgs.shift());
   msgs = msg.split(" ");
 
-
+  var msghandlers = Object.keys(this.messagehandlers).filter(function(val) {
+    return val.indexOf(msg) == 0;
+  });
 
   if(msgs[0][0] == "#") {
     if(msgs[0][1] == ".") {
@@ -124,9 +126,15 @@ ircServer.prototype.onMessage = function(msg) {
         }
       }
 
-      trig.callback.apply(this.plugins[trig.plugin], [this, sandbunn.channel, sandbunn.user, msgs.splice(1), argm, msg]); 
-    } //no msghandler as of now
-  } 
+     trig.callback.apply(this.plugins[trig.plugin], [this, sandbunn.channel, sandbunn.user, msgs.splice(1), argm, msg]); 
+    }
+  } else if(msghandlers.length > 0) {
+    msghandlers.forEach(function(h) {
+      var ha = this.messagehandlers[h];
+
+      ha.callback.apply(this.plugins[ha.plugin], [this, sandbunn.channel, sandbunn.user, msgs.splice(1), argm, msg]);
+    }, this);
+  }
 
   this.emit("message", argm);
 }
@@ -149,7 +157,6 @@ ircServer.prototype.addPluginListener = function (plugin, ev, f) {
   })();
 
   this.hooks[plugin].push({event: ev, callback: callback});
-
   return this.on(ev, callback);
 };
 
@@ -177,11 +184,10 @@ ircServer.prototype.load = function(name) {
   ['connect', 'data', 'numeric', 'message', 'join', 'part', 'quit', 'nick', 'privateMessage'].forEach(function(event) {
     var onEvent = 'on' + event.charAt(0).toUpperCase() + event.substr(1),
     callback = this.plugins[name][onEvent];
-
     if (typeof callback == 'function') {
       this.addPluginListener(name, event, callback);
     }
-  }, irc);
+  }, this);
 }
 
 var irc = new ircServer(program);
