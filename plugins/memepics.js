@@ -1,9 +1,10 @@
 /*
  * @Plugin        Meme Pics
  * @Description   Serving up your favorite memes.
- * @Trigger       .brian, .scumbag_steve, .grumpy_cat, .first_world_problem, .stoner, .good_guy, .morpheus, .all_the_things, .prepare_yourself, .yo_dawg, .what_if, .i_dont_always, .skeptical, .josesph, .oag, .trollface, .insanity_wolf
+ * @Trigger       .brian, .scumbag_steve, .grumpy_cat, .first_world_problem, .stoner, .good_guy, .morpheus, .all_the_things, .prepare_yourself, .yo_dawg, .what_if, .i_dont_always, .skeptical, .josesph, .oag, .trollface, .insanity_wolf, .y_u_no, .victory_baby, .redneck_randal, .stereotypical_redneck, .wtf_picard, .skeptical_fry, .internet_husband, .not_simply            
  * @Author        cgcardona
  * @Contributor   polar-bear 
+ * @Copyright     MIT License http://opensource.org/licenses/MIT
  *
  */
 
