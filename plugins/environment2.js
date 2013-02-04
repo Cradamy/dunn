@@ -8,7 +8,7 @@
  */
 
 var Plugin = exports.Plugin = function(irc) {
-  irc.addTrigger("env", this.env)
+  // irc.addTrigger("env", this.env)
 };
 
 Plugin.prototype.env = function(irc, channel, user, params, message) {
