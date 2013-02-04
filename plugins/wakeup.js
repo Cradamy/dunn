@@ -13,7 +13,6 @@ Plugin = exports.Plugin = function (irc) {
 };
 
 Plugin.prototype.wakeup = function (irc, channel, nick, params, message, raw) {
-  console.log(irc.users);
   var users = '';
   for (var user in irc.users)
     users += user + ', ';
