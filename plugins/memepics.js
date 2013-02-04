@@ -36,18 +36,31 @@ var memes = {
   "insanity_wolf"         : [45, 20]
 };
 
+var mongodb = require("mongojs");
+var self = this;
 Plugin = exports.Plugin = function (irc) {
-  var self = this;
-  for(var meme in memes) {
-    console.log("loading meme: " + meme);
+  this.irc = irc;
+  this.db = mongodb.connect(irc.database, ['memes']);
+  self = this; 
 
-    irc.addTrigger(meme, function(i,c,u,p,m) {
-      var meme = m.replace(i.command, "").split(" ")[0].trim();
-      self.memeFunc(i,c,u,p,m,memes[meme]);
-    }); 
-  }
+  this.db.memes.find({}, function(e, r) {
+    while(r.length) {
+      var m = r.shift();
+      memes[m.name] = m.data;
+    }
+
+    for(var meme in memes) {
+      console.log("loading meme: " + meme);
+
+      irc.addTrigger(meme, function(i,c,u,p,m) {
+        var meme = m.replace(i.command, "").split(" ")[0].trim();
+        self.memeFunc(i,c,u,p,m,memes[meme]);
+      }); 
+    }
+  });
 
   irc.addTrigger('meme', this.memeSwitch);
+  irc.addTrigger('addmeme', this.addMeme);
 };
 
 Plugin.prototype.memeSwitch = function(irc, channel, user, params, message) {
@@ -97,6 +110,50 @@ Plugin.prototype.getLines = function(params) {
   }
 
   return [msg1.trim(),msg2.trim()];
+}
+
+var http = require("http");
+Plugin.prototype.addMeme = function(irc, channel, user, params, message) {
+  if(params[0] == "auto") {
+    var req = http.request(require("url").parse("http://version1.api.memegenerator.net/Generators_Search?q=" + params.splice(1).join("+") + "&pagesize=1"), function(res) {
+      var data = "";  
+      res.on("data", function(d) { data += d; }).
+        on("end", function() {
+          data = JSON.parse(data);
+          var imageID = require("url").parse(data.result[0].imageUrl).pathname.split("/");
+          var MemeData = [data.result[0].generatorID, imageID[imageID.length-1].split(".")[0]];
+          var name = data.result[0].urlName.toLowerCase().replace(new RegExp("-", "igm"), "_");
+          var model = {name: name, data: MemeData};
+
+          if(typeof memes[name] != "undefined") return self.irc.send(channel, "Meme already added");
+
+          self.db.memes.save(model, function(e) {
+            if(typeof e == "undefined") return self.irc.send(channel, "Could not add meme to database");
+            else {
+              memes[name] = MemeData;
+              self.irc.send(channel, "Adding meme " + irc.command + name);
+              irc.addTrigger(name, function(i,c,u,p,m) {
+                var meme = m.replace(i.command, "").split(" ")[0].trim();
+                self.memeFunc(i,c,u,p,m,memes[meme]);
+              }); 
+            }
+          });
+      });
+    }).end();
+  } else if(params[0] == "remove") {
+    if(typeof params[1] != "undefined" && typeof irc.triggers[params[1]] != "undefined") {
+      delete irc.triggers[params[1].toLowerCase()];
+      self.db.memes.remove({
+        name: params[1].toLowerCase()
+      }, function(e) {
+        irc.send(channel, "Removed "+params[1])
+      });
+    } else {
+      irc.send(channel, "Cannot remove"+params[1]);
+    }
+  } else {
+    irc.send(channel, "Usage: " + irc.command + "addMeme <auto|remove> query");
+  }
 }
 
 Plugin.prototype.memeFunc = function (irc, channel, user, params, message, generatorID) {

@@ -228,5 +228,5 @@ console.log("Root commands are #.chusr - change user, #.chchnl - change channel,
 sandbunn.requestInput();
 
 process.on('uncaughtException', function(e) {
-  console.error(e);
+  console.error(e.message);
 });
