@@ -39,7 +39,6 @@ var memes = {
 Plugin = exports.Plugin = function (irc) {
   var self = this;
   for(var meme in memes) {
-    console.log("loading meme: " + meme);
     irc.addTrigger(meme, function(i,c,u,p,m) {
       var meme = m.split(" ")[0].replace(i.command, "");
       self.memeFunc(i,c,u,p,m,memes[meme]);
@@ -120,7 +119,6 @@ Plugin.prototype.memeFunc = function (irc, channel, user, params, message, gener
         irc.send(channel, user + ': ' + parsedJSON.result.instanceImageUrl);
       });
     }).on('error', function(e) {
-         console.log("Got error: " + e.message);
     });
 
     request.end();
