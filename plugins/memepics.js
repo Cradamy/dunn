@@ -114,8 +114,10 @@ Plugin.prototype.getLines = function(params) {
 
 var http = require("http");
 Plugin.prototype.addMeme = function(irc, channel, user, params, message) {
-  if(params[0] == "auto") {
-    var req = http.request(require("url").parse("http://version1.api.memegenerator.net/Generators_Search?q=" + params.splice(1).join("+") + "&pagesize=1"), function(res) {
+  if(params.length < 1) {
+    irc.send(channel, "Usage: " + irc.command + "addMeme <auto|remove> query");
+  } else if(params[0] == "auto" || params[0] == "add") {
+    var req = http.request(require("url").parse("http://version1.api.memegenerator.net/Generators_Search?q=" + params.splice(1).join("+")), function(res) {
       var data = "";  
       res.on("data", function(d) { data += d; }).
         on("end", function() {
