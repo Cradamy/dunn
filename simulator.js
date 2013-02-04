@@ -126,7 +126,7 @@ ircServer.prototype.onMessage = function(msg) {
 
       trig.callback.apply(this.plugins[trig.plugin], [this, sandbunn.channel, sandbunn.user, msgs.splice(1), argm, msg]); 
     } //no msghandler as of now
-  }
+  } 
 
   this.emit("message", argm);
 }
@@ -220,3 +220,7 @@ sandbunn.requestInput = function() {
 
 console.log("Root commands are #.chusr - change user, #.chchnl - change channel, #.this - prints this, #.exit - exits, #[EVENT] emits an event with msg");
 sandbunn.requestInput();
+
+process.on('uncaughtException', function(e) {
+  console.error(e);
+});
