@@ -11,7 +11,7 @@
 Plugin = exports.Plugin = function (irc) {
   irc.addTrigger('plugins', this.plugins);
   irc.addTrigger('triggers', this.triggers);
-  irc.addTrigger('env', this.triggers);
+  irc.addTrigger('env', this.env);
 };
 
 Plugin.prototype.plugins = function (irc, channel, nick, params, message, raw) {
