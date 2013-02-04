@@ -151,7 +151,7 @@ Plugin.prototype.addMeme = function(irc, channel, user, params, message) {
         irc.send(channel, "Removed "+params[1])
       });
     } else {
-      irc.send(channel, "Cannot remove"+params[1]);
+      irc.send(channel, "Cannot remove "+params[1]);
     }
   } else {
     irc.send(channel, "Usage: " + irc.command + "addMeme <auto|remove> query");
