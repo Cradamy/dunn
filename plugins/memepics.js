@@ -141,7 +141,7 @@ Plugin.prototype.addMeme = function(irc, channel, user, params, message) {
       });
     }).end();
   } else if(params[0] == "remove") {
-    if(typeof params[1] != "undefined" && typeof irc.triggers[params[1]] != "undefined") {
+    if(typeof params[1] != "undefined" && typeof irc.triggers[params[1]] != "undefined" && typeof memes[params[1]] != "undefined") {
       delete irc.triggers[params[1].toLowerCase()];
       self.db.memes.remove({
         name: params[1].toLowerCase()
