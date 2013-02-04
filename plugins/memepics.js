@@ -10,11 +10,12 @@
 var memes = require("./memepics.json");
 
 Plugin = exports.Plugin = function (irc) {
+  var self = this;
   for(var meme in memes) {
-    console.log("loading meme: "+meme);
+    console.log("loading meme: " + meme);
     irc.addTrigger(meme, function(i,c,u,p,m) {
-      var meme = message.split(" ")[0].replace(i.command, "");
-      this.meme(i,c,u,p,m,memes[meme]);
+      var meme = m.split(" ")[0].replace(i.command, "");
+      self.memeFunc(i,c,u,p,m,memes[meme],meme);
     });
   }
 
@@ -28,31 +29,39 @@ Plugin.prototype.memeSwitch = function(irc, channel, user, params, message) {
 
   var meme = params.shift();
   if(memes[meme] !== undefined) return this.meme(irc, channel, user, params, message, memes[meme]);
-  else return irc.send("Meme "+meme+" not found");
+  else return irc.send("Meme " + meme + " not found");
 }
 
 Plugin.prototype.getLines = function(params) {
   var msg1 = '';
   var msg2 = '';
-  if(params[0][0] == '"') {
+  if(params[0][0] == '"')
+  {
     var msgNum = 1;
-    while(params.length) {
+    while(params.length)
+    {
       var p = params.shift();
       var msgNumAfter = false;
-      if(p[0] == '"') {
+
+      if(p[0] == '"')
         p = p.substr(1);
-      } else if(p[p.length-1] == '"') {
-        p = p.substr(0, p.length-1);
+      else if(p[p.length-1] == '"')
+      {
+        p = p.substr(0, p.length - 1);
         msgNumAfter = true;
       }
 
-      if(msgNum == 1) msg1 += p + " ";
-      else msg2 += p + " ";
+      if(msgNum == 1) 
+        msg1 += p + " ";
+      else 
+        msg2 += p + " ";
 
-      if(msgNumAfter) msgNum++;
+      if(msgNumAfter) 
+        msgNum++;
     }
   } else {
-    params.forEach(function(el, inx){
+    params.forEach(function(el, inx)
+    {
       if(inx <= 4)
         msg1 += el + ' ';
       else
@@ -63,7 +72,7 @@ Plugin.prototype.getLines = function(params) {
   return [msg1.trim(),msg2.trim()]
 }
 
-Plugin.prototype.meme = function (irc, channel, user, params, message, generatorID) {
+Plugin.prototype.memeFunc = function (irc, channel, user, params, message, generatorID, memeType) {
   if(params < 1)
     irc.send(channel, user + ', Attemps to bad luck brian someone. Forgets to add message.');
   else
