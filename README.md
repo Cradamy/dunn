@@ -13,6 +13,7 @@ Contributors
 * [Naomi Kyoto](http://github.com/naomik)
 * [Jonathan Ardis](http://github.com/Emn1ty)
 * [Aaron Ahmed](http://github.com/draceros)
+* [Carlos Cardona](http://github.com/cgcardona)
 
 ## Usage 
 1. Get your very own brand new shiny bot by cloning the Dunn git repository: `git://github.com/killswitch/dunn.git` Once the new DunnBot box arrives you'll want to tear open the box and start tinkering right away so bring your toolset. 
