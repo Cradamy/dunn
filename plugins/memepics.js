@@ -1,7 +1,7 @@
 /*
  * @Plugin        Meme Pics
  * @Description   Serving up your favorite memes.
- * @Trigger       .brian
+ * @Trigger       .brian, .scumbag_steve, .grumpy_cat, .first_world_problem, .stoner, .good_guy, .morpheus, .all_the_things, .prepare_yourself, .yo_dawg, .what_if, .i_dont_always, .skeptical, .josesph, .oag, .trollface, .insanity_wolf
  * @Author        cgcardona
  * @Contributor   polar-bear 
  *
@@ -10,7 +10,7 @@
 var memes = {
   "brian"               : [740857,3459374],
   "scumbag_steve"       : [142,366130],
-  "grumpy_cat"         : [1590955,6541210],
+  "grumpy_cat"          : [1590955,6541210],
   "first_world_problem" : [340895,2055789],
   "stoner"              : [1091690,4694520],
   "good_guy"            : [534,699717],
@@ -33,7 +33,7 @@ Plugin = exports.Plugin = function (irc) {
     console.log("loading meme: " + meme);
     irc.addTrigger(meme, function(i,c,u,p,m) {
       var meme = m.split(" ")[0].replace(i.command, "");
-      self.memeFunc(i,c,u,p,m,memes[meme],meme);
+      self.memeFunc(i,c,u,p,m,memes[meme]);
     });
   }
 
@@ -77,20 +77,19 @@ Plugin.prototype.getLines = function(params) {
       if(msgNumAfter) 
         msgNum++;
     }
-  } else {
-    params.forEach(function(el, inx)
-    {
-      if(inx <= 4)
-        msg1 += el + ' ';
-      else
-        msg2 += el + ' ';
-    });
+  }
+  else
+  {
+    var paramsString = params.join(' ');
+    var splitParams = paramsString.split('.');
+    msg1 = splitParams[0];
+    msg2 = splitParams[1];
   }
 
-  return [msg1.trim(),msg2.trim()]
+  return [msg1.trim(),msg2.trim()];
 }
 
-Plugin.prototype.memeFunc = function (irc, channel, user, params, message, generatorID, memeType) {
+Plugin.prototype.memeFunc = function (irc, channel, user, params, message, generatorID) {
   if(params < 1)
     irc.send(channel, user + ', Attemps to bad luck brian someone. Forgets to add message.');
   else

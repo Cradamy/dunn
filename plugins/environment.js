@@ -16,7 +16,8 @@ Plugin = exports.Plugin = function (irc) {
 Plugin.prototype.plugins = function (irc, channel, nick, params, message, raw) {
   var plugins = [];
   for (var plugin in irc.plugins) {
-    plugins.push(plugin);
+    if(plugin != 'has')
+      plugins.push(plugin);
   }
   irc.send(channel, nick + ': Loaded plugins are: ' + plugins.join(', ') + '.');
 };
@@ -24,7 +25,10 @@ Plugin.prototype.plugins = function (irc, channel, nick, params, message, raw) {
 Plugin.prototype.triggers = function (irc, channel, nick, params, message, raw) {
   var plugins = [];
   for (var plugin in irc.plugins)
-    plugins.push(plugin);
+  {
+    if(plugin != 'has')
+      plugins.push(plugin);
+  }
 
   var fs = require('fs');
   var loadedTriggerString = '';
