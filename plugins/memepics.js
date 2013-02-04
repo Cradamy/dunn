@@ -7,7 +7,25 @@
  *
  */
 
-var memes = require("./memepics.json");
+var memes = {
+  "brian"               : [740857,3459374],
+  "scumbag_steve"       : [142,366130],
+  "grumpy_cat"         : [1590955,6541210],
+  "first_world_problem" : [340895,2055789],
+  "stoner"              : [1091690,4694520],
+  "good_guy"            : [534,699717],
+  "morpheus"            : [1118843,4796874],
+  "all_the_things"      : [318065,1985197],
+  "prepare_yourself"    : [414926,2295701],
+  "yo_dawg"             : [79,108785],
+  "what_if"             : [318374,1986282],
+  "i_dont_always"       : [76,2485],
+  "skeptical"           : [1225013,5169527],
+  "joseph"              : [54,42],
+  "oag"                 : [1152019,4915715],
+  "trollface"           : [68,269],
+  "insanity_wolf"       : [45, 20]
+};
 
 Plugin = exports.Plugin = function (irc) {
   var self = this;
