@@ -43,7 +43,7 @@ Plugin = exports.Plugin = function (irc) {
     irc.addTrigger(meme, function(i,c,u,p,m) {
       var meme = m.arguments[1].replace(i.command, "");
       self.memeFunc(i,c,u,p,m,memes[meme]);
-    });
+    }); 
   }
 
   irc.addTrigger('meme', this.memeSwitch);
