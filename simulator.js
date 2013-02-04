@@ -140,7 +140,10 @@ ircServer.prototype.onMessage = function(msg) {
 }
 
 ircServer.prototype.send = function(t, m, u) {
-  console.log((u || this.nick) + "@" + t + " >>> " + m);
+  while(m.length) {
+    console.log((u || this.nick) + "@" + t + " >>> " + m.substr(0, 440));
+    m = m.substr(440);
+  }
 }
 
 ircServer.prototype.addPluginListener = function (plugin, ev, f) {
