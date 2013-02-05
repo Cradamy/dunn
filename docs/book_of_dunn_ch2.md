@@ -1,4 +1,16 @@
 # Chapter 2. Setup
+## First things first
+Install the following packages on your server.
+
+* node **0.8 or newer** 
+* npm **1.x.x**
+* mongojs **0.4.x**
+* commander *****
+* cleverbot-node *****
+* underscore **1.4.x**
+
+*Note*: If you use anything like `logging`, `seen`, `karma`, or anything you set the third param in the plugin's irc.addTrigger() then you'll need mongodb installed.
+
 ## Grab a copy of Dunn
 Get your very own brand new shiny bot by cloning the Dunn git repository: `git://github.com/killswitch/dunn.git` Once the new DunnBot box arrives you'll want to tear open the box and start tinkering right away so bring your toolset. 
 
