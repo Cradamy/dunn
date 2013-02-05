@@ -69,7 +69,7 @@ Plugin.prototype.memeSwitch = function(irc, channel, user, params, message) {
   }
 
   var meme = params.shift();
-  if(memes[meme] !== undefined) return this.memeFunc(irc, channel, user, params, message, memes[meme]);
+  if(memes[meme] !== undefined) return self.memeFunc(irc, channel, user, params, message, memes[meme]);
   else return irc.send("Meme " + meme + " not found");
 }
 
