@@ -15,7 +15,7 @@ Contributors
 * [Aaron Ahmed](http://github.com/draceros)
 * [Carlos Cardona](http://github.com/cgcardona)
 
-## Usage 
+## Setup
 1. Get your very own brand new shiny bot by cloning the Dunn git repository: `git://github.com/killswitch/dunn.git` Once the new DunnBot box arrives you'll want to tear open the box and start tinkering right away so bring your toolset. 
 2. Each new dunnbot comes with a config.js.default. You'll want to `mv config.js.default config.js`.
 3. Change `nick` in config.js.
@@ -36,5 +36,8 @@ Wanna see Dunnbot in all his glory? Of course you do! Point your IRC Client to [
 * #openbigdata
 
 ## Legal
-
 [MIT License](http://opensource.org/licenses/MIT)
+
+## Documentation
+### The Book of Dunn
+[Chapter 1. What is Dunn](./book_of_dunn_ch1.md)
