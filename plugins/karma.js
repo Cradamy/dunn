@@ -97,7 +97,7 @@ Plugin.prototype.karma = function (irc, channel, nick, params, message, raw) {
   
   db.karma.find({ to: nick.toLowerCase(), channel: channel, action: 'give' }, function (err, karma) {
     db.karma.find({ to: nick, channel: channel, action: 'take'}, function(err, karma2) {
-      irc.send(channel, nick + ': ' + ((user == botNick) ? 'I' : 'You') + ' have ' + (karma.length - karma2.length) + ' total karma.');
+      irc.send(channel, nick + ': ' + ((user == irc.nick.toLowerCase()) ? 'I' : 'You') + ' have ' + (karma.length - karma2.length) + ' total karma.');
     });
   });
 };
