@@ -37,4 +37,4 @@ Wanna see Dunnbot in all his glory? Of course you do! Point your IRC Client to [
 
 ## Legal
 
-We need to add some legal info here
+[MIT License](http://opensource.org/licenses/MIT)
