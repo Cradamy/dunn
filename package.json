@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "mongojs": "0.4.x",
-    "commander": "*"
+    "commander": "*",
+    "cleverbot-node": "*"
   }
 }

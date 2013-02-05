@@ -85,7 +85,7 @@ ircServer.prototype.onMessage = function(msg) {
   msgs = msg.split(" ");
 
   var msghandlers = Object.keys(this.messagehandlers).filter(function(val) {
-    return val.indexOf(msg) == 0;
+    return msg.toLowerCase().indexOf(val.toLowerCase()) == 0;
   });
 
   if(msgs[0][0] == "#") {
@@ -231,5 +231,5 @@ console.log("Root commands are #.chusr - change user, #.chchnl - change channel,
 sandbunn.requestInput();
 
 process.on('uncaughtException', function(e) {
-  console.error(e.message);
+  console.log(e.stack);
 });
