@@ -34,7 +34,7 @@ Plugin.prototype.onMessage = function (msg) {
       karma = this.db.karma,
       threshold = this.threshold;
   Object.keys(irc.users).forEach(function (user) {
-  if (user != irc.nick.toLowerCase() && user != nick)
+  if (user != nick)
     {
       users += ' ' + user;
     }
@@ -45,7 +45,7 @@ Plugin.prototype.onMessage = function (msg) {
   }
   if (to = message.match(/^(\w+)\+\+;?$/i)) {
     var user = to[1].toLowerCase();
-    if (user != botNick && user != nick && users.indexOf(user) != -1) {
+    if (user != nick && users.indexOf(user) != -1) {
       karma.find({ to: user, from: nick, channel: channel, action: 'give' }).sort({ date: -1 }).limit(1, function (err, check) {
         var KarmaLimit = new Date().KarmaLimit(),
             now = new Date();
@@ -63,7 +63,7 @@ Plugin.prototype.onMessage = function (msg) {
 
   if (to = message.match(/^(\w+)\-\-;?$/i)) {
     var user = to[1].toLowerCase();
-    if (user != botNick && user != nick && users.indexOf(user) != -1) {
+    if (user != nick && users.indexOf(user) != -1) {
       karma.find({ to: user, from: nick, channel: channel, action: 'take' }).sort({ date: -1 }).limit(1, function (err, check) {
         var KarmaLimit = new Date().KarmaLimit(),
             now = new Date();
