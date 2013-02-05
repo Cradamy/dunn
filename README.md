@@ -15,7 +15,11 @@ Contributors
 * [Aaron Ahmed](http://github.com/draceros)
 * [Carlos Cardona](http://github.com/cgcardona)
 
-## Setup
+## Documentation
+### The Book of Dunn
+[Chapter 1. What is Dunn](./docs/book_of_dunn_ch1.md)
+
+[Chapter 2. Setup](./docs/book_of_dunn_ch2.md)
 
 ## See Dunn play
 
@@ -27,8 +31,3 @@ Wanna see Dunnbot in all his glory? Of course you do! Point your IRC Client to [
 
 ## Legal
 [MIT License](http://opensource.org/licenses/MIT)
-
-## Documentation
-### The Book of Dunn
-[Chapter 1. What is Dunn](./book_of_dunn_ch1.md)
-[Chapter 2. Setup](./book_of_dunn_ch2.md)
