@@ -1,4 +1,4 @@
-var mongojs = require("mongojs");
+var mongo = require("mongojs");
 
 var self = undefined;
 Api = exports.Api = function(irc) {
