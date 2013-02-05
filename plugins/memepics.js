@@ -44,14 +44,14 @@ Plugin = exports.Plugin = function (irc) {
   self = this; 
 
   this.db.memes.find({}, function(e, r) {
-    while(r.length) {
-      var m = r.shift();
-      memes[m.name] = m.data;
+    if(e === null) {
+      while(r.length) {
+        var m = r.shift();
+        memes[m.name] = m.data;
+      }
     }
 
     for(var meme in memes) {
-      console.log("loading meme: " + meme);
-
       irc.addTrigger(meme, function(i,c,u,p,m) {
         var meme = m.replace(i.command, "").split(" ")[0].trim();
         self.memeFunc(i,c,u,p,m,memes[meme]);
