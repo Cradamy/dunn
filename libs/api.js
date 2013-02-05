@@ -25,7 +25,7 @@ Api.prototype.env = {
 };
 
 Api.prototype.hook = function(evt /**/) {
-
+	var args = Array.prototype.slice.call(arguments).splice(1);
 };
 
 Api.prototype.event = {
@@ -63,15 +63,16 @@ Api.prototype.event = {
 
 Api.prototype.add =  {
 	trigger: function(cmd /**/) {
-
+		var args = Array.prototype.slice.call(arguments).splice(1);
 	}, 
 	message: function(match /**/) {
-
+		var args = Array.prototype.slice.call(arguments).splice(1);
 	},
 	pm: function(pmID /**/) {
-
+		var args = Array.prototype.slice.call(arguments).splice(1);
 	},
 	hook: function(evt, pluginID /**/) {
+		var args = Array.prototype.slice.call(arguments).splice(2);
 
 	}
 };
@@ -121,11 +122,11 @@ Api.prototype.requestDB = function(/**/) {
 };
 
 Api.prototype.send = function(channel /**/) {
-	var args = Array.prototype.slice.call(arguments);
+	var args = Array.prototype.slice.call(arguments).splice(1);
 	while(args.length) {
 		var arg = args.shift();
 		while(arg.length) {
-			irc.send(channel, arg.substr(0, 440));
+			self.irc.send(channel, arg.substr(0, 440));
 			arg = arg.substr(440);
 		}
 	}
@@ -140,5 +141,6 @@ Api.prototype.kick = function(channel, nick, reason) {
 }
 
 Api.prototype.topic = function(channel /**/) {
+	var args = Array.prototype.slice.call(arguments).splice(1);
 
 }
