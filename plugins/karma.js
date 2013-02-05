@@ -19,10 +19,23 @@ Date.prototype.KarmaLimit = function () {
 }
 
 Plugin = exports.Plugin = function (irc) {
+  this.config = irc.config.karma || {threshold: 5, trackNickChanges: false};
+
   irc.addTrigger('karma', this.karma);
   this.db = mongodb.connect(irc.database, ['karma']);
   this.irc = irc;
-  this.threshold = irc.config.karmaThreshold || 5;
+  this.threshold = irc.config.karmaThreshold || this.config.threshold || 5;
+};
+
+Plugin.prototype.onNick = function(msg, newNick, oldNick) {
+  if(typeof this.config.trackNickChanges != "undefined" && this.config.trackNickChanges) {
+    karma.find({to: oldNick}, function(e, r) {
+      while(r.length) {
+        var k = r;
+        karma.save({to: newNick, from: k.from, channel: k.channel, action: k.action});
+      }
+    });
+  }
 };
 
 Plugin.prototype.onMessage = function (msg) {

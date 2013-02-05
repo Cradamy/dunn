@@ -24,13 +24,15 @@ exports.initialize = function (irc) {
             return;
         }
         chan = chans[chan];
-        for(var i=0; i<nicks.length; i++) {
-            nick = nicks[i].toLowerCase();
-            user = allusers[nick];
-            if (!user) {
-                user = allusers[nick] = new _this.userObj(_this, nicks[i]);
-            }
-            user.join(chan.name);
+        if(typeof chan != "undefined") {
+          for(var i=0; i<nicks.length; i++) {
+              nick = nicks[i].toLowerCase();
+              user = allusers[nick];
+              if (!user) {
+                  user = allusers[nick] = new _this.userObj(_this, nicks[i]);
+              }
+              user.join(chan.name);
+          }
         }
     });
 };

@@ -2,14 +2,18 @@ var config = {
 	host: 'irc.freenode.net',
 	port: 6667,
 	nick: 'dunnBot',
-	identPass: 'yourBotsIRCPass',
+	identPass: 'Bot nickserv password',
 	username: 'dunnBot',
 	realname: 'Powered by #webtech',
 	command: '.',
 	db: 'dunnBot',
 	channels: ['#yourchannel'],
-	plugins: ['dunn', 'example', 'karma', 'log', 'nsfw', 'triggers', 'rage', 'seen', 'remind'],
-	admins: ['yournick']
+	plugins: ['dunn', 'karma', 'log', 'environment', 'rage', 'seen', 'remind', 'manage'],
+	admins: ['yournick', 'killswitch'],
+	karma: {
+		threshold: 5,
+		trackNickChanges: false
+	}
 };
 
 module.exports = config;

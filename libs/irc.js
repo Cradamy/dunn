@@ -329,11 +329,15 @@ Server.prototype.onMessage = function (msg) {
       break;
 
     case (command === 'NICK'):
+      var oldNick = msg.prefix.split("!")[0].trim().toLowerCase();
+      user = this.users[oldNick];
+
       if (user) {
         user.update(msg.prefix);
+        this.users[msg.arguments[0]] = user;
       }
 
-      this.emit('nick', msg);
+      this.emit('nick', msg, msg.arguments[0], oldNick);
       break;
 
     case (/^\d+$/.test(command)):
@@ -567,5 +571,5 @@ Server.prototype.addMessageHandler = function (trigger, callback) {
 };
 
 process.on('uncaughtException', function (error) {
-  console.log(error.stack); //prevents from crashing
+  // console.log(error.stack); //prevents from crashing
 });
