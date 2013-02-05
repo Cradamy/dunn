@@ -21,8 +21,6 @@ CBot.params.sessionid = (new Date().getTime());
  }
 
 Plugin.prototype.run = function(irc, channel, nick, match, message, raw) {
-	irc.send(channel, "sending "+message.split(" ").splice(1).join(" "));
-
 	CBot.write(message.split(" ").splice(1).join(" "), function(r) {
 		irc.send(channel, nick + ': ' + r.message);
 	});
