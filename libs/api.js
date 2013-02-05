@@ -6,7 +6,7 @@ Api = exports.Api = function(irc) {
 
 	self = this;
 	irc.on("ctcp", this.event.ctcp);
-	irc.on("notice", this.event.notice, this);
+	irc.on("notice", this.event.notice);
 	irc.on("private_message", this.event.pm);
 	irc.on("message", this.event.message);
 	irc.on("join", this.event.join);
