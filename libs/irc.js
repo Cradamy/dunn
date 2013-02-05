@@ -4,7 +4,8 @@ var sys = require('util'),
     fs = require('fs'),
     path = require('path'),
     user = require ('./user.js' ),
-    channel = require('./channel.js');
+    channel = require('./channel.js'),
+    api = require("./api.js");
 
 var existsSync = fs.existsSync || path.existsSync;
 
@@ -42,6 +43,8 @@ Server.prototype.initialize = function (config) {
   this.triggers = [];
   this.messagehandlers = {};
   this.replies = [];
+
+  this.v2 = new api.Api(this);
 
   this.connection = null;
   this.buffer = "";
@@ -168,7 +171,7 @@ Server.prototype.ctcp = function(nick, target, msg, command) {
     }
 
     this.raw("NOTICE", nick, ":\x01VERSION DunnBot, running ["+(plugins.join(", "))+"] plugins\x01");
-    this.emit("ctcp-version", nick, target);
+    this.emit("ctcp-version", [nick, target]);
   }
 };
 
