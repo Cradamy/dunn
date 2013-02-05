@@ -5,7 +5,7 @@ Open source Node.js powered IRC bot for #webtech on freenode.
 
 Author
 -----
-* [Killswitch](http://github.com/killswitch).
+* [Killswitch](http://github.com/killswitch)
 
 Contributors
 -----
