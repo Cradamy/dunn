@@ -12,6 +12,9 @@
  var Cleverbot = require("cleverbot-node");
  var CBot = new Cleverbot();
 
+CBot.params.sessionid = (new Date().getTime());
+
+
  Plugin = exports.Plugin = function(irc) {
  	irc.addMessageHandler(irc.nick.toLowerCase() + ", ", this.run);
  	irc.addMessageHandler(irc.nick.toLowerCase() + ": ", this.run);
