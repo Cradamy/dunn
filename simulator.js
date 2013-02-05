@@ -58,6 +58,7 @@ ircServer.prototype.init = function(program) {
   this.encoding = "utf8";
   this.timeout = 60*60*1000;
   this.heap = [];
+  this.existsSync = require("fs").existsSync || require("path").existsSync;
 }
 
 var sandbunn = {

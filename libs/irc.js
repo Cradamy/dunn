@@ -8,6 +8,7 @@ var sys = require('util'),
     api = require("./api.js");
 
 var existsSync = fs.existsSync || path.existsSync;
+var self;
 
 var Server = exports.Server = function (config) {
   this.initialize(config);
@@ -16,6 +17,8 @@ var Server = exports.Server = function (config) {
 sys.inherits(Server, events.EventEmitter);
 
 Server.prototype.initialize = function (config) {
+  this.existsSync = existsSync;
+
   this.host = config.host || '127.0.0.1';
   this.port = config.port || 6667;
   this.nick = config.nick || 'DunnBot';
@@ -69,9 +72,18 @@ Server.prototype.initialize = function (config) {
    * Boot Plugins
    */
   this.plugins = [];
-  var self = this;
+  self = this;
   config.plugins.forEach(function(plugin) {
     self.loadPlugin(plugin);
+  });
+
+  //Another layer of error reporting, useful until proven otherwise.
+  process.on('uncaughtException', function (error) {
+    try {
+      self.sendHeap(error.stack);
+    } catch(e) {
+      return;
+    }
   });
 };
 
@@ -487,13 +499,8 @@ Server.prototype.unloadPlugin = function (name) {
 
     }
 
-    if(typeof require.cache[__dirname.substr(0, __dirname.length-5) + "/plugins/" + name + ".js"] != "undefined") {
-      delete require.cache[__dirname.substr(0, __dirname.length-5) + "/plugins/" + name + ".js"]; //requires absolute path
-    }
-    
-    //windows
-    if(typeof require.cache[__dirname.substr(0, __dirname.length-5) + "\\plugins\\" + name + ".js"] != "undefined") {
-      delete require.cache[__dirname.substr(0, __dirname.length-5) + "\\plugins\\" + name + ".js"];
+    if(typeof require.cache[path.resolve(__dirname, "../plugins/" + name + ".js")] != "undefined") {
+      delete require.cache[path.resolve(__dirname, "../plugins/" + name + ".js")];
     }
   }
 
@@ -560,5 +567,5 @@ Server.prototype.addMessageHandler = function (trigger, callback) {
 };
 
 process.on('uncaughtException', function (error) {
-   console.log(error.stack); //prevents from crashing
+  console.log(error.stack); //prevents from crashing
 });
