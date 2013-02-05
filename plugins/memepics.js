@@ -182,7 +182,6 @@ Plugin.prototype.memeFunc = function (irc, channel, user, params, message, gener
         irc.send(channel, user + ': ' + parsedJSON.result.instanceImageUrl);
       });
     }).on('error', function(e) {
-         console.log("Got error: " + e.message);
     });
 
     request.end();

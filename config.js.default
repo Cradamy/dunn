@@ -2,7 +2,7 @@ var config = {
 	host: 'irc.freenode.net',
 	port: 6667,
 	nick: 'dunnBot',
-	identPass: 'youridpasshere',
+	identPass: 'yourBotsIRCPass',
 	username: 'dunnBot',
 	realname: 'Powered by #webtech',
 	command: '.',

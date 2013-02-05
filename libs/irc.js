@@ -502,7 +502,7 @@ Server.prototype.unloadPlugin = function (name) {
 
 Server.prototype.loadPlugin = function (name) {
   
-  console.log("loading plugin: " + name);
+  //console.log("loading plugin: " + name);
 
   this.unloadPlugin(name);
 
