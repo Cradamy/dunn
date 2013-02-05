@@ -56,7 +56,7 @@ Plugin.prototype.onMessage = function (msg) {
           }
         }
         karma.save({ to: user, from: nick, channel: channel, action: 'give', date: new Date() });
-        irc.send(channel, nick + ': Karma given to ' + user);
+        irc.send(channel, nick + ': Karma given to ' + user == botNick ? 'Me :)' : user);
       });
     }
   }
@@ -81,7 +81,7 @@ Plugin.prototype.onMessage = function (msg) {
               return;
             }
             karma.save({ to: user, from: nick, channel: channel, action: 'take', date: new Date() });
-            irc.send(channel, nick + ': Karma taken from ' + user);
+            irc.send(channel, nick + ': Karma taken from ' + user == botNick ? 'Me :(' : user);
           });
         });
       });
@@ -97,7 +97,7 @@ Plugin.prototype.karma = function (irc, channel, nick, params, message, raw) {
   
   db.karma.find({ to: nick.toLowerCase(), channel: channel, action: 'give' }, function (err, karma) {
     db.karma.find({ to: nick, channel: channel, action: 'take'}, function(err, karma2) {
-      irc.send(channel, nick + ': You have ' + (karma.length - karma2.length) + ' total karma.');
+      irc.send(channel, nick + ': ' + user == botNick ? 'I' : 'You' + ' have ' + (karma.length - karma2.length) + ' total karma.');
     });
   });
 };
