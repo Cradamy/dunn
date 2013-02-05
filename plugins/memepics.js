@@ -131,7 +131,7 @@ Plugin.prototype.addMeme = function(irc, channel, user, params, message) {
           if(typeof memes[name] != "undefined") return self.irc.send(channel, "Meme already added");
 
           self.db.memes.save(model, function(e) {
-            if(typeof e == "undefined") return self.irc.send(channel, "Could not add meme to database");
+            if(e !== null) return self.irc.send(channel, "Could not add meme to database");
             else {
               memes[name] = MemeData;
               self.irc.send(channel, "Adding meme " + irc.command + name);
