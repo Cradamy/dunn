@@ -18,7 +18,9 @@ exports.initialize = function (irc) {
             nick;
 
         // TODO: support all channel prefixes - need to find proper documentation to list these
-        if (!chan || chan.charAt(0) !== '#') {
+        // Not sure if this actually "supports" it but well here!
+        // https://www.alien.net.au/irc/chantypes.html
+        if (!chan || ["!", "#", "&", "+", ".", "~"].indexOf(chan[0]) == -1) {
             return;
         }
         chan = chans[chan];
