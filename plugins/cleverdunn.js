@@ -9,11 +9,8 @@
  *
  */
 
- var Cleverbot = require("cleverbot-node");
- var CBot = new Cleverbot();
-
-CBot.params.sessionid = (new Date().getTime());
-
+var Cleverbot = require("cleverbot-node");
+var Bots = {}
 
  Plugin = exports.Plugin = function(irc) {
  	irc.addMessageHandler(irc.nick.toLowerCase() + ", ", this.run);
@@ -21,7 +18,13 @@ CBot.params.sessionid = (new Date().getTime());
  }
 
 Plugin.prototype.run = function(irc, channel, nick, match, message, raw) {
-	CBot.write(message.split(" ").splice(1).join(" "), function(r) {
+	if(typeof Bots[nick] == "undefined") {
+		Bots[nick] = new Cleverbot();
+		Bots[nick].params.sessionid = channel.replace("#", "")+"-"+nick;
+	}
+	
+	var Bot = Bots[nick];
+	Bot.write(message.split(" ").splice(1).join(" "), function(r) {
 		irc.send(channel, nick + ': ' + r.message);
 	});
 };
