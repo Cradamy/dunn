@@ -47,7 +47,7 @@ Plugin.prototype.request = function(req, res) {
 		});
 
 		res.write("</table>");
-	} else {
+	} else { 
 		res.write("<h1>User/bot not found</h1>");
 	}
 	res.write("</body></html>");
