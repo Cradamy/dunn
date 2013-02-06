@@ -14,13 +14,13 @@ var Bots = {}
 
 var config = {};
 Plugin = exports.Plugin = function(irc) {
-	config = irc.config.cleverdunn || {nickSessionID: false};
+	config = irc.config.cleverdunn || {nickSessionID: false, log: true, debug: false};
 
 	irc.addMessageHandler(irc.nick.toLowerCase() + ", ", this.run);
 	irc.addMessageHandler(irc.nick.toLowerCase() + ": ", this.run);
 
-	// irc.addTrigger("cdlog", this.getLog); //doesn't really work
-	// irc.addTrigger("cddebug", this.debug);
+	if(config.log) irc.addTrigger("cdlog", this.getLog); //doesn't really work
+	if(config.debug) irc.addTrigger("cddebug", this.debug);
 }
 
 Plugin.prototype.getLog = function(irc, channel, nick, match, message, raw) {
