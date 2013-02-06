@@ -44,6 +44,7 @@ Plugin.prototype.run = function(irc, channel, nick, match, message, raw) {
 	
 	var Bot = Bots[nick];
 	Bot.write(message.split(" ").splice(1).join(" "), function(r) {
-		irc.send(channel, nick + ': ' + r.message);
+		if(r.message.indexOf("<!--") > -1) irc.send(channel, "Cleverbot.com is under maintenance, probably because of us.");
+		else irc.send(channel, nick + ': ' + r.message);
 	});
 };
