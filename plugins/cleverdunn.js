@@ -39,11 +39,11 @@ Plugin.prototype.debug = function(irc, channel, nick, match, message, raw) {
 Plugin.prototype.run = function(irc, channel, nick, match, message, raw) {
 	if(typeof Bots[nick] == "undefined") {
 		Bots[nick] = new Cleverbot();
-		Bots[nick].params.sessionid = channel.replace("#", "")+"_"+nick;
+		// Bots[nick].params.sessionid = channel.replace("#", "")+"_"+nick;
 	}
 	
 	var Bot = Bots[nick];
-	Bot.params.sessionid = channel.replace("#", "")+nick;
+	// Bot.params.sessionid = channel.replace("#", "")+nick;
 	Bot.write(message.split(" ").splice(1).join(" "), function(r) {
 		if(r.message.indexOf("<!--") > -1) irc.send(channel, "Cleverbot.com is under maintenance, probably because of us.");
 		else irc.send(channel, nick + ': ' + r.message);
