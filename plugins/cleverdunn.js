@@ -66,9 +66,9 @@ Plugin.prototype.getLog = function(irc, channel, nick, match, message, raw) {
 	if(typeof Bots[channel.replace("#", "")+" "+nick] != "undefined") {
 		// irc.send(channel, "Cleverbot log url: http://cleverbot.com/" + Bots[nick].params.logurl);
 		console.log(server.address());
-		irc.send(channel, "Log url: http://"+address+":"+server.address().port+"/"+encodeURIComponent(channel.replace("#", "")+" "+nick));
+		irc.send(channel, nick + ", http://"+address+":"+server.address().port+"/"+encodeURIComponent(channel.replace("#", "")+" "+nick));
 	} else {
-		irc.send(channel, "Sorry, "+nick+" you don't have a cleverbot session yet.");
+		irc.send(channel, "Sorry, "+nick+" you don't have a cleverbot session yet. All logs at http://"+address+":"+server.address().port);
 	}
 }
 
