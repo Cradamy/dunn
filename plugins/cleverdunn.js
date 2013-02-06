@@ -12,15 +12,34 @@
 var Cleverbot = require("cleverbot-node");
 var Bots = {}
 
- Plugin = exports.Plugin = function(irc) {
- 	irc.addMessageHandler(irc.nick.toLowerCase() + ", ", this.run);
- 	irc.addMessageHandler(irc.nick.toLowerCase() + ": ", this.run);
- }
+Plugin = exports.Plugin = function(irc) {
+	irc.addMessageHandler(irc.nick.toLowerCase() + ", ", this.run);
+	irc.addMessageHandler(irc.nick.toLowerCase() + ": ", this.run);
+
+	irc.addTrigger("cdlog", this.getLog);
+	irc.addTrigger("cddebug", this.debug);
+}
+
+Plugin.prototype.getLog = function(irc, channel, nick, match, message, raw) {
+	if(typeof Bots[nick] != "undefined") {
+		irc.send(channel, "Cleverbot log url: http://cleverbot.com/" + Bots[nick].params.logurl);
+	} else {
+		irc.send(channel, "Sorry, "+nick+" you don't have a cleverbot session yet.");
+	}
+}
+
+Plugin.prototype.debug = function(irc, channel, nick, match, message, raw) {
+	if(typeof Bots[nick] != "undefined") {
+		irc.send(nick, JSON.stringify(Bots[nick].params));
+	} else {
+		irc.send(channel, "Sorry, "+nick+" you don't have a cleverbot session yet.");
+	}
+}
 
 Plugin.prototype.run = function(irc, channel, nick, match, message, raw) {
 	if(typeof Bots[nick] == "undefined") {
 		Bots[nick] = new Cleverbot();
-		Bots[nick].params.sessionid = channel.replace("#", "")+"-"+nick;
+		Bots[nick].params.sessionid = channel.replace("#", "")+"_"+nick;
 	}
 	
 	var Bot = Bots[nick];
