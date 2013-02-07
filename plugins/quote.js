@@ -254,7 +254,7 @@ var Quote = function (irc) {
             quoteUserDb.findOne({name: nick, channel: channel}, function (err, user) {
                 if (!err && (user || has(ircAdmins, nick))) {
                     quotecoll.findOne({idNumber: idNumber}, function (err, found) {
-                        if (!err && found && (nick === found.owner || user.admin || has(ircAdmins, nick))) {
+                        if (!err && found && (nick === found.owner || (user && user.admin) || has(ircAdmins, nick))) {
                             quotecoll.remove({idNumber: idNumber}, function (err) {
                                 if (!err) {
                                     self.emit('confirmAction', channel, nick, idNumber, 'deleted', 'quote');
