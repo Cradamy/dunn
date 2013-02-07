@@ -74,7 +74,7 @@ Plugin.prototype.getLog = function(irc, channel, nick, match, message, raw) {
 
 Plugin.prototype.debug = function(irc, channel, nick, match, message, raw) {
 	if(typeof Bots[channel.replace("#", "")+" "+nick] != "undefined") {
-		irc.send(nick, JSON.stringify(Bots[nick].params));
+		irc.send(nick, JSON.stringify(Bots[channel.replace("#", "")+" "+nick].params));
 	} else {
 		irc.send(channel, "Sorry, "+nick+" you don't have a cleverbot session yet.");
 	}
