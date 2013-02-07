@@ -263,17 +263,19 @@ Server.prototype.onMessage = function (msg) {
         }
       } else {
 
-        var msgHandlers = this.messagehandlers, msgTrigger;
+        var msgHandlers = this.messagehandlers, msgTrigger, key;
  
         for (key in msgHandlers) {
 
-          var msgHandler = msgHandlers[key], trigger = msgHandler.trigger, _msg = msg.arguments[1],
+          var msgHandler = msgHandlers[key],
+              ttrigger = msgHandler.trigger,
+              _msg = msg.arguments[1],
               match = false;
 
-          if (trigger instanceof RegExp) {
-            match = trigger.test(_msg);
+          if (ttrigger instanceof RegExp) {
+            match = ttrigger.test(_msg);
           } else {
-            match = _msg.toLowerCase().match(trigger)
+            match = _msg.toLowerCase().match(ttrigger);
           }
 
           if (match) {
@@ -583,7 +585,7 @@ Server.prototype.addMessageHandler = function (trigger, callback) {
 
   if(typeof this.messagehandlers[key] == 'undefined') {
     this.messagehandlers[key] = {trigger: trigger, callback: callback};
-  };  
+  }
 
 };
 

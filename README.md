@@ -14,6 +14,7 @@ Contributors
 * [Jonathan Ardis](http://github.com/Emn1ty)
 * [Aaron Ahmed](http://github.com/draceros)
 * [Carlos Cardona](http://github.com/cgcardona)
+* [Olli K](http://github.com/gildean)
 
 ## Documentation
 ### The Book of Dunn
