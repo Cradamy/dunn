@@ -25,9 +25,10 @@ Contributors
 
 Wanna see Dunnbot in all his glory? Of course you do! Point your IRC Client to [Freenode](http://freenode.net/) and checkout
 
-* #webtech
-* #audiofile
-* #openbigdata
+* [#webtech](http://tinyurl.com/ahq26th) (Dunn)
+* [#audiofile](http://tinyurl.com/aesu2nw) (Boombot)
+* [#openbigdata](http://tinyurl.com/begs36t) (Boombot)
+* [#shirokuma](http://tinyurl.com/b9z94f9) (mc469)
 
 ## Legal
 [MIT License](http://opensource.org/licenses/MIT)
