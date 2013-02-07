@@ -1,4 +1,8 @@
-var mongo = require("mongojs");
+try {
+	var mongo = require("mongojs");
+} catch(e) {
+	var mongo = undefined;
+}
 
 var self = undefined;
 Api = exports.Api = function(irc) {
@@ -118,7 +122,8 @@ Api.prototype.invoke = {
 };
 
 Api.prototype.requestDB = function(/**/) {
-	return mongo(self.irc.database, Array.prototype.slice.call(arguments));
+	if(mongo) return mongo(self.irc.database, Array.prototype.slice.call(arguments));
+	else return null;
 };
 
 Api.prototype.send = function(channel /**/) {
