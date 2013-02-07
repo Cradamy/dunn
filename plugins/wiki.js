@@ -29,7 +29,7 @@ var wiki = function (irc) {
         }
 
         function sendToIrc(err, links) {
-            if (!err && links && links !== '') {
+            if (!err && links) {
                 irc.send(channel, nick + ': ' + links);
             } else {
                 irc.send(channel, nick + ': ' + err || 'No valid answer');
@@ -39,7 +39,7 @@ var wiki = function (irc) {
         function getLinksFromAnswer(answer, cb) {
             var json = isValidJson(answer);
             var links = '';
-            if (json && json.length > 1) {
+            if (json && json.length > 1 && json[1].length > 0) {
                 json[1].forEach(function (link) {
                     links += link + ': http://en.wikipedia.org/wiki/' + qs.escape(link) + ' || ';
                 });
