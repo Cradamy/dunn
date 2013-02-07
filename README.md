@@ -34,5 +34,7 @@ Wanna see Dunnbot in all his glory? Of course you do! Point your IRC Client to [
 ## Legal
 [MIT License](http://opensource.org/licenses/MIT)
 
-###### syndicate.js
+#### Plugin info
+
+##### syndicate.js
 Webserver source code at [polar-bear/dunnsync](https://github.com/polar-bear/dunnsync)
