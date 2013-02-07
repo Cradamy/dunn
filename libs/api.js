@@ -47,7 +47,7 @@ Api.prototype.env = {
 };
 
 Api.prototype.hook = function(evt /**/) {
-	var args = Array.prototype.slice.call(arguments).splice(1);
+	var args = Array.prototype.slice.call(arguments, 1);
 
 	switch(evt) {
 		case "ctcp":
@@ -123,25 +123,25 @@ Api.prototype.event = {
 
 Api.prototype.add =  {
 	trigger: function(cmd, admin /**/) {
-		var args = Array.prototype.slice.call(arguments).splice(2);
+		var args = Array.prototype.slice.call(arguments, 2);
 		if(typeof self.env.triggers[cmd] != "undefined") self.Error("The trigger "+trigger.toString()+" already exists.");
 		self.env.triggers[cmd] = {trigger: cmd, admin: admin, callbacks: args};
 		return true;
 	}, 
 	message: function(match, admin /**/) {
-		var args = Array.prototype.slice.call(arguments).splice(2);
+		var args = Array.prototype.slice.call(arguments, 2);
 		if(typeof self.env.message[match] != "undefined") self.Error("A message handler with the match: "+message.toString()+" already exists.")
 		self.env.message[match] = {match: match, admin: admin, callbacks: args};
 		return true;
 	},
 	pm: function(pmID, admin /**/) {
-		var args = Array.prototype.slice.call(arguments).splice(2);
+		var args = Array.prototype.slice.call(arguments, 2);
 		if(typeof self.env.pm[pmID] != "undefined") self.Error("A PM interceptor with the id: "+pmID+" already exists.")
 		self.env.pm[pmID] = {id: pmID, admin: admin, callbacks: args};
 		return true;
 	},
 	hook: function(pluginID, evt /**/) {
-		var args = Array.prototype.slice.call(arguments).splice(2);
+		var args = Array.prototype.slice.call(arguments, 2);
 		if(evt.substr(0, 2).toLowerCase() == "on") evt = evt.substr(2); 
 		if(typeof self.env.hooks[evt] == "undefined") self.error("Event "+evt+"does not exist");
 		if(typeof self.env.hooks[evt][pluginID] != "undefined") self.error("There is already an event with the ID "+pluginID);
@@ -211,7 +211,7 @@ Api.prototype.configAgent = function(i, d) {
 }
 
 Api.prototype.send = function(channel /**/) {
-	var args = Array.prototype.slice.call(arguments).splice(1);
+	var args = Array.prototype.slice.call(arguments, 1);
 	while(args.length) {
 		var arg = args.shift();
 		while(arg.length) {
@@ -239,6 +239,8 @@ Api.prototype.kick = function(channel, nick, reason) {
 Api.prototype.join = function(channel, password) {
 	if(typeof self.irc.channels[channel] == "undefined") {
 		self.irc.channels[channel] = new self.irc.channelObj(self.irc, channel, true, password);
+	} else {
+		self.irc.channels[channel].join();
 	}
 }
 
@@ -249,7 +251,7 @@ Api.prototype.part = function(channel, reason) {
 }
 
 Api.prototype.topic = function(channel /**/) {
-	var args = Array.prototype.slice.call(arguments).splice(1);
+	var args = Array.prototype.slice.call(arguments, 1);
 
-	self.irc.raw("TOPIC "+channel+" "+args.join(" "))
+	self.irc.raw("TOPIC", channel, args.join(" "));
 }
