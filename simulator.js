@@ -175,9 +175,18 @@ ircServer.prototype.addTrigger = function(trigger, callback, admin) {
 };
 
 ircServer.prototype.addMessageHandler = function(trigger, callback) {
-  if(typeof this.messagehandlers[trigger] == 'undefined') {
-    this.messagehandlers[trigger] = {plugin: trigger, callback: callback};
-  }
+  // we can convert the callback into a str for a unique id
+  var keyFromFn = function(f) {
+    var strf = f.toString().replace(/\s+/, '');
+    return strf.slice(-25) + String(trigger);
+  };
+
+  var key = keyFromFn(callback); // same trigger, multiple cbs? no problem
+
+  if(typeof this.messagehandlers[key] == 'undefined') {
+    this.messagehandlers[key] = {trigger: trigger, callback: callback};
+  };  
+
 };
 
 
