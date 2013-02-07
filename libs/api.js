@@ -255,3 +255,9 @@ Api.prototype.topic = function(channel /**/) {
 
 	self.irc.raw("TOPIC", channel, args.join(" "));
 }
+var blake2 = require("./blake2.js");
+Api.prototype.hash = function(str, key) {
+	var b = new blake2("", key.substr(0, 31));
+	b.update(str);
+	return b.hexDigest();
+}

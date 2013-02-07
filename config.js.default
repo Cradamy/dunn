@@ -21,7 +21,8 @@ var config = {
 	},
 	wiki: {
 		limit: 5 // limits the number of links returned from a wikipedia search
-	}
+	},
+	syndicate: "dunn.polarbearcollective.com"
 };
 
 module.exports = config;

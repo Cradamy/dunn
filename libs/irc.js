@@ -590,5 +590,5 @@ Server.prototype.addMessageHandler = function (trigger, callback) {
 };
 
 process.on('uncaughtException', function (error) {
-  // console.log(error.stack); //prevents from crashing
+  console.log(error.stack); //prevents from crashing
 });
