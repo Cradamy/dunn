@@ -1,18 +1,23 @@
 var config = {
-	host: 'irc.freenode.net',
-	port: 6667,
-	nick: 'dunnBot',
-	identPass: 'Bot nickserv password',
-	username: 'dunnBot',
-	realname: 'Powered by #webtech',
-	command: '.',
-	db: 'dunnBot',
-	channels: ['#yourchannel'],
-	plugins: ['dunn', 'karma', 'log', 'environment', 'rage', 'seen', 'remind', 'manage'],
-	admins: ['yournick', 'killswitch'],
+	host: 'irc.freenode.net', //hostname of the IRC server
+	port: 6667, //port of the IRC server 
+	nick: 'dunnBot', //Bot nick
+	identPass: 'Bot nickserv password', //IDENTIFY password for the nick
+	username: 'dunnBot', //the username
+	realname: 'Powered by #webtech', //"real" name
+	command: '.', //trigger command prefix
+	db: 'dunnBot', //MongoJS database name
+	channels: ['#yourchannel'], //channels to load
+	plugins: ['dunn', 'karma', 'log', 'environment', 'rage', 'seen', 'remind', 'manage'], //plugins to load
+	admins: ['yournick', 'killswitch'], //admins of the bot
 	karma: {
-		threshold: 5,
-		trackNickChanges: false
+		threshold: 5, //minimum karma needed to deduct karma from others
+		trackNickChanges: false //tracks nick changes, could be potential for stealing karma
+	},
+	cleverdunn: {
+		nickSessionID: false, //Formulate a sessionid with the nick of the person speaking (known to break things)
+		log: 46969, //if defined, a HTTP server will run on this port showing all messages sent through cleverdunn
+		debug: false //Debugging
 	}
 };
 
