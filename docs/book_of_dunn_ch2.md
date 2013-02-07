@@ -4,12 +4,21 @@ Install the following packages on your server.
 
 * node **0.8 or newer** 
 * npm **1.x.x**
-* mongojs **0.4.x**
-* commander *****
-* cleverbot-node *****
-* underscore **1.4.x**
 
-*Note*: If you use anything like `logging`, `seen`, `karma`, or anything you set the third param in the plugin's irc.addTrigger() then you'll need mongodb installed.
+Optional packages 
+
+* mongojs **0.4.x**
+ * For various plugins
+* commander *****
+ * For simulator.js, not really needed
+* cleverbot-node *****
+ * for cleverdunn.js
+* underscore **1.4.x**
+ * For various plugins
+
+Or simply run  ``` npm install ``` in the directory dunnbot.js resides in.
+
+*Note*: For a full list of plugins that use mongojs, see below.
 
 ## Grab a copy of Dunn
 Get your very own brand new shiny bot by cloning the Dunn git repository: `git://github.com/killswitch/dunn.git` Once the new DunnBot box arrives you'll want to tear open the box and start tinkering right away so bring your toolset. 
@@ -59,3 +68,14 @@ Put your nick is in the admins array otherwise admin commands (e.g update) won't
 * There are two ways to run Dunn. You can go the traditional route `node dunnbot.js` but that blocks a terminal window. Instead use [forever.js](https://github.com/nodejitsu/forever) to keep him running without a terminal window blocked. That way when you issue the `.update` command he runs the command to git pull, then `forever restart dunnbot.js`
 * To fire up your shiny new robot issue this from a command line: `forever start dunnbot.js`
 * To shut your robot down if you went the traditional termnial blocking route `cntrl^C` and if you're using `forever` issue: `forever stop dunnbot.js`
+
+
+## Plugins that use MongoJS
+
+* remind
+* timebomb
+* karma
+* seen
+* log
+* memepics
+* quote
