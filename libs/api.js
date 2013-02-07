@@ -9,7 +9,7 @@ Api = exports.Api = function(irc) {
 	this.boot(irc);
 };
 
-Api.prototype.error = function(msg) {
+Api.prototype.Error = function(msg) {
 	throw new msg;
 }
 
