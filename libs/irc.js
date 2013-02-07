@@ -262,17 +262,26 @@ Server.prototype.onMessage = function (msg) {
           }
         }
       } else {
-        var msgHandlers = this.messagehandlers, msgTrigger, match;
-        for (msgTrigger in msgHandlers) {
-          match = msg.arguments[1].toLowerCase().match(msgTrigger);
-          if (match) {
-            msgHandler = msgHandlers[msgTrigger];
 
+        var msgHandlers = this.messagehandlers, msgTrigger;
+ 
+        for (key in msgHandlers) {
+
+          var msgHandler = msgHandlers[key], trigger = msgHandler.trigger, _msg = msg.arguments[1],
+              match = false;
+
+          if (trigger instanceof RegExp) {
+            match = trigger.test(_msg);
+          } else {
+            match = _msg.toLowerCase().match(trigger)
+          }
+
+          if (match) {
+ 
             if (typeof this.channels[msg.arguments[0]] != "undefined") {
               //room message recieved
-
               try {
-                msgHandler.callback.apply(msgHandler.plugin, [this, this.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase(), match, msg.arguments[1], msg.orig]);
+                msgHandler.callback.apply(this, [this, this.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase(), match, msg.arguments[1], msg.orig]);
               } catch(err) {
                 this.sendHeap(err.stack, this.channels[msg.arguments[0]].name.toLowerCase());
                 return false;
@@ -280,7 +289,6 @@ Server.prototype.onMessage = function (msg) {
             } else {
               //PM recieved
             }
-            msgHandlers = [];
           }
         }
       }
@@ -565,9 +573,18 @@ Server.prototype.addTrigger = function (trigger, callback, admin) {
 };
 
 Server.prototype.addMessageHandler = function (trigger, callback) {
-  if (typeof this.messagehandlers[trigger] == 'undefined') {
-    this.messagehandlers[trigger] = { plugin: trigger, callback: callback};
-  }
+  // we can convert the callback into a str for a unique id
+  var keyFromFn = function(f) {
+    var strf = f.toString().replace(/\s+/, '');
+    return strf.slice(-25) + String(trigger);
+  };
+
+  var key = keyFromFn(callback); // same trigger, multiple cbs? no problem
+
+  if(typeof this.messagehandlers[key] == 'undefined') {
+    this.messagehandlers[key] = {trigger: trigger, callback: callback};
+  };  
+
 };
 
 process.on('uncaughtException', function (error) {
