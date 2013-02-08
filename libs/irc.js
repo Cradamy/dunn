@@ -18,6 +18,10 @@ sys.inherits(Server, events.EventEmitter);
 Server.prototype.initialize = function (config) {
   this.existsSync = existsSync;
 
+  //update this as you change the code pls.
+  this.majorVersion = "1.0.7";
+  this.minorVersion = "469-git";
+
   this.host = config.host || '127.0.0.1';
   this.port = config.port || 6667;
   this.nick = config.nick || 'DunnBot';
