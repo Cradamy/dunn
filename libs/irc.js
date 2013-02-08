@@ -20,7 +20,7 @@ Server.prototype.initialize = function (config) {
 
   //update this as you change the code pls.
   this.majorVersion = "1.0.7";
-  this.minorVersion = "469-git";
+  this.minorVersion = "470-git";
 
   this.host = config.host || '127.0.0.1';
   this.port = config.port || 6667;
@@ -248,10 +248,14 @@ Server.prototype.onMessage = function (msg) {
               trig.callback.apply(this.plugins[trig.plugin], [this, this.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase(), params, msg.arguments[1], msg.orig]);
             } catch(err) {
               this.sendHeap(err.stack, this.channels[msg.arguments[0]].name.toLowerCase());
-              return false;
             }
           } else {
             //PM recieved
+            try {
+              trig.callback.apply(this.plugins[trig.plugin], [this, nick.toLowerCase(), nick.toLowerCase(), params, msg.arguments[1], msg.orig]);
+            } catch(err) {
+              this.sendHeap(err.stack, this.channels[msg.arguments[0]].name.toLowerCase());
+            }
           }
         } else if(trigger == "heaps") {
           if(this.heap.length > 0) {
@@ -286,10 +290,14 @@ Server.prototype.onMessage = function (msg) {
                 msgHandler.callback.apply(this, [this, this.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase(), match, msg.arguments[1], msg.orig]);
               } catch(err) {
                 this.sendHeap(err.stack, this.channels[msg.arguments[0]].name.toLowerCase());
-                return false;
               }
             } else {
               //PM recieved
+              try {
+                msgHandler.callback.apply(this, [this, nick.toLowerCase(), nick.toLowerCase(), match, msg.arguments[1], msg.orig]);
+              } catch(err) {
+                this.sendHeap(err.stack, this.channels[msg.arguments[0]].name.toLowerCase());
+              }
             }
           }
         }
