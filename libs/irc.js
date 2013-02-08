@@ -9,6 +9,8 @@ var sys = require('util'),
 
 var existsSync = fs.existsSync || path.existsSync;
 
+var self = this;
+
 var Server = exports.Server = function (config) {
   this.initialize(config);
 };
@@ -20,7 +22,7 @@ Server.prototype.initialize = function (config) {
 
   //update this as you change the code pls.
   this.majorVersion = "1.0.7";
-  this.minorVersion = "470-git";
+  this.minorVersion = "470a-git";
 
   this.host = config.host || '127.0.0.1';
   this.port = config.port || 6667;
@@ -77,11 +79,10 @@ Server.prototype.initialize = function (config) {
    * Boot Plugins
    */
   this.plugins = [];
-  with(this) {
-    config.plugins.forEach(function(plugin) {
-      loadPlugin(plugin);
-    });
-  };
+  self = this;
+  config.plugins.forEach(function(plugin) {
+    self.loadPlugin(plugin);
+  });
 };
 
 Server.prototype.sendHeap = function(err, send) {
@@ -89,7 +90,6 @@ Server.prototype.sendHeap = function(err, send) {
 
   var reqdata = "contents="+encodeURIComponent(err)+"&private=true&language=Plain+Text";
 
-  with(this) {
     var req = https.request({
       host: "www.refheap.com",
       port: 443,
@@ -106,9 +106,9 @@ Server.prototype.sendHeap = function(err, send) {
         res.data += chunk;
       }).on("end", function() {
         var data = JSON.parse(res.data);
-        if(typeof send != "string") heap.push(data.url);
+        if(typeof send != "string") self.heap.push(data.url);
         else {
-          send(send, "Error: "+data.url);
+          self.send(send, "Error: "+data.url);
         }
       });
     }).write(reqdata);
