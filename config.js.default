@@ -1,6 +1,7 @@
 var config = {
 	host: 'irc.freenode.net', //hostname of the IRC server
 	port: 6667, //port of the IRC server 
+	autoReconnect: true, //Automatically reconnects
 	nick: 'dunnBot', //Bot nick
 	identPass: 'Bot nickserv password', //IDENTIFY password for the nick
 	username: 'dunnBot', //the username

@@ -29,6 +29,8 @@ Server.prototype.initialize = function (config) {
   this.database = config.db || 'dunn';
   this.admins = config.admins || [];
   this.userChannels = config.channels || [];
+
+  this.reconnect = config.autoReconnect || true;
   
   // carry over config object to allow plugins to access it
   this.config = config || {};
@@ -122,16 +124,20 @@ Server.prototype.connect = function () {
     c.setTimeout(this.timeout);
 
   this.addListener('connect', this.onConnect);
-    this.addListener('data', this.onReceive);
-    this.addListener('eof', this.onEOF);
-    this.addListener('timeout', this.onTimeout);
-    this.addListener('close', this.onClose);
+  this.addListener('data', this.onReceive);
+  this.addListener('eof', this.onEOF);
+  this.addListener('timeout', this.onTimeout);
+  this.addListener('close', this.onClose);
 };
 
-Server.prototype.disconnect = function (reason) {
+Server.prototype.disconnect = function (reason, reconnect) {
     if (this.connection.readyState !== 'closed') {
         this.connection.close();
         sys.puts('disconnected (' + reason + ')');
+
+        if((typeof reconnect == "undefined" || reconnect == true) && this.reconnect) {
+          with(this) setTimeout(function(){this.connection.connect(this.port, this.host)}, 3000); //reconnect in 3 seconds
+        }
     }
 };
 
