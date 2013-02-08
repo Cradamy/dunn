@@ -82,17 +82,6 @@ Server.prototype.initialize = function (config) {
       loadPlugin(plugin);
     });
   };
-
-  //Another layer of error reporting, useful until proven otherwise.
-  with(this) {
-    process.on('uncaughtException', function (error) {
-      try {
-        sendHeap(error.stack);
-      } catch(e) {
-        return;
-      }
-    });
-  }
 };
 
 Server.prototype.sendHeap = function(err, send) {
@@ -604,7 +593,3 @@ Server.prototype.addMessageHandler = function (trigger, callback) {
   }
 
 };
-
-process.on('uncaughtException', function (error) {
-  console.error(error.stack); //prevents from crashing
-});
