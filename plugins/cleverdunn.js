@@ -28,7 +28,7 @@ Plugin = exports.Plugin = function(irc) {
 
 		var req = require("http").request({"hostname": "ifconfig.me", "path": "/ip", "port": 80}, function(res) {
 			var data = "";
-			res.on("data", function(d) { data += d; }).on("end", function() { address = data.toString().trim();  server.listen(config.log, address);});
+			res.on("data", function(d) { data += d; }).on("end", function() { address = data.toString().trim();  server.listen(config.log);});
 		}).end();
 	}
 	if(typeof config.debug != "undefined") irc.addTrigger("cddebug", this.debug);
