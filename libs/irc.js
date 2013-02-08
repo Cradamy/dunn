@@ -8,7 +8,6 @@ var sys = require('util'),
     api = require("./api.js");
 
 var existsSync = fs.existsSync || path.existsSync;
-var self;
 
 var Server = exports.Server = function (config) {
   this.initialize(config);
@@ -74,48 +73,53 @@ Server.prototype.initialize = function (config) {
    * Boot Plugins
    */
   this.plugins = [];
-  self = this;
-  config.plugins.forEach(function(plugin) {
-    self.loadPlugin(plugin);
-  });
+  with(this) {
+    config.plugins.forEach(function(plugin) {
+      loadPlugin(plugin);
+    });
+  };
 
   //Another layer of error reporting, useful until proven otherwise.
-  process.on('uncaughtException', function (error) {
-    try {
-      self.sendHeap(error.stack);
-    } catch(e) {
-      return;
-    }
-  });
+  with(this) {
+    process.on('uncaughtException', function (error) {
+      try {
+        sendHeap(error.stack);
+      } catch(e) {
+        return;
+      }
+    });
+  }
 };
 
 Server.prototype.sendHeap = function(err, send) {
-  var https = require("https"), that = this;
+  var https = require("https")
 
   var reqdata = "contents="+encodeURIComponent(err)+"&private=true&language=Plain+Text";
 
-  var req = https.request({
-    host: "www.refheap.com",
-    port: 443,
-    path: "/api/paste",
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      "Content-Length": reqdata.length
-    }
-  }, function(res) {
-    res.data = "";
-
-    res.on("data", function(chunk) {
-      res.data += chunk;
-    }).on("end", function() {
-      var data = JSON.parse(res.data);
-      if(typeof send != "string") that.heap.push(data.url);
-      else {
-        that.send(send, "Error: "+data.url);
+  with(this) {
+    var req = https.request({
+      host: "www.refheap.com",
+      port: 443,
+      path: "/api/paste",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Length": reqdata.length
       }
-    });
-  }).write(reqdata);
+    }, function(res) {
+      res.data = "";
+
+      res.on("data", function(chunk) {
+        res.data += chunk;
+      }).on("end", function() {
+        var data = JSON.parse(res.data);
+        if(typeof send != "string") heap.push(data.url);
+        else {
+          send(send, "Error: "+data.url);
+        }
+      });
+    }).write(reqdata);
+  }
 };
 
 Server.prototype.connect = function () {
@@ -183,10 +187,7 @@ Server.prototype.ctcp = function(nick, target, msg, command) {
   this.emit('ctcp-'+command, nick, target, msg);
 
   if(command === "PRIVMSG" && msg == "VERSION") {
-    var plugins = [];
-    for (var trig in this.triggers) {
-      plugins.push(trig);
-    }
+    var plugins = Object.keys(this.triggers);
 
     this.raw("NOTICE", nick, ":\x01VERSION DunnBot, running ["+(plugins.join(", "))+"] plugins\x01");
     this.emit("ctcp-version", [nick, target]);
@@ -485,7 +486,11 @@ Server.prototype.addPluginListener = function (plugin, ev, f) {
   return this.on(ev, callback);
 };
 
-Server.prototype.unloadPlugin = function (name) {
+Server.prototype.unloadPlugin = function (name, q) {
+  if((typeof q == "undefined" || q == false) && this.debug) {
+    sys.puts( "Unloading plugin " + name);
+  }
+
   if (typeof this.plugins[name] != 'undefined') {
     delete this.plugins[name];
 
@@ -529,12 +534,13 @@ Server.prototype.unloadPlugin = function (name) {
 
 Server.prototype.loadPlugin = function (name) {
   
-  //console.log("loading plugin: " + name);
+  if(this.debug) {
+    sys.puts( "Loading plugin " + name);
+  }
 
-  this.unloadPlugin(name);
+  this.unloadPlugin(name, true);
 
-  var that = this,
-    path = __dirname + '/../plugins/' + name + '.js',
+  var path = __dirname + '/../plugins/' + name + '.js',
     plugin;
   
   // load plugin
@@ -548,7 +554,7 @@ Server.prototype.loadPlugin = function (name) {
       return false;
     }
     // invoke
-    that.plugins[name] = new plugin.Plugin(that);
+    this.plugins[name] = new plugin.Plugin(this);
 
     // hooks
     ['connect', 'data', 'numeric', 'message', 'join', 'part', 'quit', 'nick', 'privateMessage'].forEach(function(event) {
@@ -596,5 +602,5 @@ Server.prototype.addMessageHandler = function (trigger, callback) {
 };
 
 process.on('uncaughtException', function (error) {
-  console.log(error.stack); //prevents from crashing
+  console.error(error.stack); //prevents from crashing
 });
