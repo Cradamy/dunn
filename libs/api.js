@@ -1,7 +1,7 @@
 try {
-	var mongo = require("mongojs");
+	var mongojs = require("mongojs").connect;
 } catch(e) {
-	var mongo = undefined;
+	var mongojs = undefined;
 }
 
 var self = undefined;
@@ -15,6 +15,7 @@ Api.prototype.Error = function(msg) {
 
 Api.prototype.boot = function(irc) {
 	this.irc = irc;
+	this.mongo = mongojs(irc.database);
 
 	self = this;
 	irc.on("ctcp", this.event.ctcp);
@@ -190,8 +191,13 @@ Api.prototype.remove = Api.prototype.rm = {
 Api.prototype.unbind = Api.prototype.removeListener = Api.prototype.rm.hook;
 
 
-Api.prototype.requestDB = function(/**/) {
-	if(mongo) return mongo(self.irc.database, Array.prototype.slice.call(arguments));
+Api.prototype.requestDB = Api.prototype.database = function(/**/) {
+	if(mongojs) { //Rather than open 10 connections for 10 plugins, open one connection and keep requesting collections.
+		var c = Array.prototype.slice.call(arguments);
+		while(c.length) self.mongo.collection(c.shift());
+		return self.mongo
+	}
+
 	else return null;
 };
 
