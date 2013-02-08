@@ -565,7 +565,7 @@ Server.prototype.loadPlugin = function (name) {
         this.addPluginListener(name, event, callback);
       }
 
-    }, that);
+    }, this);
 
     return true;
   }
