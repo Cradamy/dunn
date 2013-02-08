@@ -90,30 +90,29 @@ Server.prototype.sendHeap = function(err, send) {
 
   var reqdata = "contents="+encodeURIComponent(err)+"&private=true&language=Plain+Text";
 
-    var req = https.request({
-      host: "www.refheap.com",
-      port: 443,
-      path: "/api/paste",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Content-Length": reqdata.length
-      }
-    }, function(res) {
-      res.data = "";
+  var req = https.request({
+    host: "www.refheap.com",
+    port: 443,
+    path: "/api/paste",
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Content-Length": reqdata.length
+    }
+  }, function(res) {
+    res.data = "";
 
-      res.on("data", function(chunk) {
-        res.data += chunk;
-      }).on("end", function() {
-        var data = JSON.parse(res.data);
-        if(typeof send != "string") self.heap.push(data.url);
-        else {
-          self.send(send, "Error: "+data.url);
-        }
-      });
-    }).write(reqdata);
-  }
-};
+    res.on("data", function(chunk) {
+      res.data += chunk;
+    }).on("end", function() {
+      var data = JSON.parse(res.data);
+      if(typeof send != "string") self.heap.push(data.url);
+      else {
+        self.send(send, "Error: "+data.url);
+      }
+    });
+  }).write(reqdata);
+}
 
 Server.prototype.connect = function () {
   var c = this.connection = net.createConnection(this.port, this.host);
