@@ -132,7 +132,11 @@ Server.prototype.disconnect = function (reason, reconnect) {
         sys.puts('disconnected (' + reason + ')');
 
         if((typeof reconnect == "undefined" || reconnect == true) && this.reconnect) {
-          with(this) setTimeout(function(){this.connection.connect(this.port, this.host)}, 3000); //reconnect in 3 seconds
+
+          var port = this.port, host = this.host, conn = this.connection, reconnect = function() {
+            conn.connect(port, host);
+          };
+          setTimeout(reconnect, 3000); //reconnect in 3 seconds;
         }
     }
 };

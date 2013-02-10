@@ -88,7 +88,7 @@ User.prototype.part = function(/* string or Channel object */ channel) {
             delete allchans[channel];
         }
     }
-    console.log(chan.users.join(' '));
+    // console.log(chan.users.join(' '));
     if (this.channels.length === 0 && this.nick !== irc.nick) {
         delete allusers[this.nick];
     }
