@@ -3,16 +3,16 @@ Dunn
 
 Open source Node.js powered IRC bot for #webtech on freenode.
 
-Author
+Authors
 -----
 * [Killswitch](http://github.com/killswitch)
+* [Aaron Ahmed](http://github.com/Polar-bear)
 
 Contributors
 -----
 * [Conrad Pankoff](http://www.fknsrs.biz/)
 * [Naomi Kyoto](http://github.com/naomik)
 * [Jonathan Ardis](http://github.com/Emn1ty)
-* [Aaron Ahmed](http://github.com/draceros)
 * [Carlos Cardona](http://github.com/cgcardona)
 * [Olli K](http://github.com/gildean)
 
