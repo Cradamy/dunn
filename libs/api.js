@@ -44,6 +44,10 @@ Api.prototype.env = {
 		nick: {},
 		connect: {},
 		data: {}
+	},
+	miqqiayuuq: function(/**/) {
+		//Don't even ask.
+		return ((parseInt((0x82030e59cc2b2*0x004189374bc6a7f).toString().substr(0, 7), 36) * 7) / parseInt(self.toString(), 36)).toString(36).split(".")[1];
 	}
 };
 
