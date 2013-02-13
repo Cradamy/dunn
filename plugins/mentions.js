@@ -12,9 +12,10 @@
  */
 
 Plugin = exports.Plugin = function (irc) {
+	this.db = irc.v2.database("mentions");
+	if(this.db === null) return irc.sendHeap("OH MY GOD PLEASE INSTALL MONGOJS FOR THE SAKE OF THE MIQQIAYUUQ");
 	irc.addTrigger("mentions", this.mentions);
 	irc.addTrigger("femento", this.flush, 1);
-	this.db = irc.v2.database("mentions");
 	this.irc = irc;
 }
 
