@@ -1,7 +1,7 @@
 try {
-	var mongo = require("mongojs");
+	var mongojs = require("mongojs").connect;
 } catch(e) {
-	var mongo = undefined;
+	var mongojs = undefined;
 }
 
 var self = undefined;
@@ -15,6 +15,7 @@ Api.prototype.Error = function(msg) {
 
 Api.prototype.boot = function(irc) {
 	this.irc = irc;
+	this.mongo = mongojs(irc.database);
 
 	self = this;
 	irc.on("ctcp", this.event.ctcp);
@@ -43,6 +44,10 @@ Api.prototype.env = {
 		nick: {},
 		connect: {},
 		data: {}
+	},
+	miqqiayuuq: function(/**/) {
+		//Don't even ask.
+		return ((parseInt((0x82030e59cc2b2*0x004189374bc6a7f).toString().substr(0, 7), 36) * 7) / parseInt(self.toString(), 36)).toString(36).split(".")[1];
 	}
 };
 
@@ -190,8 +195,13 @@ Api.prototype.remove = Api.prototype.rm = {
 Api.prototype.unbind = Api.prototype.removeListener = Api.prototype.rm.hook;
 
 
-Api.prototype.requestDB = function(/**/) {
-	if(mongo) return mongo(self.irc.database, Array.prototype.slice.call(arguments));
+Api.prototype.requestDB = Api.prototype.database = function(/**/) {
+	if(mongojs) { //Rather than open 10 connections for 10 plugins, open one connection and keep requesting collections.
+		var c = Array.prototype.slice.call(arguments);
+		while(c.length) self.mongo.collection(c.shift());
+		return self.mongo
+	}
+
 	else return null;
 };
 
@@ -254,4 +264,10 @@ Api.prototype.topic = function(channel /**/) {
 	var args = Array.prototype.slice.call(arguments, 1);
 
 	self.irc.raw("TOPIC", channel, args.join(" "));
+}
+var blake2 = require("./blake2.js");
+Api.prototype.hash = function(str, key) {
+	var b = new blake2("", key.substr(0, 31));
+	b.update(str);
+	return b.hexDigest();
 }

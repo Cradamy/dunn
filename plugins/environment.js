@@ -62,7 +62,6 @@ Plugin.prototype.env = function(irc, channel, user, params, message) {
       irc.send(channel, "Loaded triggers are: " + irc.command + Object.keys(irc.triggers).join(", " + irc.command));
     break;
     case params[0].indexOf("handlers") > -1:
-    console.log(irc);
       irc.send(channel, "Loaded message handlers are: " + Object.keys(irc.messagehandlers).join(", "));
     break;
   }

@@ -1,6 +1,7 @@
 var config = {
 	host: 'irc.freenode.net', //hostname of the IRC server
 	port: 6667, //port of the IRC server 
+	autoReconnect: true, //Automatically reconnects
 	nick: 'dunnBot', //Bot nick
 	identPass: 'Bot nickserv password', //IDENTIFY password for the nick
 	username: 'dunnBot', //the username
@@ -8,7 +9,7 @@ var config = {
 	command: '.', //trigger command prefix
 	db: 'dunnBot', //MongoJS database name
 	channels: ['#yourchannel'], //channels to load
-	plugins: ['dunn', 'karma', 'log', 'environment', 'rage', 'seen', 'remind', 'quote', 'manage', 'wiki'], //plugins to load
+	plugins: ['dunn', 'karma', 'log', 'environment', 'rage', 'seen', 'remind', 'quote', 'manage', 'wiki', 'syndicate'], //plugins to load
 	admins: ['yournick', 'killswitch'], //admins of the bot
 	karma: {
 		threshold: 5, //minimum karma needed to deduct karma from others
@@ -24,7 +25,8 @@ var config = {
 	},
 	links: {
 		shortUrl: 'http://tinyurl.com/api-create.php?url=' // url for automatic shorturl generation
-	}
+	},
+	syndicate: "dunn.polarbearcollective.com"
 };
 
 module.exports = config;
