@@ -10,10 +10,9 @@
  *
  */
 
-var wiki = function (irc) {
+var qs = require('querystring');
+var Wiki = function (irc) {
     "use strict";
-    var http = require('http');
-    var qs = require('querystring');
     var trigger = 'wiki';
     var mesLen = trigger.length + irc.command.length + 1;
     var limit = (irc.config.wiki && irc.config.wiki.limit) ? parseInt(irc.config.wiki.limit) : 5;
@@ -66,23 +65,13 @@ var wiki = function (irc) {
                     path: qPath,
                     headers: {'user-agent': 'Mozilla/5.0'},
                 };
-                var req = http.request(options, function (res) {
-                    var answer = '';
-                    res.setEncoding('utf8');
-                    res.on('data', function (chunk) {
-                        answer += chunk;
-                    });
-                    res.on('error', function (err) {
-                        cb(err.message, null);
-                    });
-                    res.on('end', function () {
+                var req = irc.httpGet(options, function (err, answer) {
+                    if (!err && answer) {
                         cb(null, answer);
-                    });
+                    } else {
+                        cb(err.message, null);
+                    }
                 });
-                req.on('error', function (err) {
-                    cb(err.message, null);
-                });
-                req.end();
             } else {
                 cb('Search the wikipedia i.e. \'' + irc.command + trigger + ' traumatic insemination\' ', null);
             }
@@ -93,4 +82,4 @@ var wiki = function (irc) {
     irc.addTrigger(trigger, question);
 };
 
-exports.Plugin = wiki;
+exports.Plugin = Wiki;

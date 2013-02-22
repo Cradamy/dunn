@@ -21,6 +21,9 @@ var config = {
 	},
 	wiki: {
 		limit: 5 // limits the number of links returned from a wikipedia search
+	},
+	links: {
+		shortUrl: 'http://tinyurl.com/api-create.php?url=' // url for automatic shorturl generation
 	}
 };
 

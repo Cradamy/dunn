@@ -5,6 +5,7 @@ var sys = require('util'),
     path = require('path'),
     user = require ('./user.js' ),
     channel = require('./channel.js'),
+    httpGet = require('./httpget'),
     api = require("./api.js");
 
 var existsSync = fs.existsSync || path.existsSync;
@@ -29,6 +30,7 @@ Server.prototype.initialize = function (config) {
   this.database = config.db || 'dunn';
   this.admins = config.admins || [];
   this.userChannels = config.channels || [];
+  this.httpGet = httpGet;
   
   // carry over config object to allow plugins to access it
   this.config = config || {};
