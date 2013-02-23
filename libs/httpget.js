@@ -33,6 +33,7 @@
   */
 
 var http = require('http');
+var url = require('url');
 var https = require('https');
 
 /*
@@ -41,22 +42,38 @@ var https = require('https');
 
 module.exports = function (options, cb) {
     "use strict";
+    var getHost = (typeof(options) === 'string') ? url.parse(options).hostname : options.hostname || options.host;
+    var i = 0;
     var hGet;
     if (typeof(options) === 'string' && options.toLowerCase().indexOf('s') === 4 || typeof(options) === 'object' && options.port === 443) {
         hGet = https.get;
     } else {
         hGet = http.get;
     }
-    var req = hGet(options, function (res) {
-        var data = '';
-        res.on('data', function (chunk) {
-            data += chunk;
+    (function req(options) {
+        hGet(options, function (res) {
+            // Detect a redirect
+            if (res.statusCode > 300 && res.statusCode < 400 && res.headers.location && i < 5) {
+                i += 1;
+                if (url.parse(res.headers.location).hostname) {
+                    req(res.headers.location);
+                } else {
+                    req(getHost + res.headers.location);
+                }
+            } else if (i === 5) {
+                return cb(new Error('Redirect loop'), null);
+            } else {
+                var data = '';
+                res.on('data', function (chunk) {
+                    data += chunk;
+                }).on('error', function (err) {
+                    return cb(err, null);
+                }).on('end', function () {
+                    return cb(null, data);
+                });
+            }
         }).on('error', function (err) {
             return cb(err, null);
-        }).on('end', function () {
-            return cb(null, data);
         });
-    }).on('error', function (err) {
-        return cb(err, null);
-    });
+    }(options));
 };
