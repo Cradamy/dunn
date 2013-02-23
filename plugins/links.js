@@ -29,7 +29,7 @@ function Links(irc) {
     }
     
     function parseTitle(response, message, channel, shortLink) {
-        var title = message.match(titleRegex)[0].replace('<title>', '').replace('</title>', '');
+        var title = (message.match(titleRegex)) ? message.match(titleRegex)[0].replace('<title>', '').replace('</title>', '') : '';
         var data = (response.statusCode > 299) ? 'Error ' + response.statusCode + ' ' + title : title;
         var msg = (shortLink) ? data + ' || ' + shortLink : data;
         self.emit('sendToIrc', null, msg, channel);
