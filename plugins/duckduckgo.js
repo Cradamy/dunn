@@ -79,7 +79,7 @@ function Ddg(irc) {
                     }
                 });
             } else {
-                cb('DuckDuckGo e.g. \'' + irc.command + trigger + ' define google\' or \'' + irc.command + trigger + ' !ddg google\'', null);
+                cb('DuckDuckGo e.g. \'' + irc.command + trigger + ' define google\' or \'' + irc.command + trigger + ' 10+20*50\'', null);
             }
         }(message, handleAnswer));
 
