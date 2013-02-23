@@ -23,7 +23,7 @@ Server.prototype.initialize = function (config) {
 
   //update this as you change the code pls.
   this.majorVersion = "1.0.7";
-  this.minorVersion = "470a-git";
+  this.minorVersion = "c9ac55f-git";
 
   this.host = config.host || '127.0.0.1';
   this.port = config.port || 6667;
