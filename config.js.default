@@ -9,7 +9,7 @@ var config = {
 	command: '.', //trigger command prefix
 	db: 'dunnBot', //MongoJS database name
 	channels: ['#yourchannel'], //channels to load
-	plugins: ['dunn', 'karma', 'log', 'environment', 'rage', 'seen', 'remind', 'quote', 'manage', 'wiki', 'syndicate'], //plugins to load
+	plugins: ['dunn', 'karma', 'log', 'environment', 'rage', 'seen', 'remind', 'quote', 'manage', 'wiki', 'duckduckgo', syndicate'], //plugins to load
 	admins: ['yournick', 'killswitch'], //admins of the bot
 	karma: {
 		threshold: 5, //minimum karma needed to deduct karma from others
