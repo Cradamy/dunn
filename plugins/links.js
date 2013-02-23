@@ -40,7 +40,7 @@ function Links(irc) {
             if (!err && answer) {
                 self.emit('gotTitle', response, answer, channel, shortLink);
             } else {
-                self.emit('sendToIrc', err, null, channel);
+                self.emit('sendToIrc', err.message, null, channel);
             }
         });
     }
@@ -50,7 +50,7 @@ function Links(irc) {
             if (!err && answer) {
                 self.emit('getPageTitle', message, channel, answer);
             } else {
-                self.emit('sendToIrc', err, null, channel);
+                self.emit('sendToIrc', err.message, null, channel);
             }
         });
     }
