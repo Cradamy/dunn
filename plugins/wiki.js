@@ -65,7 +65,7 @@ var Wiki = function (irc) {
                     path: qPath,
                     headers: {'user-agent': 'Mozilla/5.0'},
                 };
-                var req = irc.httpGet(options, function (err, answer) {
+                var req = irc.httpGet(options, function (err, response, answer) {
                     if (!err && answer) {
                         cb(null, answer);
                     } else {

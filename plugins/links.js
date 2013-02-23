@@ -12,7 +12,8 @@
 
 var util = require('util');
 var events = require('events');
-var Links = function (irc) {
+
+function Links(irc) {
     "use strict";
     var shortUrl = (irc.config.links && irc.config.links.shortUrl) ? irc.config.links.shortUrl : null;
     var self = this;
@@ -27,28 +28,29 @@ var Links = function (irc) {
         }
     }
     
-    function parseTitle(message, channel, shortLink) {
+    function parseTitle(response, message, channel, shortLink) {
         var title = message.match(titleRegex)[0].replace('<title>', '').replace('</title>', '');
-        var msg = (shortLink) ? title + ' || ' + shortLink : title;
+        var data = (response.statusCode > 299) ? 'Error ' + response.statusCode + ' ' + title : title;
+        var msg = (shortLink) ? data + ' || ' + shortLink : data;
         self.emit('sendToIrc', null, msg, channel);
     }
 
     function getPageTitle(message, channel, shortLink) {
-        var req = irc.httpGet(message, function (err, answer) {
+        var req = irc.httpGet(message, function (err, response, answer) {
             if (!err && answer) {
-                self.emit('gotTitle', answer, channel, shortLink);
+                self.emit('gotTitle', response, answer, channel, shortLink);
             } else {
-                self.emit('sendToIrc', err.message, null, channel);
+                self.emit('sendToIrc', err, null, channel);
             }
         });
     }
 
     function getShort(message, channel, shortU) {
-        var req = irc.httpGet(shortU + message, function (err, answer) {
+        var req = irc.httpGet(shortU + message, function (err, response, answer) {
             if (!err && answer) {
                 self.emit('getPageTitle', message, channel, answer);
             } else {
-                self.emit('sendToIrc', err.message, null, channel);
+                self.emit('sendToIrc', err, null, channel);
             }
         });
     }
@@ -57,21 +59,21 @@ var Links = function (irc) {
         var message = msg.arguments[1].match(urlRegex);
         if (message) {
             var channel = msg.arguments[0];
-            message.forEach(function (url) {
+            message.forEach(function (uri) {
                 if (shortUrl) {
-                    self.emit('getShort', url.trim(), channel, shortUrl);
+                    self.emit('getShort', uri.trim(), channel, shortUrl);
                 } else {
-                    self.emit('getPageTitle', url.trim(), channel, null);
+                    self.emit('getPageTitle', uri.trim(), channel, null);
                 }
             });
         }
-    }
+    };
 
     this.on('getShort', getShort)
         .on('getPageTitle', getPageTitle)
         .on('gotTitle', parseTitle)
         .on('sendToIrc', sendToIrc);
-};
+}
 
 util.inherits(Links, events.EventEmitter);
 exports.Plugin = Links;
