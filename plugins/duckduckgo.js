@@ -30,15 +30,11 @@ function Ddg(irc) {
         }
 
         function sendToIrc(err, links) {
-            if (!err) {
-                irc.send(channel, nick + ': ' + links);
-            } else {
-                irc.send(channel, nick + ': ' + err);
-            }
+            return irc.send(channel, nick + ': ' + ((!err) ? links : err));
         }
         
-        function getLinksFromAnswer(answer, query, cb) {
-            var json = isValidJson(answer);
+        function getDataFromJson(jsonn, query, cb) {
+            var json = isValidJson(jsonn);
             if (json) {
                 var abstractText = (json.AbstractText) ? json.AbstractText + ' || ' : '';
                 var abstractSource = (json.AbstractSource && json.AbstractUrl) ? json.AbstractSource + ': ' + json.AbstractUrl + ' || ' : '';
@@ -49,17 +45,17 @@ function Ddg(irc) {
                 if (links === '') {
                     links = 'https://duckduckgo.com/?q=' + query + '    ';
                 }
-                cb(null, links.substring(0, links.length - 4));
+                return cb(null, links.substring(0, links.length - 4));
             } else {
-                cb('No valid answer', null);
+                return cb('No valid answer', null);
             }
         }
 
         function handleAnswer(err, answer, query) {
             if (!err) {
-                getLinksFromAnswer(answer, query, sendToIrc);
+                return getDataFromJson(answer, query, sendToIrc);
             } else {
-                sendToIrc(err);
+                return sendToIrc(err);
             }
         }
 
@@ -73,13 +69,13 @@ function Ddg(irc) {
                 };
                 var req = irc.httpGet(options, function (err, res, json) {
                     if (!err) {
-                        cb(null, json, msg);
+                        return cb(null, json, msg);
                     } else {
-                        cb(err.message, null);
+                        return cb(err.message, null);
                     }
                 });
             } else {
-                cb('DuckDuckGo e.g. \'' + irc.command + trigger + ' define google\' or \'' + irc.command + trigger + ' 10+20*50\'', null);
+                return cb('DuckDuckGo e.g. \'' + irc.command + trigger + ' define google\' or \'' + irc.command + trigger + ' 10+20*50\'', null);
             }
         }(message, handleAnswer));
 
