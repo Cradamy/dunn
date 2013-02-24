@@ -40,7 +40,7 @@ var Wiki = function (irc) {
             var links = '';
             if (json && json.length > 1 && json[1].length > 0) {
                 json[1].forEach(function (link) {
-                    links += link + ': http://en.wikipedia.org/wiki/' + qs.escape(link.replace(' ', '_')) + ' || ';
+                    links += link + ': http://en.wikipedia.org/wiki/' + qs.escape(link.replace(/ /g, '_')) + ' || ';
                 });
                 cb(null, links.substring(0, links.length - 4));
             } else {
