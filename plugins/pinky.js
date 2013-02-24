@@ -10,7 +10,7 @@
  *
  */
  
-Plugin = exports.Plugin = function (irc) {
+var Plugin = module.exports = function (irc) {
   irc.addMessageHandler("are you thinking what i am thinking?", this.pinky);
   irc.addMessageHandler("are you thinking what i'm thinking?", this.pinky);
   irc.addMessageHandler("are you thinking what im thinking?", this.pinky);

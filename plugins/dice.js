@@ -80,4 +80,4 @@ var Dice = function (irc) {
 
 util.inherits(Dice, events.EventEmitter);
 
-exports.Plugin = Dice;
+module.exports = Dice;

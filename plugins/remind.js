@@ -17,7 +17,7 @@ var mongodb =		require('mongojs'),
 		timerMS =		1000; //how frequently to fetch and send messages
 
 		
-Plugin = exports.Plugin = function (irc) {
+var Plugin = module.exports = function (irc) {
   irc.addTrigger(trigger, this.remind);
   this.irc = irc;
   this.db = mongodb.connect(irc.database);

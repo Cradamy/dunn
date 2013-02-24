@@ -6,7 +6,7 @@
  *
  */
 
-Plugin = exports.Plugin = function (irc) {
+var Plugin = module.exports = function (irc) {
   //lolololololololol
 };
 

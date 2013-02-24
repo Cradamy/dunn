@@ -11,7 +11,7 @@
  *
  */
 
-Plugin = exports.Plugin = function(irc) {
+var Plugin = module.exports = function(irc) {
   this.irc = irc;
   this.irc.addTrigger('g', this.google);
   this.irc.addTrigger('gi', this.image);

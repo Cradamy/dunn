@@ -12,7 +12,7 @@
 
 var https = require("https");
 var self;
-Plugin = exports.Plugin = function (irc) {
+var Plugin = module.exports = function (irc) {
   irc.addTrigger('git', this.git);
   irc.addTrigger('git-issues', this.issues);
   this.pull = [];

@@ -15,7 +15,7 @@ var https = require("https"),
 		sys = require("sys"),
 		exec = require("child_process").exec;
 var updateSHA;
-Plugin = exports.Plugin = function (i) {
+var Plugin = module.exports = function (i) {
 	//console.log(__dirname + "/../.git/refs/heads/master", fs.existsSync(__dirname + "/../.git/refs/heads/master"));
 	if(fs.existsSync(__dirname + "/../.git/refs/heads/master")) {
 		updateSHA = fs.readFileSync(__dirname + "/../.git/refs/heads/master").toString().split("\n")[0];

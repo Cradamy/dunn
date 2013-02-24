@@ -10,7 +10,7 @@
  
 var mongodb = require('mongojs');
 
-Plugin = exports.Plugin = function (irc) {
+var Plugin = module.exports = function (irc) {
   this.irc = irc;
   this.db = mongodb.connect(irc.database, ['logs', 'userList']);
 };

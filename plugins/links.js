@@ -76,4 +76,4 @@ function Links(irc) {
 }
 
 util.inherits(Links, events.EventEmitter);
-exports.Plugin = Links;
+module.exports = Links;

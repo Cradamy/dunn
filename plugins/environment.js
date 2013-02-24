@@ -8,7 +8,7 @@
  *
  */
 
-Plugin = exports.Plugin = function (irc) {
+var Plugin = module.exports = function (irc) {
   irc.addTrigger('plugins', this.plugins);
   irc.addTrigger('triggers', this.triggers);
   irc.addTrigger('env', this.env);

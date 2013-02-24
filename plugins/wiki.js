@@ -82,4 +82,4 @@ var Wiki = function (irc) {
     irc.addTrigger(trigger, question);
 };
 
-exports.Plugin = Wiki;
+module.exports = Wiki;

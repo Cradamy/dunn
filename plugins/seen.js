@@ -12,7 +12,7 @@
 var mongodb = require('mongojs'),
     howLong = require('../libs/ago.js');
  
-Plugin = exports.Plugin = function (irc) {
+var Plugin = module.exports = function (irc) {
   this.irc = irc;
   this.db = mongodb.connect(irc.database, ['logs']);
   this.irc.addTrigger('seen', this.seen);

@@ -84,4 +84,4 @@ function Ddg(irc) {
     irc.addTrigger(trigger, question);
 }
 
-exports.Plugin = Ddg;
+module.exports = Ddg;

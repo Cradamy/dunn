@@ -18,7 +18,7 @@ Date.prototype.KarmaLimit = function () {
   return this;
 }
 
-Plugin = exports.Plugin = function (irc) {
+var Plugin = module.exports = function (irc) {
   this.config = irc.config.karma || {threshold: 5, trackNickChanges: false};
 
   irc.addTrigger('karma', this.karma);

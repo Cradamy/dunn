@@ -334,4 +334,4 @@ var Quote = function (irc) {
 
 util.inherits(Quote, events.EventEmitter);
 
-exports.Plugin = Quote;
+module.exports = Quote;

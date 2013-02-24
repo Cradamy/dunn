@@ -11,7 +11,7 @@
  * @Tested        0
  */
 
-Plugin = exports.Plugin = function (irc) {
+var Plugin = module.exports = function (irc) {
 	this.db = irc.v2.database("mentions");
 	if(this.db === null) return irc.sendHeap("OH MY GOD PLEASE INSTALL MONGOJS FOR THE SAKE OF THE MIQQIAYUUQ");
 	irc.addTrigger("mentions", this.mentions);

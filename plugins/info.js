@@ -10,7 +10,7 @@
  *
  */
 
-Plugin = exports.Plugin = function (irc) {
+var Plugin = module.exports = function (irc) {
   irc.addTrigger('info', this.pull);
   irc.addTrigger('info-reparse', this.parsePlugins);
   this.irc = irc;

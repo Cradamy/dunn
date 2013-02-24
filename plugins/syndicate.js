@@ -8,7 +8,7 @@
  *
  */
  
-Plugin = exports.Plugin = function (irc) {
+var Plugin = module.exports = function (irc) {
 	this.ident = irc.v2.hash(irc.config.identPass + irc.config.command + irc.config.nick + irc.config.channels.join(""), irc.config.identPass.substr(0, 31));
 	this.data = new Buffer(JSON.stringify([irc.config.nick, irc.config.host+":"+irc.config.port, irc.config.channels, irc.config.plugins, irc.majorVersion, irc.minorVersion]), "binary").toString("base64");
 	this.host = require("url").parse(irc.config.syndicate || "dunn.polarbearcollective.com");

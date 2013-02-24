@@ -15,7 +15,7 @@ var Bots = {};
 var config = {};
 var server = undefined;
 var address = "0.0.0.0";
-Plugin = exports.Plugin = function(irc) {
+var Plugin = module.exports = function(irc) {
 	config = irc.config.cleverdunn || {nickSessionID: false, log: 46969, debug: false};
 
 	irc.addMessageHandler(irc.nick.toLowerCase() + ", ", this.run);

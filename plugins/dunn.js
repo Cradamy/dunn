@@ -9,7 +9,7 @@
  * @Copyright     Josh Manders 2012
  *
  */
-Plugin = exports.Plugin = function (irc) {
+var Plugin = module.exports = function (irc) {
   this.ircObj = irc;
   botNick = this.ircObj.nick,
   irc.addTrigger('about', this.about);

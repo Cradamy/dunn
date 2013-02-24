@@ -9,7 +9,7 @@
  *
  */
 
-Plugin = exports.Plugin = function (irc) {
+var Plugin = module.exports = function (irc) {
   irc.addTrigger('manager', this.manager, 1);
 };
 

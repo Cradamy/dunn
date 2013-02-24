@@ -10,7 +10,7 @@
  *
  */
  
-Plugin = exports.Plugin = function (irc) {
+var Plugin = module.exports = function (irc) {
   irc.addMessageHandler("what's up", this.sup);
   irc.addMessageHandler("whats up", this.sup);
   irc.addMessageHandler("what is up", this.sup);

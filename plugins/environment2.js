@@ -7,7 +7,7 @@
  *
  */
 
-var Plugin = exports.Plugin = function(irc) {
+var Plugin = module.exports = function(irc) {
   // irc.addTrigger("env", this.env)
 };
 

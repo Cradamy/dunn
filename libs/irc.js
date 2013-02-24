@@ -549,20 +549,20 @@ Server.prototype.loadPlugin = function (name) {
   this.unloadPlugin(name, true);
 
   var path = __dirname + '/../plugins/' + name + '.js',
-    plugin;
+    Plugin;
   
   // load plugin
   if (existsSync(path)) {
 
     // require
     try {
-      plugin = require(path);
+      Plugin = require(path);
     } catch(err) {
       this.sendHeap(err.stack);
       return false;
     }
     // invoke
-    this.plugins[name] = new plugin.Plugin(this);
+    this.plugins[name] = new Plugin(this);
 
     // hooks
     ['connect', 'data', 'numeric', 'message', 'join', 'part', 'quit', 'nick', 'privateMessage'].forEach(function(event) {
