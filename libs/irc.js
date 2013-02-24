@@ -563,14 +563,13 @@ Server.prototype.loadPlugin = function (name) {
     }
     // invoke
     this.plugins[name] = new Plugin(this);
-
     // hooks
-    ['connect', 'data', 'numeric', 'message', 'join', 'part', 'quit', 'nick', 'privateMessage'].forEach(function(event) {
-      var onEvent = 'on' + event.charAt(0).toUpperCase() + event.substr(1),
-        callback = this.plugins[name][onEvent];
+    var onEvents = ['onConnect', 'onData', 'onNumeric', 'onMessage', 'onJoin', 'onPart', 'onQuit', 'onNick', 'onPrivateMessage'];
+    onEvents.forEach(function (onEvent) {
+      var callback = this.plugins[name][onEvent];
 
       if (typeof callback === 'function') {
-        this.addPluginListener(name, event, callback);
+        this.addPluginListener(name, onEvent.substring(2).toLowerCase(), callback);
       }
 
     }, this);

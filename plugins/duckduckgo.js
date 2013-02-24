@@ -36,8 +36,8 @@ function Ddg(irc) {
         function getDataFromJson(jsonn, query, cb) {
             var json = isValidJson(jsonn);
             if (json) {
-                var abstractText = (json.AbstractText) ? json.AbstractText + ' || ' : '';
-                var abstractSource = (json.AbstractSource && json.AbstractUrl) ? json.AbstractSource + ': ' + json.AbstractUrl + ' || ' : '';
+                var abstractText = (json.AbstractText) ? (json.AbstractText.replace(/\n/ig, '').replace(/<pre>.+?<\/pre>/ig, '')) + ' || ' : '';
+                var abstractSource = (json.AbstractSource && json.AbstractURL) ? json.AbstractSource + ': ' + json.AbstractURL + ' || ' : '';
                 var answerText = (json.Answer) ? json.Answer + ' || ' : '';
                 var definitionText = (json.DefinitionText && json.DefinitionURL) ? 'Definition ( ' + json.DefinitionURL + ' ): ' + json.DefinitionText + ' || ' : '';
                 var redirect = (json.Redirect) ? url.resolve('https://duckduckgo.com', json.Redirect) + ' || ' : '';
