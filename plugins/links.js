@@ -22,9 +22,9 @@ function Links(irc) {
 
     function sendToIrc(err, title, channel) {
         if (!err && title) {
-            irc.send(channel, title);
+            return irc.send(channel, title);
         } else {
-            irc.send(channel, err || 'Error getting link title');
+            return irc.send(channel, err || 'Error getting link title');
         }
     }
     

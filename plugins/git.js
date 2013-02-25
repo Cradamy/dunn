@@ -23,32 +23,34 @@ var Plugin = module.exports = function (irc) {
 };
 
 Plugin.prototype.issues = function(irc, channel, nick, params, message) {
-	var num = parseInt(params[0]);
-	if(params[0] == "issues") num = parseInt(params[1]) || 0;
+	var num;
+	if (params[0] === "issues") {
+		num = parseInt(params[1]) || 0;
+	} else {
+		num = parseInt(params[0]);
+	}
 
-	var req = https.request(require("url").parse("https://api.github.com/repos/killswitch/dunn/issues"), function(res) {
-		var data = "";
-		res.on("data", function(d) { data += d; }).
-			  on("end", function() {
-			  	data = JSON.parse(data);
-			  	if(data.length) {
-			  		if(data.length < num) num = data.length;
-			  		if(num == 0) num = data.length;
+	var req = irc.httpGet("https://api.github.com/repos/killswitch/dunn/issues", function (err, res, json) {
+		if (!err) {
+	  	    var data = irc.isValidJson(json);
+		  	if (data && data.length) {
+		  		if (data.length < num) num = data.length;
+		  		if (num == 0) num = data.length;
 
-			  		data = data.reverse();
+		  		data = data.reverse();
 
-			  		while(num > 0) {
-			  			var issue = data[num-1];
-			  			irc.send(channel, "Issue "+issue.number+"; "+issue.title+" "+issue.url);
-			  			num--;
-			  		} 
-			  	} else {
-			  		irc.send(channel, "No issues");
-			  	}
-			  });
-	}).on("error", function(e) {
-		irc.sendHeap(e, channel);
-	}).end();
+		  		while(num > 0) {
+		  			var issue = data[num-1];
+		  			irc.send(channel, "Issue "+issue.number+"; "+issue.title+" "+issue.url);
+		  			num--;
+		  		} 
+		  	} else {
+		  		irc.send(channel, "No issues");
+		  	}
+		} else {	
+			irc.sendHeap(err, channel);
+		}
+	});
 }
 
 Plugin.prototype.pullMonitor = function() {
@@ -61,25 +63,27 @@ Plugin.prototype.pullMonitor = function() {
 
 
 Plugin.prototype.pull = function(irc, channel) {
-	var req = https.request(require("url").parse("https://api.github.com/repos/killswitch/dunn/pulls"), function(res) {
-		var data = "";
-		res.on("data", function(d) { data += d; }).
-			  on("end", function() {
-			  	data = JSON.parse(data);
+	var req = irc.httpGet("https://api.github.com/repos/killswitch/dunn/pulls", function (err, res, json) {
+		if (!err) {
+		  	var data = irc.isValidJson(json);
+		  	if (data) {
 			  	while(data.length) {
 			  		var pull = data.shift();
-			  		if(self.pull[pull.number]) {
+			  		if (self.pull[pull.number]) {
 			  			data = [];
 			  			return;
 			  		} else {
-			  			irc.send(channel, "New pull: "+pull.title+" "+pull.html_url);
+			  			irc.send(channel, "New pull: " + pull.title + " " + pull.html_url);
 			  			data.push(pull.number);
 			  		}
 			  	}
-			  });
-	}).on("error", function(e) {
-		irc.sendHeap(e, channel);
-	}).end();
+		  	} else {
+		  		irc.send(channel, 'Error getting data from Github');
+		  	}
+		} else {	
+			irc.sendHeap(err, channel);
+		}
+	});
 }
 
 Plugin.prototype.git = function (irc, channel, nick, params, message) {
@@ -98,16 +102,19 @@ Plugin.prototype.git = function (irc, channel, nick, params, message) {
 		break;
 
 		case "last":
-				var req = https.request(require("url").parse("https://api.github.com/repos/killswitch/dunn/commits"), function(res) {
-				var data = "";
-				res.on("data", function(d) { data += d; }).
-					  on("end", function() {
-					  	data = JSON.parse(data)[0];
-					  	irc.send(channel, data.sha.substr(0, 10)+" - "+data.commit.message+" https://github.com/killswitch/dunn/commit/"+data.sha);
-					  });
-			}).on("error", function(e) {
-				irc.sendHeap(e, irc.channel);
-			}).end();
+			var req = irc.httpGet("https://api.github.com/repos/killswitch/dunn/commits", function (err, res, json) {
+				if (!err) {
+					var data = irc.isValidJson(json);
+					if (data) {
+						var jsondata = data[0];
+						irc.send(channel, jsondata.sha.substr(0, 10) + " - " + jsondata.commit.message + " https://github.com/killswitch/dunn/commit/" + jsondata.sha);
+					} else {
+						irc.send(channel, 'Error getting data from Github');
+					}
+				} else {
+					irc.sendHeap(err, channel);
+				}
+			});
 		break;
 	}
 };

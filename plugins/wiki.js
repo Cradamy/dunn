@@ -19,14 +19,6 @@ var Wiki = function (irc) {
 
     var question = function (pla, channel, nick, par, message) {
 
-        function isValidJson(json) {
-            try {
-                return JSON.parse(json);
-            } catch (e) {
-                return false;
-            }
-        }
-
         function sendToIrc(err, links) {
             if (!err && links) {
                 irc.send(channel, nick + ': ' + links);
@@ -36,11 +28,11 @@ var Wiki = function (irc) {
         }
         
         function getLinksFromAnswer(answer, cb) {
-            var json = isValidJson(answer);
+            var json = irc.isValidJson(answer);
             var links = '';
             if (json && json.length > 1 && json[1].length > 0) {
                 json[1].forEach(function (link) {
-                    links += link + ': http://en.wikipedia.org/wiki/' + qs.escape(link.replace(' ', '_')) + ' || ';
+                    links += link + ': http://en.wikipedia.org/wiki/' + qs.escape(link.replace(/ /g, '_')) + ' || ';
                 });
                 cb(null, links.substring(0, links.length - 4));
             } else {

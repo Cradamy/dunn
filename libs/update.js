@@ -1,8 +1,8 @@
-var https = require("https"),
-        fs = require("fs"),
-        sys = require("sys"),
-        exec = require("child_process").exec;
-var irc = 0, child, self;
+var fs = require("fs"),
+    sys = require("sys"),
+    exec = require("child_process").exec,
+    irc = 0,
+    child, self;
 
 Update = exports.Update = function(i) {
     irc = i;
@@ -30,21 +30,20 @@ Update.prototype.restart = function() {
 };
 
 Update.prototype.watch = function() {
-    var req = https.request(require("url").parse("https://api.github.com/repos/killswitch/dunn/commits"), function(res) {
-        var data = "";
-        res.on("data", function(d) { data += d; }).
-              on("end", function() {
-                data = JSON.parse(data)[0];
-                if(irc.updateSHA.indexOf(data.sha) !== -1) {
-                    if(irc.updateAnnounce) {
-                        irc.send(irc.updateChannel, "New commit; "+data.sha.substr(0, 10)+" - "+data.commit.message);
-                    }
-                    self.restart();
-                } else {
-                        irc.updateTimer = setTimeout(self.watch, irc.updateInterval);
+    var req = irc.httpGet('https://api.github.com/repos/killswitch/dunn/commits', function (err, res, json) {
+        var jsondata = irc.isValidJson(json);
+        if (jsondata && jsondata.length > 0) {
+            var data = jsondata[0];
+            if (irc.updateSHA.indexOf(data.sha) !== -1) {
+                if (irc.updateAnnounce) {
+                    irc.send(irc.updateChannel, "New commit; " + data.sha.substr(0, 10) + " - " + data.commit.message);
                 }
-              });
-    }).on("error", function(e) {
-        irc.sendHeap(e, irc.updateChannel);
-    }).end();
+                self.restart();
+            } else {
+                irc.updateTimer = setTimeout(self.watch, irc.updateInterval);
+            }
+        } else {
+            irc.sendHeap('Error getting data from Github', irc.updateChannel);
+        }      
+    });
 };

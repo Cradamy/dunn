@@ -5,7 +5,9 @@ var sys = require('util'),
     path = require('path'),
     user = require ('./user' ),
     channel = require('./channel'),
+    https = require('https'),
     httpGet = require('./httpget'),
+    validjson = require('./validjson'),
     api = require("./api");
 
 var existsSync = fs.existsSync || path.existsSync;
@@ -23,7 +25,7 @@ Server.prototype.initialize = function (config) {
 
   //update this as you change the code pls.
   this.majorVersion = "1.0.7";
-  this.minorVersion = "c9ac55f-git";
+  this.minorVersion = "470a-git";
 
   this.host = config.host || '127.0.0.1';
   this.port = config.port || 6667;
@@ -36,11 +38,9 @@ Server.prototype.initialize = function (config) {
   this.admins = config.admins || [];
   this.userChannels = config.channels || [];
   this.httpGet = httpGet;
-
-
+  this.isValidJson = validjson;
   this.reconnect = config.autoReconnect || true;
 
-  
   // carry over config object to allow plugins to access it
   this.config = config || {};
 
@@ -58,7 +58,7 @@ Server.prototype.initialize = function (config) {
   this.messagehandlers = {};
   this.replies = [];
 
-  this.v2 = new api.Api(this);
+  //this.v2 = new api.Api(this);
 
   this.connection = null;
   this.buffer = "";
@@ -83,17 +83,15 @@ Server.prototype.initialize = function (config) {
    * Boot Plugins
    */
   this.plugins = [];
-  self = this;
-  config.plugins.forEach(function(plugin) {
+  var self = this;
+  config.plugins.forEach(function (plugin) {
     self.loadPlugin(plugin);
   });
 };
 
-Server.prototype.sendHeap = function(err, send) {
-  var https = require("https")
-
-  var reqdata = "contents="+encodeURIComponent(err)+"&private=true&language=Plain+Text";
-
+Server.prototype.sendHeap = function (err, send) {
+  var self = this;
+  var reqdata = "contents=" + encodeURIComponent(err) + "&private=true&language=Plain+Text";
   var req = https.request({
     host: "www.refheap.com",
     port: 443,
@@ -103,20 +101,26 @@ Server.prototype.sendHeap = function(err, send) {
       "Content-Type": "application/x-www-form-urlencoded",
       "Content-Length": reqdata.length
     }
-  }, function(res) {
+  }, function (res) {
     res.data = "";
-
-    res.on("data", function(chunk) {
+    res.on("data", function (chunk) {
       res.data += chunk;
-    }).on("end", function() {
-      var data = JSON.parse(res.data);
-      if(typeof send !== "string") self.heap.push(data.url);
-      else {
-        self.send(send, "Error: "+data.url);
+    }).on("end", function () {
+      var data = self.isValidJson(res.data);
+      if (data) {
+        if (typeof send !== "string") {
+          self.heap.push(data.url);
+        } else {
+          self.send(send, "Error: " + data.url);
+        }
+      } else if (typeof send === 'string') {
+        self.send(send, 'Error getting data from refheap');
+      } else {
+        self.heap.push('Error getting data from refheap');
       }
     });
   }).write(reqdata);
-}
+};
 
 Server.prototype.connect = function () {
   var c = this.connection = net.createConnection(this.port, this.host);
@@ -134,13 +138,14 @@ Server.prototype.disconnect = function (reason, reconnect) {
     if (this.connection.readyState !== 'closed') {
         this.connection.close();
         sys.puts('disconnected (' + reason + ')');
-
-        if((typeof reconnect === "undefined" || reconnect === true) && this.reconnect) {
-
-          var port = this.port, host = this.host, conn = this.connection, reconnect = function() {
-            conn.connect(port, host);
-          };
-          setTimeout(reconnect, 3000); //reconnect in 3 seconds;
+        if ((!reconnect || reconnect === true) && this.reconnect) {
+          var port = this.port,
+              host = this.host,
+              conn = this.connection,
+              reConnect = function () {
+                conn.connect(port, host);
+              };
+          setTimeout(reConnect, 3000); //reconnect in 3 seconds;
         }
     }
 };
@@ -154,42 +159,40 @@ Server.prototype.onConnect = function () {
 Server.prototype.onReceive = function (chunk) {
   this.buffer += chunk;
     while(this.buffer) {
-        var offset = this.buffer.indexOf("\r\n");
-        if (offset < 0) {
-            return;
-        }
+      var offset = this.buffer.indexOf("\r\n");
+      if (offset < 0) {
+        return;
+      }
 
-        var msg = this.buffer.slice(0, offset);
-        this.buffer = this.buffer.slice(offset + 2);
+      var msg = this.buffer.slice(0, offset);
+      this.buffer = this.buffer.slice(offset + 2);
 
-        if (this.debug) {
-            sys.puts( "< " + msg);
-        }
+      if (this.debug) {
+        sys.puts( "< " + msg);
+      }
 
-        msg = this.parse(msg);
-        this.onMessage(msg);
+      msg = this.parse(msg);
+      this.onMessage(msg);
     }
 };
 
-Server.prototype.kick = function(channel, nick, reason) {
-  if(typeof channel === "undefined" || typeof nick === "undefined") return;
-
-  if(typeof reason === "undefined") reason = "";
-  else reason = " :"+reason;
-
-  this.raw("KICK", channel + " " + nick + reason);
+Server.prototype.kick = function (channel, nick, reason) {
+  if (!channel || !nick)  {
+    return;
+  }
+  var kick = (reason) ? ' :' + reason : '';
+  this.raw("KICK", channel + " " + nick + kick);
 };
 
-Server.prototype.ctcp = function(nick, target, msg, command) {
+Server.prototype.ctcp = function (nick, target, msg, command) {
   msg = msg.slice(1); msg = msg.slice(0, msg.lastIndexOf('\x01'));
   var parts = msg.split(" ");
   this.emit('ctcp', nick, target, msg, command);
-  this.emit('ctcp-'+command, nick, target, msg);
+  this.emit('ctcp-' + command, nick, target, msg);
 
-  if(command === "PRIVMSG" && msg === "VERSION") {
+  if (command === "PRIVMSG" && msg === "VERSION") {
     var plugins = Object.keys(this.triggers);
-
-    this.raw("NOTICE", nick, ":\x01VERSION DunnBot, running ["+(plugins.join(", "))+"] plugins\x01");
+    this.raw("NOTICE", nick, ":\x01VERSION DunnBot, running [" + (plugins.join(", ")) + "] plugins\x01");
     this.emit("ctcp-version", [nick, target]);
   }
 };
@@ -207,167 +210,143 @@ Server.prototype.onMessage = function (msg) {
       user = this.users[nick], // user
       m, // message
       command = msg.command, // command
-      users = this.users; // user hash
-
-  switch(true){
-    case (command === 'PING'):
-      this.raw('PONG', msg.arguments);
-      break;
-
-    case (command === "NOTICE"):
-      if(msg.arguments[1][0] === "\x01" && msg.arguments[1].lastIndexOf('\x01') > 0) {
-        this.ctcp(nick, target, msg.arguments[1], command);
-      }
-      this.emit("notice", msg);
-      break;
-
-    case (command === 'PRIVMSG'):
-      if (user) {
-          user.update(msg.prefix);
-      }
-
-      if(msg.arguments[1][0] === "\x01" && msg.arguments[1].lastIndexOf('\x01') > 0) {
-        this.ctcp(nick, target, msg.arguments[1], command);
-      }
-
-      // Look for triggers
-      var params = msg.arguments[1].split(' '),
-          cmd = params.shift();
-      
-      if (cmd.substring(0, 1) === this.command) {
-        
-        var trigger = cmd.substring(1);
-
-        if (typeof this.triggers[trigger] !== 'undefined') {
-          var trig = this.triggers[trigger];
-
-          if(trig.admin) {
-            if(this.admins.indexOf(nick.toLowerCase()) === -1) {
-              this.send(this.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase() + ": Insufficient permissions");
-              return false;
-            }
+      users = this.users, // user hash
+      self = this,
+      commands = {
+        'PING': function () {
+          self.raw('PONG', msg.arguments);
+        },
+        'NOTICE': function () {
+          if (msg.arguments[1][0] === "\x01" && msg.arguments[1].lastIndexOf('\x01') > 0) {
+            self.ctcp(nick, target, msg.arguments[1], command);
+          }
+          self.emit("notice", msg);
+        },
+        'PRIVMSG': function () {
+          if (user) {
+            user.update(msg.prefix);
+          }
+          if (msg.arguments[1][0] === "\x01" && msg.arguments[1].lastIndexOf('\x01') > 0) {
+            self.ctcp(nick, target, msg.arguments[1], command);
           }
 
-          if (typeof this.channels[msg.arguments[0]] !== "undefined") {
-            //room message recieved
+          // Look for triggers
+          var params = msg.arguments[1].split(' '),
+              cmd = params.shift();
+          
+          if (cmd.substring(0, 1) === self.command) {
+            
+            var trigger = cmd.substring(1);
 
-            try {
-              trig.callback.apply(this.plugins[trig.plugin], [this, this.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase(), params, msg.arguments[1], msg.orig]);
-            } catch(err) {
-              this.sendHeap(err.stack, this.channels[msg.arguments[0]].name.toLowerCase());
-            }
-          } else {
-            //PM recieved
-            try {
-              trig.callback.apply(this.plugins[trig.plugin], [this, nick.toLowerCase(), nick.toLowerCase(), params, msg.arguments[1], msg.orig]);
-            } catch(err) {
-              this.sendHeap(err.stack, this.channels[msg.arguments[0]].name.toLowerCase());
-            }
-          }
-        } else if(trigger === "heaps") {
-          if(this.heap.length > 0) {
-            this.send(this.channels[msg.arguments[0]].name.toLowerCase(), this.heap.join(" "));
-            this.heap = [];
-          } else {
-            this.send(this.channels[msg.arguments[0]].name.toLowerCase(), "No heaps");
-          }
-        }
-      } else {
+            if (self.triggers[trigger]) {
+              var trig = self.triggers[trigger];
 
-        var msgHandlers = this.messagehandlers, msgTrigger, key;
- 
-        for (key in msgHandlers) {
-
-          var msgHandler = msgHandlers[key],
-              ttrigger = msgHandler.trigger,
-              _msg = msg.arguments[1],
-              match = false;
-
-          if (ttrigger instanceof RegExp) {
-            match = ttrigger.test(_msg);
-          } else {
-            match = _msg.toLowerCase().match(ttrigger);
-          }
-
-          if (match) {
- 
-            if (typeof this.channels[msg.arguments[0]] != "undefined") {
-              //room message recieved
-              try {
-                msgHandler.callback.apply(this, [this, this.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase(), match, msg.arguments[1], msg.orig]);
-              } catch(err) {
-                this.sendHeap(err.stack, this.channels[msg.arguments[0]].name.toLowerCase());
+              if (trig.admin) {
+                if (self.admins.indexOf(nick.toLowerCase()) === -1) {
+                  self.send(self.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase() + ": Insufficient permissions");
+                  return false;
+                }
               }
-            } else {
-              //PM recieved
-              try {
-                msgHandler.callback.apply(this, [this, nick.toLowerCase(), nick.toLowerCase(), match, msg.arguments[1], msg.orig]);
-              } catch(err) {
-                this.sendHeap(err.stack, this.channels[msg.arguments[0]].name.toLowerCase());
+
+              if (self.channels[msg.arguments[0]]) {
+                //room message recieved
+                try {
+                  trig.callback.apply(self.plugins[trig.plugin], [self, self.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase(), params, msg.arguments[1], msg.orig]);
+                } catch(err) {
+                  self.sendHeap(err.stack, self.channels[msg.arguments[0]].name.toLowerCase());
+                }
+              } else {
+                //PM recieved
+                try {
+                  trig.callback.apply(self.plugins[trig.plugin], [self, nick.toLowerCase(), nick.toLowerCase(), params, msg.arguments[1], msg.orig]);
+                } catch(err) {
+                  self.sendHeap(err.stack, self.channels[msg.arguments[0]].name.toLowerCase());
+                }
+              }
+            } else if (trigger === "heaps") {
+              if (self.heap.length > 0) {
+                self.send(self.channels[msg.arguments[0]].name.toLowerCase(), self.heap.join(" "));
+                self.heap = [];
+              } else {
+                self.send(self.channels[msg.arguments[0]].name.toLowerCase(), "No heaps");
+              }
+            }
+          } else {
+
+            var msgHandlers = self.messagehandlers, msgTrigger, key;
+     
+            for (key in msgHandlers) {
+              var msgHandler = msgHandlers[key],
+                  ttrigger = msgHandler.trigger,
+                  _msg = msg.arguments[1],
+                  match = (ttrigger instanceof RegExp) ? ttrigger.test(_msg) : _msg.toLowerCase().match(ttrigger);
+              if (match) {
+                try {
+                  if (self.channels[msg.arguments[0]]) {
+                    //room message recieved
+                      msgHandler.callback.apply(self, [self, self.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase(), match, msg.arguments[1], msg.orig]);
+                  } else {
+                    //PM recieved
+                    msgHandler.callback.apply(self, [self, nick.toLowerCase(), nick.toLowerCase(), match, msg.arguments[1], msg.orig]);
+                  }
+                } catch (err) {
+                  self.sendHeap(err.stack, self.channels[msg.arguments[0]].name.toLowerCase());
+                }
               }
             }
           }
+
+          if (user === self.nick) {
+            self.emit('private_message', msg);
+          } else {
+            self.emit('message', msg);
+          }
+        },
+        'JOIN': function () {
+          if (user) {
+            user.update(msg.prefix);
+            user.join(target);
+          } else {
+            user = self.users[nick] = new self.userObj(self, nick);
+            self.raw('NS id ' + self.config.identPass);
+          }
+
+          user.join(target);
+          self.emit('join', msg);
+        },
+        'PART': function () {
+          if (user) {
+            user.update(msg.prefix);
+            user.part(target);
+          }
+
+          self.emit('part', msg);
+        },
+        'QUIT': function () {
+          if (user) {
+            user.update(msg.prefix);
+            user.quit(msg);
+          }
+
+          self.emit('quit', msg);
+        },
+        'NICK': function () {
+          var oldNick = msg.prefix.split("!")[0].trim().toLowerCase();
+          user = self.users[oldNick];
+
+          if (user) {
+            user.update(msg.prefix);
+            self.users[msg.arguments[0]] = user;
+          }
+
+          self.emit('nick', msg, msg.arguments[0], oldNick);
         }
-      }
 
-      if (user == this.nick) {
-          this.emit('private_message', msg);
-      }
-
-      else {
-        this.emit('message', msg);
-      }
-
-      break;
-
-    case (command === 'JOIN'):
-      if (user) {
-        user.update(msg.prefix);
-        user.join(target);
-      }
-
-      else {
-          user = this.users[nick] = new this.userObj(this, nick);
-          this.raw('NS id ' + this.config.identPass);
-      }
-
-      user.join(target);
-      this.emit('join', msg);
-      break;
-
-    case (command === 'PART'):
-      if (user) {
-        user.update(msg.prefix);
-        user.part(target);
-      }
-
-      this.emit('part', msg);
-      break;
-
-    case (command === 'QUIT'):
-      if (user) {
-        user.update(msg.prefix);
-        user.quit(msg);
-      }
-
-      this.emit('quit', msg);
-      break;
-
-    case (command === 'NICK'):
-      var oldNick = msg.prefix.split("!")[0].trim().toLowerCase();
-      user = this.users[oldNick];
-
-      if (user) {
-        user.update(msg.prefix);
-        this.users[msg.arguments[0]] = user;
-      }
-
-      this.emit('nick', msg, msg.arguments[0], oldNick);
-      break;
-
-    case (/^\d+$/.test(command)):
-      this.emit('numeric', msg);
-      break;
+      };
+  if (typeof(commands[command]) === 'function') {
+    commands[command]();
+  } else if (/^\d+$/.test(command)) {
+    this.emit('numeric', msg);
   }
 
   this.emit(msg.command, msg);
@@ -375,21 +354,21 @@ Server.prototype.onMessage = function (msg) {
 };
 
 Server.prototype.user = function (mask){
-    if (!mask) {
-        return;
-    }
+  if (!mask) {
+    return;
+  }
   var match = mask.match(/([^!]+)![^@]+@.+/);
 
-  if (!match ) {
-        return;
-    }
+  if (!match) {
+    return;
+  }
   return match[1];
 };
 
 Server.prototype.parse = function (text) {
   if (typeof text  !== "string") {
     return false;
-    }
+  }
 
   var tmp = text.split(" ");
 
@@ -405,11 +384,11 @@ Server.prototype.parse = function (text) {
   for (var i = 0, j = tmp.length; i < j; i++) {
     if (i === 0 && tmp[i].indexOf(":") === 0) {
       prefix = tmp[0].substr(1);
-        } else if (tmp[i] === "") {
+    } else if (tmp[i] === "") {
       continue;
-        } else if (!command && tmp[i].indexOf(":") !== 0) {
+    } else if (!command && tmp[i].indexOf(":") !== 0) {
       command = tmp[i].toUpperCase();
-        } else if (tmp[i].indexOf(":") === 0) {
+    } else if (tmp[i].indexOf(":") === 0) {
       tmp[i] = tmp[i].substr(1);
       tmp.splice(0, i);
       args.push(tmp.join(" "));
@@ -417,7 +396,7 @@ Server.prototype.parse = function (text) {
       break;
     } else {
       args.push(tmp[i]);
-        }
+    }
   }
 
   return {
@@ -469,74 +448,60 @@ Server.prototype.send = function (target, msg) {
 
 Server.prototype.addListener = function (ev, f) {
   var that = this;
-  return this.connection.addListener(ev, (function() {
-    return function() {
+  return this.connection.addListener(ev, (function () {
+    return function () {
       f.apply(that, arguments);
     };
   })());
 };
 
 Server.prototype.addPluginListener = function (plugin, ev, f) {
-  if (typeof this.hooks[plugin] === 'undefined') {
-        this.hooks[plugin] = [];
-    }
-
+  if (!this.hooks[plugin]) {
+    this.hooks[plugin] = [];
+  }
   var scope = this.plugins[plugin];
-
-  var callback = (function() {
-    return function() {
+  var callback = (function () {
+    return function () {
       f.apply(scope, arguments);
     };
   })();
-
   this.hooks[plugin].push({event: ev, callback: callback});
-
   return this.on(ev, callback);
 };
 
 Server.prototype.unloadPlugin = function (name, q) {
-  if((typeof q === "undefined" || q === false) && this.debug) {
+  if((!q) && this.debug) {
     sys.puts( "Unloading plugin " + name);
   }
 
-  if (typeof this.plugins[name] !== 'undefined') {
-    delete this.plugins[name];
+  function unLoadFromObj(obj, f) {
+    Object.keys(obj).forEach(function (key) {
+      return f(obj[key].event, obj[key].callback);
+    });
+  }
 
-    if (typeof this.hooks[name] !== 'undefined') {
-
-      for(var hook in this.hooks[name]) {
-
-        this.removeListener(this.hooks[name][hook].event, this.hooks[name][hook].callback);
-
-      }
-
-    }
-
-    if (typeof this.replies[name] !== 'undefined') {
-
-      for(var reply in this.replies[name]) {
-
-        this.removeListener(this.replies[name][reply].event, this.replies[name][reply].callback);
-
-      }
-
-    }
-
-    for(var trig in this.triggers) {
-
-      if (this.triggers[trig].plugin === name) {
-
-        delete this.triggers[trig];
-
-      }
-
-    }
-
-    if(typeof require.cache[path.resolve(__dirname, "../plugins/" + name + ".js")] != "undefined") {
-      delete require.cache[path.resolve(__dirname, "../plugins/" + name + ".js")];
+  function delTrig(trig) {
+    if (this.triggers[trig].plugin === name) {
+      delete this.triggers[trig];
     }
   }
 
+  if (this.plugins[name]) {
+    delete this.plugins[name];
+
+    if (this.hooks[name]) {
+      unLoadFromObj(this.hooks[name], this.removeListener);
+    }
+    if (this.replies[name]) {
+      unLoadFromObj(this.replies[name], this.removeListener);
+    }
+
+    Object.keys(this.triggers).forEach(delTrig);
+
+    if (require.cache[path.resolve(__dirname, "../plugins/" + name + ".js")]) {
+      delete require.cache[path.resolve(__dirname, "../plugins/" + name + ".js")];
+    }
+  }
 
 };
 
@@ -547,38 +512,36 @@ Server.prototype.loadPlugin = function (name) {
   }
 
   this.unloadPlugin(name, true);
-
   var path = __dirname + '/../plugins/' + name + '.js',
-    Plugin;
+    plugin;
   
   // load plugin
   if (existsSync(path)) {
-
     // require
     try {
-      Plugin = require(path);
+      plugin = require(path);
     } catch(err) {
       this.sendHeap(err.stack);
       return false;
     }
     // invoke
-    this.plugins[name] = new Plugin(this);
+    this.plugins[name] = new plugin(this);
+
     // hooks
-    var onEvents = ['onConnect', 'onData', 'onNumeric', 'onMessage', 'onJoin', 'onPart', 'onQuit', 'onNick', 'onPrivateMessage'];
-    onEvents.forEach(function (onEvent) {
-      var callback = this.plugins[name][onEvent];
+    var hookarr = ['connect', 'data', 'numeric', 'message', 'join', 'part', 'quit', 'nick', 'privateMessage'];
+    hookarr.forEach(function(event) {
+      var onEvent = 'on' + event.charAt(0).toUpperCase() + event.substr(1),
+        callback = this.plugins[name][onEvent];
 
       if (typeof callback === 'function') {
-        this.addPluginListener(name, onEvent.substring(2).toLowerCase(), callback);
+        this.addPluginListener(name, event, callback);
       }
 
     }, this);
 
     return true;
-  }
-
-  // invalid plugin
-  else {
+  } else {
+    // invalid plugin
     sys.puts("Plugin not found: " + name);
     return false;
   }
@@ -586,8 +549,10 @@ Server.prototype.loadPlugin = function (name) {
 };
 
 Server.prototype.addTrigger = function (trigger, callback, admin) {
-  if (typeof this.triggers[trigger] === 'undefined') {
-    if(typeof admin === "undefined") admin = 0;
+  if (!this.triggers[trigger]) {
+    if (!admin) {
+      admin = 0;
+    }
     admin = parseInt(admin);
     this.triggers[trigger] = { plugin: trigger, callback: callback, admin: admin};
   }
@@ -602,7 +567,7 @@ Server.prototype.addMessageHandler = function (trigger, callback) {
 
   var key = keyFromFn(callback); // same trigger, multiple cbs? no problem
 
-  if(typeof this.messagehandlers[key] === 'undefined') {
+  if (!this.messagehandlers[key]) {
     this.messagehandlers[key] = {trigger: trigger, callback: callback};
   }
 

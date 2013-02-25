@@ -11,11 +11,11 @@
  *      // here the httpGet function returns a callback function with three arguments
  *      irc.httpGet(options, function (err, response, responsedata) {
  *          if (!err && response.statusCode === 200) {
- *              try {
- *                  var json = JSON.parse(responsedata);
+ *              var json = irc.isValidJson(responsedata);
+ *              if (json) {
  *                  callback(null, channel, json);
- *              } catch (e) {
- *                  callback(e, channel, null);
+ *              } else {
+ *                  callback('Invalid answer', channel, null);
  *              }
  *          } else {
  *              callback(err || 'Something went wrong', channel, null);

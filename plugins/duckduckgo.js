@@ -1,4 +1,3 @@
-
 /*
  * @Plugin        DuckDuckGo
  * @Description   Use the duckduckgo api
@@ -18,25 +17,16 @@ function Ddg(irc) {
     "use strict";
     var trigger = 'ddg';
     var mesLen = trigger.length + irc.command.length + 1;
-
     var question = function (pla, channel, nick, par, message) {
-
-        function isValidJson(json) {
-            try {
-                return JSON.parse(json);
-            } catch (e) {
-                return false;
-            }
-        }
 
         function sendToIrc(err, links) {
             return irc.send(channel, nick + ': ' + ((!err) ? links : err));
         }
         
         function getDataFromJson(jsonn, query, cb) {
-            var json = isValidJson(jsonn);
+            var json = irc.isValidJson(jsonn);
             if (json) {
-                var abstractText = (json.AbstractText) ? (json.AbstractText.replace(/\n/ig, '').replace(/<pre>.+?<\/pre>/ig, '')) + ' || ' : '';
+                var abstractText = (json.AbstractText) ? (json.AbstractText.replace(/\n/ig, ' ').replace(/<pre>.+?<\/pre>/ig, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&')) + ' || ' : '';
                 var abstractSource = (json.AbstractSource && json.AbstractURL) ? json.AbstractSource + ': ' + json.AbstractURL + ' || ' : '';
                 var answerText = (json.Answer) ? json.Answer + ' || ' : '';
                 var definitionText = (json.DefinitionText && json.DefinitionURL) ? 'Definition ( ' + json.DefinitionURL + ' ): ' + json.DefinitionText + ' || ' : '';
@@ -80,7 +70,6 @@ function Ddg(irc) {
         }(message, handleAnswer));
 
     };
-
     irc.addTrigger(trigger, question);
 }
 
