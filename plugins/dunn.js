@@ -31,17 +31,16 @@ Plugin.prototype.onNumeric = function(irc) {
   }
 };
 
-Plugin.prototype.onMessage = function (irc) {
-  if (irc.arguments[1].match(/dunn dunn/i))
-  {
-      this.ircObj.send(irc.arguments[0], 'dunnnnnnnnnn');
+Plugin.prototype.onMessage = function (message) {
+  if (message.arguments[1].match(/dunn dunn/i)) {
+      this.ircObj.send(message.arguments[0], 'dunnnnnnnnnn');
   }
 };
 
 Plugin.prototype.about = function (irc, channel, nick, params, message, raw) {
-  irc.send(channel, nick + ': My name is ' + botNick + ', I am written in Node.js and utilize MongoDB as my data storage. I was written by Killswitch with heavy contributions by shirokuma.');
+  irc.send(channel, nick + ': My name is ' + botNick + ', I am written in Node.js and utilize MongoDB as my data storage. I was written by the people at #webtech.');
 };
 
 Plugin.prototype.code = function (irc, channel, nick, params, message, raw) {
-  irc.send(channel, nick + ': You can view, and fork me in my code hole to contribute on GitHub @ http://www.github.com/killswitch/dunn.');
+  irc.send(channel, nick + ': You can view, and fork me in my code hole to contribute on GitHub @ http://www.github.com/webtechirc/dunn.');
 };

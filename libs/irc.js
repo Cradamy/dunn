@@ -349,9 +349,6 @@ Server.prototype.onMessage = function (msg) {
   } else if (/^\d+$/.test(command)) {
     this.emit('numeric', msg);
   }
-
-  this.emit(msg.command, msg);
-  this.emit('data', msg);
 };
 
 Server.prototype.user = function (mask){

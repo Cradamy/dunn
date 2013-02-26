@@ -133,7 +133,7 @@ Plugin.prototype.addMeme = function (irc, channel, user, params, message) {
 
               if (memes[name]) return irc.send(channel, "Meme already added");
 
-              self.db.memes.save(model, function(e) {
+              self.db.memes.save(model, function (e) {
                 if (e !== null) {
                   return irc.send(channel, "Could not add meme to database");
                 } else {
@@ -153,8 +153,8 @@ Plugin.prototype.addMeme = function (irc, channel, user, params, message) {
           irc.sendHeap(err, channel);
         }
     });
-  } else if(params[0] == "remove") {
-    if(typeof params[1] != "undefined" && typeof irc.triggers[params[1]] != "undefined" && typeof memes[params[1]] != "undefined") {
+  } else if (params[0] === "remove") {
+    if(params[1] && typeof irc.triggers[params[1]] !== "undefined" && typeof memes[params[1]] !== "undefined") {
       delete irc.triggers[params[1].toLowerCase()];
       self.db.memes.remove({
         name: params[1].toLowerCase()

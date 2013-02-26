@@ -20,7 +20,6 @@ Date.prototype.KarmaLimit = function () {
 
 var Plugin = module.exports = function (irc) {
   this.config = irc.config.karma || {threshold: 5, trackNickChanges: false};
-
   irc.addTrigger('karma', this.karma);
   this.db = mongodb.connect(irc.database, ['karma']);
   this.irc = irc;

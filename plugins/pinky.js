@@ -16,7 +16,7 @@ var Plugin = module.exports = function (irc) {
   irc.addMessageHandler("are you thinking what im thinking?", this.pinky);
 };
 
-Plugin.prototype.pinky = function(irc, channel, nick, match, message, raw) {
+Plugin.prototype.pinky = function (irc, channel, nick, match, message, raw) {
     var replies = [
         "I think so, %u, but where are we going to find a duck and a hose at this hour?",
         "I think so, but where will we find an open tattoo parlor at this time of night?",

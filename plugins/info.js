@@ -89,19 +89,19 @@ Plugin.prototype.parsePlugins = function(irc, channel, nick, params, message) {
 
 Plugin.prototype.pull = function(irc, channel, nick, params, message) {
 
-    if(params.length === 0) {
+    if (params.length === 0) {
         irc.send(channel, "Usage: .info plugin");
     } else {
         var plugin = 0;
         params = params.join(" ");
-        if(typeof this.pluginsRaw[params] != "undefined") {
+        if (typeof this.pluginsRaw[params] != "undefined") {
             plugin = this.pluginsRaw[params];
         } else {
             irc.send(channel, "No such plugin");
             return;
         }
 
-        if(plugin) {
+        if (plugin) {
             message = "";
             for(var key in plugin) {
                 var content = plugin[key];

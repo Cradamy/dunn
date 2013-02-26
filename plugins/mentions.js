@@ -19,12 +19,12 @@ var Plugin = module.exports = function (irc) {
 	this.irc = irc;
 };
 
-Plugin.prototype.flush = function(irc, channel) {
+Plugin.prototype.flush = function (irc, channel) {
 	this.db.mentions.remove({});
 	irc.send(channel, "Flushed backlog");
 };
 
-Plugin.prototype.mentions = function(irc, channel, nick) {
+Plugin.prototype.mentions = function (irc, channel, nick) {
 	var me = this, db = me.db.mentions;
 
 	db.find({message: new RegExp(nick, "i"), channel: channel}, function(e, r) {
@@ -44,7 +44,7 @@ Plugin.prototype.mentions = function(irc, channel, nick) {
 	});
 };
 
-Plugin.prototype.onJoin = function(msg) {
+Plugin.prototype.onJoin = function (msg) {
 	var channel = this.irc.channels[msg.arguments[0]].name.toLowerCase(), nick = (this.irc.user(msg.prefix) || '').toLowerCase();
 	var me = this, db = me.db.mentions;
 
@@ -56,6 +56,6 @@ Plugin.prototype.onJoin = function(msg) {
 	});
 };
 
-Plugin.prototype.onMessage = function(msg) {
+Plugin.prototype.onMessage = function (msg) {
 	this.db.mentions.save({message: msg.arguments[1], channel: this.irc.channels[msg.arguments[0]].name.toLowerCase(), from: (this.irc.user(msg.prefix) || '').toLowerCase()});
 };
