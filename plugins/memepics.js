@@ -1,9 +1,9 @@
 /*
  * @Plugin        Meme Pics
  * @Description   Serving up your favorite memes.
- * @Trigger       .brian, .scumbag_steve, .grumpy_cat, .first_world_problem, .stoner, .good_guy, .morpheus, .all_the_things, .prepare_yourself, .yo_dawg, .what_if, .i_dont_always, .skeptical, .josesph, .oag, .trollface, .insanity_wolf, .y_u_no, .victory_baby, .redneck_randal, .stereotypical_redneck, .wtf_picard, .skeptical_fry, .internet_husband, .not_simply            
+ * @Trigger       .brian, .scumbag_steve, .grumpy_cat, .first_world_problem, .stoner, .good_guy, .morpheus, .all_the_things, .prepare_yourself, .yo_dawg, .what_if, .i_dont_always, .skeptical, .josesph, .oag, .trollface, .insanity_wolf, .y_u_no, .victory_baby, .redneck_randal, .stereotypical_redneck, .wtf_picard, .skeptical_fry, .internet_husband, .not_simply
  * @Author        cgcardona
- * @Contributor   polar-bear 
+ * @Contributor   polar-bear
  * @Copyright     MIT License http://opensource.org/licenses/MIT
  *
  */
@@ -41,7 +41,7 @@ var self = this;
 var Plugin = module.exports = function (irc) {
   this.irc = irc;
   this.db = mongodb.connect(irc.database, ['memes']);
-  self = this; 
+  self = this;
 
   this.db.memes.find({}, function(e, r) {
     if(e === null) {
@@ -51,12 +51,17 @@ var Plugin = module.exports = function (irc) {
       }
     }
 
-    for(var meme in memes) {
+    for (var meme in memes) {
+      addMemes(meme);
+    }
+
+    function addMemes(meme) {
       irc.addTrigger(meme, function(i,c,u,p,m) {
         var meme = m.replace(i.command, "").split(" ")[0].trim();
         self.memeFunc(i,c,u,p,m,memes[meme]);
-      }); 
+      });
     }
+
   });
 
   irc.addTrigger('meme', this.memeSwitch);
@@ -71,7 +76,7 @@ Plugin.prototype.memeSwitch = function(irc, channel, user, params, message) {
   var meme = params.shift();
   if(memes[meme] !== undefined) return self.memeFunc(irc, channel, user, params, message, memes[meme]);
   else return irc.send("Meme " + meme + " not found");
-}
+};
 
 Plugin.prototype.getLines = function(params) {
   var msg1 = '';
@@ -92,12 +97,12 @@ Plugin.prototype.getLines = function(params) {
         msgNumAfter = true;
       }
 
-      if(msgNum == 1) 
+      if(msgNum == 1)
         msg1 += p + " ";
-      else 
+      else
         msg2 += p + " ";
 
-      if(msgNumAfter) 
+      if(msgNumAfter)
         msgNum++;
     }
   }
@@ -111,36 +116,41 @@ Plugin.prototype.getLines = function(params) {
 
   if(typeof msg1 != "undefined" && typeof msg2 != "undefined") return [msg1.trim(),msg2.trim()];
   else return ["", msg1.trim()];
-}
+};
 
-Plugin.prototype.addMeme = function(irc, channel, user, params, message) {
+Plugin.prototype.addMeme = function (irc, channel, user, params, message) {
   if(params.length < 1) {
     irc.send(channel, "Usage: " + irc.command + "addMeme <auto|remove> query");
   } else if(params[0] == "auto" || params[0] == "add") {
     var req = irc.httpGet("http://version1.api.memegenerator.net/Generators_Search?q=" + params.splice(1).join("+"), function (err, res, json) {
-        var data = irc.isValidJson(json);
-        if (data) {
-          var imageID = require("url").parse(data.result[0].imageUrl).pathname.split("/");
-          var MemeData = [data.result[0].generatorID, imageID[imageID.length-1].split(".")[0]];
-          var name = data.result[0].urlName.toLowerCase().replace(new RegExp("-", "igm"), "_");
-          var model = {name: name, data: MemeData};
+        if (!err) {
+          var jsonGet = irc.isValidJson(json, function (error, data) {
+            if (!error && data) {
+              var imageID = require("url").parse(data.result[0].imageUrl).pathname.split("/");
+              var MemeData = [data.result[0].generatorID, imageID[imageID.length-1].split(".")[0]];
+              var name = data.result[0].urlName.toLowerCase().replace(new RegExp("-", "igm"), "_");
+              var model = {name: name, data: MemeData};
 
-          if(typeof memes[name] != "undefined") return self.irc.send(channel, "Meme already added");
+              if (memes[name]) return irc.send(channel, "Meme already added");
 
-          self.db.memes.save(model, function(e) {
-            if (e !== null) {
-              return self.irc.send(channel, "Could not add meme to database");
+              self.db.memes.save(model, function(e) {
+                if (e !== null) {
+                  return irc.send(channel, "Could not add meme to database");
+                } else {
+                  memes[name] = MemeData;
+                  irc.send(channel, "Adding meme " + irc.command + name);
+                  irc.addTrigger(name, function(i,c,u,p,m) {
+                    var meme = m.replace(i.command, "").split(" ")[0].trim();
+                    self.memeFunc(i,c,u,p,m,memes[meme]);
+                  });
+                }
+              });
             } else {
-              memes[name] = MemeData;
-              self.irc.send(channel, "Adding meme " + irc.command + name);
-              irc.addTrigger(name, function(i,c,u,p,m) {
-                var meme = m.replace(i.command, "").split(" ")[0].trim();
-                self.memeFunc(i,c,u,p,m,memes[meme]);
-              }); 
+              irc.sendHeap((error || 'Error getting memes'), channel);
             }
           });
         } else {
-          irc.send(channel, user + ': ' + 'Error getting memes');
+          irc.sendHeap(err, channel);
         }
     });
   } else if(params[0] == "remove") {
@@ -149,15 +159,15 @@ Plugin.prototype.addMeme = function(irc, channel, user, params, message) {
       self.db.memes.remove({
         name: params[1].toLowerCase()
       }, function(e) {
-        irc.send(channel, "Removed "+params[1])
+        irc.send(channel, "Removed " + params[1]);
       });
     } else {
-      irc.send(channel, "Cannot remove "+params[1]);
+      irc.send(channel, "Cannot remove " + params[1]);
     }
   } else {
     irc.send(channel, "Usage: " + irc.command + "addMeme <add|remove> query");
   }
-}
+};
 
 Plugin.prototype.memeFunc = function (irc, channel, user, params, message, generatorID) {
   if (params < 1) {
@@ -169,13 +179,14 @@ Plugin.prototype.memeFunc = function (irc, channel, user, params, message, gener
     url += '&text0=' + encodeURIComponent(msgs[0] || "") + '&text1=' + encodeURIComponent(msgs[1] || "");
 
     var request = irc.httpGet(url, function (err, res, json) {
-      if (!err) { 
-        var parsedJSON = irc.isValidJson(json);
-        if (parsedJSON) {
-          irc.send(channel, user + ': ' + parsedJSON.result.instanceImageUrl);
-        } else {
-          irc.send(channel, user + ': ' + 'Error getting memes');
-        }
+      if (!err) {
+        var parsedJSON = irc.isValidJson(json, function (error, data) {
+          if (!error && data) {
+            irc.send(channel, user + ': ' + data.result.instanceImageUrl);
+          } else {
+            irc.sendHeap((error || 'Error getting memes'), channel);
+          }
+        });
       } else {
         irc.sendHeap(err, channel);
       }

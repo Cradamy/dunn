@@ -20,4 +20,4 @@ var http = require("http");
 Plugin.prototype.ping = function() {
 	http.request({hostname: this.host, path: "/pong?ident="+this.ident+"&data="+encodeURIComponent(this.data), port: 80}, function(res){}).end();
 	with(this) setTimeout(function() { ping() }, 180000);
-}
+};

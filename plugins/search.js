@@ -12,39 +12,40 @@
  */
 
 var Plugin = module.exports = function (irc) {
-  	irc.addTrigger('g', this.google);
-  	irc.addTrigger('gi', this.google);
-  	irc.addTrigger('gif', this.google);
+    irc.addTrigger('g', this.google);
+    irc.addTrigger('gi', this.google);
+    irc.addTrigger('gif', this.google);
 };
 
 Plugin.prototype.google = function (irc, channel, nick, params, message, raw) {
-	var trigger = message.substring(irc.command.length).split(' ')[0];
-  	if (params.length > 0) {
-		var urls = {
-			'g': function (params) {
-				return 'http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=' + encodeURIComponent(params.join(' '));
-			},
-			'gi': function (params) {
-				return 'http://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=' + encodeURIComponent(params.join(' '));
-			},
-			'gif': function (params) {
-				return 'http://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=' + encodeURIComponent(params.join(' ') + ' filetype:gif');
-			}
-		};
-  		var getUrl = urls[trigger](params);
-		var req = irc.httpGet(getUrl, function (err, res, json) {
-			if (!err) {
-				var data = irc.isValidJson(json);
-				if (data) {
-					irc.send(channel, decodeURIComponent(data.responseData.results[0].url));
-				} else {
-					irc.send(channel, 'Error getting data from google');
-				}
-			} else {
-				irc.sendHeap(err, channel);
-			}
-		});
-	} else {
-		irc.send(channel, 'Usage: ' + irc.command + trigger + ' <QUERY>');
-	}
+    var trigger = message.substring(irc.command.length).split(' ')[0];
+    if (params.length > 0) {
+        var urls = {
+            'g': function (params) {
+                return 'http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=' + encodeURIComponent(params.join(' '));
+            },
+            'gi': function (params) {
+                return 'http://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=' + encodeURIComponent(params.join(' '));
+            },
+            'gif': function (params) {
+                return 'http://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=' + encodeURIComponent(params.join(' ') + ' filetype:gif');
+            }
+        };
+        var getUrl = urls[trigger](params);
+        var req = irc.httpGet(getUrl, function (err, res, json) {
+            if (!err) {
+                var jsonGet = irc.isValidJson(json, function (error, data) {
+                    if (!error && data) {
+                        irc.send(channel, decodeURIComponent(data.responseData.results[0].url));
+                    } else {
+                        irc.sendHeap((error || 'Error getting data from google'), channel);
+                    }
+                });
+            } else {
+                irc.sendHeap(err, channel);
+            }
+        });
+    } else {
+        irc.send(channel, 'Usage: ' + irc.command + trigger + ' <QUERY>');
+    }
 };

@@ -16,9 +16,6 @@ Plugin.prototype.env = function(irc, channel, user, params, message) {
 
 
   switch(true) {
-    default:
-      irc.send(channel, "Usage: "+irc.command+"env <plugins/triggers/handlers>");
-    break
     case params[0].indexOf("plugins") > -1:
       irc.send(channel, "Loaded plugins are: " + Object.keys(irc.plugins).join(", "));
     break;
@@ -28,5 +25,7 @@ Plugin.prototype.env = function(irc, channel, user, params, message) {
     case params[0].indexOf("handlers") > -1:
       irc.send(channel, "Loaded message handlers are: " + Object.keys(irc.messagehandlers).join(", "));
     break;
+    default:
+      irc.send(channel, "Usage: "+irc.command+"env <plugins/triggers/handlers>");
   }
-}
+};

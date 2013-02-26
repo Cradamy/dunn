@@ -23,7 +23,7 @@ Plugin.prototype.onMessage = function (msg) {
         host: msg.prefix,
         date: new Date(),
         message: msg.arguments[1]
-      }
+      };
 
   if (msg.command === 'PRIVMSG') {
     this.db.logs.save(scheme);

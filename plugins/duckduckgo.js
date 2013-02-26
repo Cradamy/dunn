@@ -24,21 +24,22 @@ function Ddg(irc) {
         }
         
         function getDataFromJson(jsonn, query, cb) {
-            var json = irc.isValidJson(jsonn);
-            if (json) {
-                var abstractText = (json.AbstractText) ? (json.AbstractText.replace(/\n/ig, ' ').replace(/<pre>.+?<\/pre>/ig, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&')) + ' || ' : '';
-                var abstractSource = (json.AbstractSource && json.AbstractURL) ? json.AbstractSource + ': ' + json.AbstractURL + ' || ' : '';
-                var answerText = (json.Answer) ? json.Answer + ' || ' : '';
-                var definitionText = (json.DefinitionText && json.DefinitionURL) ? 'Definition ( ' + json.DefinitionURL + ' ): ' + json.DefinitionText + ' || ' : '';
-                var redirect = (json.Redirect) ? url.resolve('https://duckduckgo.com', json.Redirect) + ' || ' : '';
-                var links = abstractText + abstractSource + answerText + definitionText + redirect;
-                if (links === '') {
-                    links = 'https://duckduckgo.com/?q=' + query + '    ';
+            var jsonGet = irc.isValidJson(jsonn, function (err, json) {
+                if (!err && json) {
+                    var abstractText = (json.AbstractText) ? (json.AbstractText.replace(/\n/ig, ' ').replace(/<pre>.+?<\/pre>/ig, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&')) + ' || ' : '';
+                    var abstractSource = (json.AbstractSource && json.AbstractURL) ? json.AbstractSource + ': ' + json.AbstractURL + ' || ' : '';
+                    var answerText = (json.Answer) ? json.Answer + ' || ' : '';
+                    var definitionText = (json.DefinitionText && json.DefinitionURL) ? 'Definition ( ' + json.DefinitionURL + ' ): ' + json.DefinitionText + ' || ' : '';
+                    var redirect = (json.Redirect) ? url.resolve('https://duckduckgo.com', json.Redirect) + ' || ' : '';
+                    var links = abstractText + abstractSource + answerText + definitionText + redirect;
+                    if (links === '') {
+                        links = 'https://duckduckgo.com/?q=' + query + '    ';
+                    }
+                    return cb(null, links.substring(0, links.length - 4));
+                } else {
+                    return cb(((err) ? err : 'No valid answer'), null);
                 }
-                return cb(null, links.substring(0, links.length - 4));
-            } else {
-                return cb('No valid answer', null);
-            }
+            });
         }
 
         function handleAnswer(err, answer, query) {

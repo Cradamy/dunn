@@ -1,5 +1,5 @@
 /*
- * @Plugin        Wake Up 
+ * @Plugin        Wake Up
  * @Description   WAKE THE FUCK UP!!!
  * @Trigger       .wakeup
  *

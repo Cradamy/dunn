@@ -1,17 +1,17 @@
 try {
 	var mongojs = require("mongojs").connect;
 } catch(e) {
-	var mongojs = undefined;
+	var mongojs;
 }
 
-var self = undefined;
-Api = exports.Api = function(irc) {
+var self;
+var Api = exports.Api = function(irc) {
 	this.boot(irc);
 };
 
-Api.prototype.Error = function(msg) {
-	throw new msg;
-}
+Api.prototype.Error = function (msg) {
+	throw new Error(msg);
+};
 
 Api.prototype.boot = function(irc) {
 	this.irc = irc;
@@ -28,7 +28,7 @@ Api.prototype.boot = function(irc) {
 	irc.on("nick", this.event.nick);
 	irc.on("connect", this.event.connect);
 	irc.on("data", this.event.data);
-}
+};
 
 Api.prototype.env = {
 	triggers: {},
@@ -132,22 +132,22 @@ Api.prototype.add =  {
 		if(typeof self.env.triggers[cmd] != "undefined") self.Error("The trigger "+trigger.toString()+" already exists.");
 		self.env.triggers[cmd] = {trigger: cmd, admin: admin, callbacks: args};
 		return true;
-	}, 
+	},
 	message: function(match, admin /**/) {
 		var args = Array.prototype.slice.call(arguments, 2);
-		if(typeof self.env.message[match] != "undefined") self.Error("A message handler with the match: "+message.toString()+" already exists.")
+		if(typeof self.env.message[match] != "undefined") self.Error("A message handler with the match: "+message.toString()+" already exists.");
 		self.env.message[match] = {match: match, admin: admin, callbacks: args};
 		return true;
 	},
 	pm: function(pmID, admin /**/) {
 		var args = Array.prototype.slice.call(arguments, 2);
-		if(typeof self.env.pm[pmID] != "undefined") self.Error("A PM interceptor with the id: "+pmID+" already exists.")
+		if(typeof self.env.pm[pmID] != "undefined") self.Error("A PM interceptor with the id: "+pmID+" already exists.");
 		self.env.pm[pmID] = {id: pmID, admin: admin, callbacks: args};
 		return true;
 	},
 	hook: function(pluginID, evt /**/) {
 		var args = Array.prototype.slice.call(arguments, 2);
-		if(evt.substr(0, 2).toLowerCase() == "on") evt = evt.substr(2); 
+		if(evt.substr(0, 2).toLowerCase() == "on") evt = evt.substr(2);
 		if(typeof self.env.hooks[evt] == "undefined") self.error("Event "+evt+"does not exist");
 		if(typeof self.env.hooks[evt][pluginID] != "undefined") self.error("There is already an event with the ID "+pluginID);
 		self.env.hooks[evt][pluginID] = {id: pluginID, callbacks: args};
@@ -162,21 +162,21 @@ Api.prototype.remove = Api.prototype.rm = {
 		var args = Array.prototype.slice.call(arguments);
 		while(args.length) {
 			var arg = args.shift();
-			delete self.env.triggers[arg]
+			delete self.env.triggers[arg];
 		}
 	},
 	message: function(/**/) {
 		var args = Array.prototype.slice.call(arguments);
 		while(args.length) {
 			var arg = args.shift();
-			delete self.env.message[arg]
+			delete self.env.message[arg];
 		}
 	},
 	pm: function(/**/) {
 		var args = Array.prototype.slice.call(arguments);
 		while(args.length) {
 			var arg = args.shift();
-			delete self.env.pm[arg]
+			delete self.env.pm[arg];
 		}
 	},
 	hook: function(/**/) {
@@ -184,7 +184,7 @@ Api.prototype.remove = Api.prototype.rm = {
 		while(args.length) {
 			var arg = args.shift();
 			try {
-				delete self.env.hook[arg[0]][arg[1]]
+				delete self.env.hook[arg[0]][arg[1]];
 			} catch(e) {
 				//
 			}
@@ -199,14 +199,14 @@ Api.prototype.requestDB = Api.prototype.database = function(/**/) {
 	if(mongojs) { //Rather than open 10 connections for 10 plugins, open one connection and keep requesting collections.
 		var c = Array.prototype.slice.call(arguments);
 		while(c.length) self.mongo.collection(c.shift());
-		return self.mongo
+		return self.mongo;
 	}
 
 	else return null;
 };
 
 Api.prototype.configAgent = function(i, d) {
-	var recursive = function(k, v) {
+	var recursive = function (k, v) {
 		var o = Object.keys(v);
 
 		while(o.length) {
@@ -215,10 +215,10 @@ Api.prototype.configAgent = function(i, d) {
 		}
 
 		return k;
-	}
+	};
 
 	return recursive(self.irc.config[i], d);
-}
+};
 
 Api.prototype.send = function(channel /**/) {
 	var args = Array.prototype.slice.call(arguments, 1);
@@ -240,11 +240,11 @@ Api.prototype.users = function(channel) {
 		}).length > 0) channelUsers += user;
 	}
 	return channelUsers;
-}
+};
 
 Api.prototype.kick = function(channel, nick, reason) {
 	self.irc.kick(channel, nick, reason);
-}
+};
 
 Api.prototype.join = function(channel, password) {
 	if(typeof self.irc.channels[channel] == "undefined") {
@@ -252,22 +252,22 @@ Api.prototype.join = function(channel, password) {
 	} else {
 		self.irc.channels[channel].join();
 	}
-}
+};
 
 Api.prototype.part = function(channel, reason) {
 	if(typeof self.irc.channels[channel] != "undefined") {
 		self.irc.channels[channel].part(reason);
 	}
-}
+};
 
 Api.prototype.topic = function(channel /**/) {
 	var args = Array.prototype.slice.call(arguments, 1);
 
 	self.irc.raw("TOPIC", channel, args.join(" "));
-}
+};
 var blake2 = require("./blake2.js");
 Api.prototype.hash = function(str, key) {
 	var b = new blake2("", key.substr(0, 31));
 	b.update(str);
 	return b.hexDigest();
-}
+};

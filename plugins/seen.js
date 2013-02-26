@@ -1,6 +1,6 @@
 /*
  * @Plugin        Seen
- * @Description   Allows you to find out the last time a user was seen active in the channel. 
+ * @Description   Allows you to find out the last time a user was seen active in the channel.
  * @Trigger       .seen <nick>
  *
  * @Author        Killswitch (Josh Manders)

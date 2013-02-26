@@ -106,18 +106,19 @@ Server.prototype.sendHeap = function (err, send) {
     res.on("data", function (chunk) {
       res.data += chunk;
     }).on("end", function () {
-      var data = self.isValidJson(res.data);
-      if (data) {
-        if (typeof send !== "string") {
-          self.heap.push(data.url);
+      var jsonGet = self.isValidJson(res.data, function (err, data) {
+        if (!err && data) {
+          if (typeof send !== "string") {
+            self.heap.push(data.url);
+          } else {
+            self.send(send, "Error: " + data.url);
+          }
+        } else if (typeof send === 'string') {
+          self.send(send, (err || 'Error getting data from refheap'));
         } else {
-          self.send(send, "Error: " + data.url);
+          self.heap.push((err || 'Error getting data from refheap'));
         }
-      } else if (typeof send === 'string') {
-        self.send(send, 'Error getting data from refheap');
-      } else {
-        self.heap.push('Error getting data from refheap');
-      }
+      });
     });
   }).write(reqdata);
 };
@@ -560,7 +561,7 @@ Server.prototype.addTrigger = function (trigger, callback, admin) {
 
 Server.prototype.addMessageHandler = function (trigger, callback) {
   // we can convert the callback into a str for a unique id
-  var keyFromFn = function(f) {
+  var keyFromFn = function (f) {
     var strf = f.toString().replace(/\s+/, '');
     return strf.slice(-25) + String(trigger);
   };

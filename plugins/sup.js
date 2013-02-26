@@ -98,7 +98,7 @@ Plugin.prototype.sup = function(irc, channel, nick, match, message, raw) {
      "Windows: Just another pain in the glass.",
      "SENILE.COM found . . . Out Of Memory . . .",
      "Who's General Failure & why's he reading my disk?",
-     "Ultimate office automation: networked coffee.", 
+     "Ultimate office automation: networked coffee.",
      "RAM disk is *not* an installation procedure.",
      "Shell to DOS... Come in DOS, do you copy? Shell to DOS...",
      "All computers wait at the same speed.",
@@ -130,4 +130,4 @@ Plugin.prototype.sup = function(irc, channel, nick, match, message, raw) {
      "(A)bort, (R)etry, (T)ake down entire network?",
      "(A)bort, (R)etry, (G)et a beer?"];
   irc.send(channel, replies[Math.floor(Math.random()*replies.length)]);
-}
+};

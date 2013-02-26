@@ -95,5 +95,5 @@ Plugin.prototype.pinky = function(irc, channel, nick, match, message, raw) {
         "I think so, %u, but Zero Mostel times anything will still give you Zero Mostel.",
         "I think so, %u, but if we have nothing to fear but fear itself, why does Elanore Roosevelt wear that spooky mask?",
         "I think so, %u, but what if the hippopotamus won't wear the beach thong?"];
-    irc.send(channel, replies[Math.floor(Math.random()*replies.length)].replace("%u", nick))
-}
+    irc.send(channel, replies[Math.floor(Math.random()*replies.length)].replace("%u", nick));
+};

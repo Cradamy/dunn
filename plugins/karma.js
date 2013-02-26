@@ -16,7 +16,7 @@ var mongodb = require('mongojs'),
 Date.prototype.KarmaLimit = function () {
   this.setMinutes(this.getMinutes() - timeLimitMinutes);
   return this;
-}
+};
 
 var Plugin = module.exports = function (irc) {
   this.config = irc.config.karma || {threshold: 5, trackNickChanges: false};
@@ -27,7 +27,7 @@ var Plugin = module.exports = function (irc) {
   this.threshold = irc.config.karmaThreshold || this.config.threshold || 5;
 };
 
-Plugin.prototype.onNick = function(msg, newNick, oldNick) {
+Plugin.prototype.onNick = function (msg, newNick, oldNick) {
   if(typeof this.config.trackNickChanges != "undefined" && this.config.trackNickChanges) {
     karma.find({to: oldNick}, function(e, r) {
       while(r.length) {
@@ -47,16 +47,15 @@ Plugin.prototype.onMessage = function (msg) {
       karma = this.db.karma,
       threshold = this.threshold;
   Object.keys(irc.users).forEach(function (user) {
-  if (user != nick)
-    {
+    if (user !== nick) {
       users += ' ' + user;
     }
   });
-  if (channel == this.irc.nick)
-  {
+  if (channel === this.irc.nick) {
     return;
   }
-  if (to = message.match(/^(\w+)\+\+;?$/i)) {
+  to = message.match(/^(\w+)\+\+;?$/i);
+  if (to) {
     var user = to[1].toLowerCase();
     if (user != nick && users.indexOf(user) != -1) {
       karma.find({ to: user, from: nick, channel: channel, action: 'give' }).sort({ date: -1 }).limit(1, function (err, check) {
@@ -73,10 +72,10 @@ Plugin.prototype.onMessage = function (msg) {
       });
     }
   }
-
-  if (to = message.match(/^(\w+)\-\-;?$/i)) {
+  to = message.match(/^(\w+)\-\-;?$/i);
+  if (to) {
     var user = to[1].toLowerCase();
-    if (user != nick && users.indexOf(user) != -1) {
+    if (user !== nick && users.indexOf(user) !== -1) {
       karma.find({ to: user, from: nick, channel: channel, action: 'take' }).sort({ date: -1 }).limit(1, function (err, check) {
         var KarmaLimit = new Date().KarmaLimit(),
             now = new Date();

@@ -23,21 +23,22 @@ var Wiki = function (irc) {
             if (!err && links) {
                 irc.send(channel, nick + ': ' + links);
             } else {
-                irc.send(channel, nick + ': ' + err || 'No valid answer');
+                irc.send(channel, nick + ': ' + (err || 'No valid answer'));
             }
         }
         
         function getLinksFromAnswer(answer, cb) {
-            var json = irc.isValidJson(answer);
-            var links = '';
-            if (json && json.length > 1 && json[1].length > 0) {
-                json[1].forEach(function (link) {
-                    links += link + ': http://en.wikipedia.org/wiki/' + qs.escape(link.replace(/ /g, '_')) + ' || ';
-                });
-                cb(null, links.substring(0, links.length - 4));
-            } else {
-                cb('No valid answer', null);
-            }
+            var jsonGet = irc.isValidJson(answer, function (err, json) {
+                if (!err && json && json.length > 1 && json[1].length > 0) {
+                    var links = '';
+                    json[1].forEach(function (link) {
+                        links += link + ': http://en.wikipedia.org/wiki/' + qs.escape(link.replace(/ /g, '_')) + ' || ';
+                    });
+                    cb(null, links.substring(0, links.length - 4));
+                } else {
+                    cb(((err) ? err.message : 'No valid answer'), null);
+                }
+            });
         }
 
         function handleAnswer(err, answer) {

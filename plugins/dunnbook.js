@@ -14,10 +14,10 @@ var Plugin = module.exports = function (irc) {
 
 Plugin.prototype.dunnbook = function (irc, channel, nick, params, message, raw) {
   var path;
-  if(params[0] == 'ch1')
+  if (params[0] == 'ch1')
     path = 'book_of_dunn_ch1';
-  else if(params[0] == 'ch2')
+  else if (params[0] == 'ch2')
     path = 'book_of_dunn_ch2';
   
-  irc.send(channel, nick + ': http://github.com/killswitch/dunn/blob/master/docs/' + path + '.md');
+  irc.send(channel, nick + ': http://github.com/webtechirc/dunn/blob/master/docs/' + path + '.md');
 };

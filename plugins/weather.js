@@ -17,20 +17,21 @@ Plugin.prototype.weather = function (irc, channel, nick, params, message) {
     var urlPath = "free.worldweatheronline.com/feed/weather.ashx?q=" + encodeURIComponent(params[0]) + "&format=json&num_of_days=2&key=fb822213ff211557121210";
     var req = irc.httpGet(urlPath, function (err, res, data) {
       if (!err) {
-       var json = irc.isValidJson(data);
-       if (json) {
-          var weather = json.data.currentCondition;
-          var temp = weather.temp_C + 'C (' + weather.temp_F + 'F)',
-            humidity = weather.humidity + '% Humidity',
-            rain = weather.precipMM + 'mm Rainfall',
-            wind = weather.windspeedKmph + 'kph (' + weather.windspeedMiles + 'mph) Winds',
-            desc = weather.weatherDesc.value,
-            clouds = weather.cloudcover + '% Cloudcover';
-            weatherMessage = desc + ' | ' + temp + ' | ' + clouds + ' | ' + humidty + ' | ' + wind;
-            irc.send(channel, nick +': '+ weatherMessage);
-        } else {
-          irc.send(channel, 'Error getting weather data');
-        }
+       var jsonGet = irc.isValidJson(data, function (error, json) {
+         if (error && json) {
+            var weather = json.data.currentCondition;
+            var temp = weather.temp_C + 'C (' + weather.temp_F + 'F)',
+              humidity = weather.humidity + '% Humidity',
+              rain = weather.precipMM + 'mm Rainfall',
+              wind = weather.windspeedKmph + 'kph (' + weather.windspeedMiles + 'mph) Winds',
+              desc = weather.weatherDesc.value,
+              clouds = weather.cloudcover + '% Cloudcover';
+              weatherMessage = desc + ' | ' + temp + ' | ' + clouds + ' | ' + humidty + ' | ' + wind;
+              irc.send(channel, nick +': '+ weatherMessage);
+          } else {
+            irc.sendHeap((error || 'Error getting weather data'), channel);
+          }
+       });
       } else {
         irc.sendHeap(err, channel);
       }

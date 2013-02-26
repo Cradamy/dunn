@@ -1,6 +1,6 @@
 /*
  * @Plugin        Timebomb
- * @Description   Nonsense. 
+ * @Description   Nonsense.
  * @Trigger       .timebomb <nick>
  * @Trigger       .cut <color>
  *
@@ -26,13 +26,13 @@ var Plugin = module.exports = function (irc) {
 };
 
 Plugin.prototype.timebomb = function (irc, channel, nick, params, message, raw) {
-  if(this.interval == null) {
+  if(this.interval === null) {
     this.interval = setInterval(self.kick, 500);
   }
 
   if (params.length > 0) {
     params[0] = params[0].toLowerCase();
-    if(params[0] == irc.nick.toLowerCase()) {
+    if(params[0] === irc.nick.toLowerCase()) {
       irc.send(channel, "I'm afraid I can not do that, Dave");
       params[0] = nick;
     } if(typeof irc.users[params[0]] == "undefined") {
@@ -77,7 +77,7 @@ Plugin.prototype.kick = function() {
       }
     });
   });
-}
+};
 
 Plugin.prototype.cut = function (irc, channel, nick, params, message, raw) {
   var dbase = self.db;
@@ -96,4 +96,4 @@ Plugin.prototype.cut = function (irc, channel, nick, params, message, raw) {
 
     self.pause = false;
   });
-}
+};

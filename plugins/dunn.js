@@ -11,7 +11,7 @@
  */
 var Plugin = module.exports = function (irc) {
   this.ircObj = irc;
-  botNick = this.ircObj.nick,
+  botNick = this.ircObj.nick;
   irc.addTrigger('about', this.about);
   irc.addTrigger('code', this.code);
 };

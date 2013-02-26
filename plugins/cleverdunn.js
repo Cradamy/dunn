@@ -13,15 +13,15 @@ var Cleverbot = require("cleverbot-node");
 var Bots = {};
 
 var config = {};
-var server = undefined;
 var address = "0.0.0.0";
-var Plugin = module.exports = function(irc) {
+var server;
+var Plugin = module.exports = function (irc) {
 	config = irc.config.cleverdunn || {nickSessionID: false, log: 46969, debug: false};
 
 	irc.addMessageHandler(irc.nick.toLowerCase() + ", ", this.run);
 	irc.addMessageHandler(irc.nick.toLowerCase() + ": ", this.run);
 
-	if(typeof config.log != "undefined") {
+	if (config.log) {
 		irc.addTrigger("cdlog", this.getLog); //doesn't really work
 
 		server = require("http").createServer(this.request);
@@ -31,8 +31,8 @@ var Plugin = module.exports = function(irc) {
 			res.on("data", function(d) { data += d; }).on("end", function() { address = data.toString().trim();  server.listen(config.log);});
 		}).end();
 	}
-	if(typeof config.debug != "undefined") irc.addTrigger("cddebug", this.debug);
-}
+	if (config.debug) irc.addTrigger("cddebug", this.debug);
+};
 
 Plugin.prototype.request = function(req, res) {
 	var sessionid = req.url.split("?")[0].substr(1);
@@ -47,7 +47,7 @@ Plugin.prototype.request = function(req, res) {
 		});
 
 		res.write("</table>");
-	} else { 
+	} else {
 		// res.write("<h1>User/bot not found</h1>");
 		res.write("<h1>All logs</h1><table><tr><td>Channel</td><td>Name</td>");
 
@@ -61,7 +61,7 @@ Plugin.prototype.request = function(req, res) {
 	}
 	res.write("</body></html>");
 	res.end();
-}
+};
 
 Plugin.prototype.getLog = function(irc, channel, nick, match, message, raw) {
 	if(typeof Bots[channel.replace("#", "")+" "+nick] != "undefined") {
@@ -70,7 +70,7 @@ Plugin.prototype.getLog = function(irc, channel, nick, match, message, raw) {
 	} else {
 		irc.send(channel, "Sorry, "+nick+" you don't have a cleverbot session yet. All logs at http://"+address+":"+server.address().port);
 	}
-}
+};
 
 Plugin.prototype.debug = function(irc, channel, nick, match, message, raw) {
 	if(typeof Bots[channel.replace("#", "")+" "+nick] != "undefined") {
@@ -78,10 +78,10 @@ Plugin.prototype.debug = function(irc, channel, nick, match, message, raw) {
 	} else {
 		irc.send(channel, "Sorry, "+nick+" you don't have a cleverbot session yet.");
 	}
-}
+};
 
 Plugin.prototype.run = function(irc, channel, nick, match, message, raw) {
-	sessionid = channel.replace("#", "")+" "+nick
+	var sessionid = channel.replace("#", "") + " " + nick;
 
 	if(typeof Bots[sessionid] == "undefined") {
 		Bots[sessionid] = new Cleverbot();
