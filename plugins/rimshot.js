@@ -7,11 +7,11 @@
  */
 
 Plugin = exports.Plugin = function (irc) {
-  //lolololololololol
+  this.irc = irc;
 };
 
-Plugin.prototype.onMessage = function (irc) {
-  if(irc.arguments[1].match(/rimshot/i)) this.ircObj.send(irc.arguments[0], 'badumm tisssshhhhh');
-  else if(irc.arguments[1].match(/badumm/i) || irc.arguments[1].match(/ba dumm/i)) this.ircObj.send(irc.arguments[0], 'tisssshhhhh');
+Plugin.prototype.onMessage = function (msg) {
+  if(msg.arguments[1].match(/rimshot/i)) this.irc.send(msg.arguments[0], 'badumm tisssshhhhh');
+  else if(msg.arguments[1].match(/badumm/i) || msg.arguments[1].match(/ba dumm/i)) this.irc.send(msg.arguments[0], 'tisssshhhhh');
 };
 

@@ -9,13 +9,18 @@ Api = exports.Api = function(irc) {
 	this.boot(irc);
 };
 
-Api.prototype.Error = function(msg) {
+Api.prototype.Error = function(msg, chan) {
+	self.sendHeap(msg, chan);
 	throw new msg;
 }
 
 Api.prototype.boot = function(irc) {
 	this.irc = irc;
-	this.mongo = mongojs(irc.database);
+	try {
+		this.mongo = mongojs(irc.database);
+	} catch(e) {
+		//
+	}
 
 	self = this;
 	irc.on("ctcp", this.event.ctcp);
@@ -44,51 +49,72 @@ Api.prototype.env = {
 		nick: {},
 		connect: {},
 		data: {}
-	},
-	miqqiayuuq: function(/**/) {
+	} /*,
+	miqqiayuuq: function() {
 		//Don't even ask.
-		return ((parseInt((0x82030e59cc2b2*0x004189374bc6a7f).toString().substr(0, 7), 36) * 7) / parseInt(self.toString(), 36)).toString(36).split(".")[1];
-	}
+		return ((parseInt((0x82030e59cc2b2*0x004189374bc6a7f).toString().substr(0, 7), 36) * 7) / parseInt(self.env.miqqiayuuq.toString(), 36)).toString(36).split(".")[1];
+	} */
 };
 
 Api.prototype.hook = function(evt /**/) {
 	var args = Array.prototype.slice.call(arguments, 1);
 
+	var hooks = self.env.hooks[evt];
+	if(hooks === undefined) return;
+
 	switch(evt) {
-		case "ctcp":
+		default:
+			var formatted = [self.irc]; while(args.lenght) formatted.unshift(args.shift());
+
+			var hooksKeys = Object.keys(hooks);
+			while(hooksKeys.length) {
+			var cb = hooks[hooksKeys.shift()].callbacks;
+			for(var i = 0; i < cb.length; ++i) {
+				try {
+					cb[i].apply(self.irc, formatted);
+				} catch(e) {
+					self.irc.sendHeap(e.stack);
+				}
+			}
 
 		break;
 
-		case "notice":
 
 		break;
 
 		case "pm":
-
-		break;
-
 		case "message":
+			// var target = args[0].arguments[0], 
+			// 		nick = (args[0].prefix || "").toLowerCase(),  //i know it's chan.
+			// 		params = msg.arguments[1].split(' '), 
+			// 		cmd = params.shift(),
+			// 		formatted = [self.irc, nick, self.irc.users[nick], params, args[0].arguments[1], args[0].orig];
 
-		break;
-		
-		case "join":
+			// var trigmsgs = Object.keys(hooks), msg = args[0].arguments[1], cbstack = [];
+			// while(trigmsgs.length) {
+			// 	var trig = trigmsgs.shift();
+			// 	if(cmd[0] == self.irc.command) {
+			// 		if(cmd.substr(1).toLowerCase() == trig.toLowerCase()) {
+			// 			cbstack.push(hooks[trig].callbacks);
+			// 		}
+			// 	}
+			// 	var reg = (trig instanceof RegExp) ? trig : new RegExp(trig, "ig");
+			// 	if(reg.test(msg)) {
+			// 		cbstack.push(hooks[trig].callbacks);
+			// 	}
+			// }
 
-		break;
+			// if(self.irc.channels[nick]) formatted[1] = self.irc.channels[nick].name.toLowerCase();
 
-		case "part":
-
-		break;
-
-		case "nick":
-
-		break;
-
-		case "connect":
-
-		break;
-
-		case "data":
-
+			// while(cbstack.length) {
+			// var cb = cbstack.shift();
+			// for(var i = 0; i < cb.length; ++i) {
+			// 	try {
+			// 		cb[i].apply(self.irc, formatted);
+			// 	} catch(e) {
+			// 		self.irc.sendHeap(e.stack, nick)
+			// 	}
+			// }
 		break;
 	}
 };
@@ -192,7 +218,7 @@ Api.prototype.remove = Api.prototype.rm = {
 	}
 };
 
-Api.prototype.unbind = Api.prototype.removeListener = Api.prototype.rm.hook;
+Api.prototype.off = Api.prototype.unbind = Api.prototype.removeListener = Api.prototype.rm.hook;
 
 
 Api.prototype.requestDB = Api.prototype.database = function(/**/) {
@@ -222,13 +248,7 @@ Api.prototype.configAgent = function(i, d) {
 
 Api.prototype.send = function(channel /**/) {
 	var args = Array.prototype.slice.call(arguments, 1);
-	while(args.length) {
-		var arg = args.shift();
-		while(arg.length) {
-			self.irc.send(channel, arg.substr(0, 440));
-			arg = arg.substr(440);
-		}
-	}
+	self.irc.send(channel, args.join(" "));
 };
 
 Api.prototype.users = function(channel) {
@@ -247,6 +267,7 @@ Api.prototype.kick = function(channel, nick, reason) {
 }
 
 Api.prototype.join = function(channel, password) {
+	if(channel[0] != "#") channel = "#"+channel;
 	if(typeof self.irc.channels[channel] == "undefined") {
 		self.irc.channels[channel] = new self.irc.channelObj(self.irc, channel, true, password);
 	} else {
