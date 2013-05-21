@@ -43,7 +43,7 @@ Plugin.prototype.about = function (irc, channel, nick, params, message, raw) {
 };
 
 Plugin.prototype.code = function (irc, channel, nick, params, message, raw) {
-	irc.send(channel, nick + ': You can view, and fork me in my code hole to contribute on GitHub @ http://www.github.com/webtechirc/dunn.');
+	irc.send(channel, nick + ': You can view, and fork me code to contribute on GitHub at http://www.github.com/webtechirc/dunn.');
 };
 
 Plugin.prototype.environment = function(irc, channel, nick, params, message, raw) {
