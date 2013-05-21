@@ -14,13 +14,16 @@ Plugin = exports.Plugin = function (irc) {
 };
 
 Plugin.prototype.onMessage = function (msg) {
-	console.log(Date.create(new Date()).format('{yyyy}-{mm}-{dd} {HH}:{mm}:{ss}'), msg);
-	/*var sql = {
-		created_on: Date.create(new Date()).format('{yyyy}-{mm}-{dd} {HH}:{mm}:{ss}'),
-		nick: 
-	};
+	var nick user_nick = (this.irc.user(msg.prefix) || '').toLowerCase(),
+		sql = {
+			created_on: Date.create(new Date()).format('{yyyy}-{dd}-{dd} {HH}:{mm}:{ss}'),
+			nick: user_nick,
+			hostmask: msg.prefix.split('!~')[1],
+			channel: msg.arguments[0],
+			message: msg.arguments[1]
+		};
   	var query = connection.query('INSERT INTO logs SET ?', post, function(err, result) {
 		
 	});
-	console.log(query.sql);*/
+	console.log(query.sql);
 };
