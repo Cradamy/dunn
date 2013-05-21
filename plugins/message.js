@@ -14,7 +14,8 @@ Plugin = exports.Plugin = function (irc) {
 };
 
 Plugin.prototype.messages = function(irc, channel, nick, params, message, raw) {
-	this.db.query('SELECT say FROM messages WHERE message_id = 1 LIMIT 1', function (err, result) {
+	console.log(this.mysql);
+	/*this.db.query('SELECT say FROM messages WHERE message_id = 1 LIMIT 1', function (err, result) {
 		irc.send(channel, result[0].say);
-	});
+	});*/
 };
