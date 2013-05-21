@@ -1,15 +1,20 @@
-var config = {
-	host: 'irc.freenode.net',
-	port: 6667,
-	nick: 'dunnBot',
-	identPass: 'youridpasshere',
-	username: 'dunnBot',
-	realname: 'Powered by #webtech',
-	command: '.',
-	db: 'dunnBot',
-	channels: ['#yourchannel'],
-	plugins: ['dunn', 'example', 'karma', 'log', 'nsfw', 'triggers', 'rage', 'seen', 'remind'],
-	admins: ['yournick']
+module.exports = {
+	host: 'irc.freenode.net', //hostname of the IRC server
+	port: 6667, //port of the IRC server 
+	autoReconnect: true, //Automatically reconnects
+	nick: 'dunnBot', //Bot nick
+	identPass: 'password', //IDENTIFY password for the nick
+	username: 'dunnBot', //the username
+	realname: 'Powered by #webtech', //"real" name
+	command: '!', //trigger command prefix
+	mysql: {
+		host: 'localhost',
+		port: 3306,
+		user: '',
+		password: '',
+		database: ''
+	}, 
+	channels: ['#webtech'], //channels to load
+	plugins: ['dunn', 'duckduckgo', 'links', 'pinky', 'rimshot', 'search', 'sup', 'weather'], //plugins to load
+	admins: ['killswitch'] //admins of the bot
 };
-
-module.exports = config;
