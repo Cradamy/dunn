@@ -1,14 +1,8 @@
 {
   "name": "dunn",
-  "version": "0.2.6",
+  "version": "0.3.0",
   "description": "IRC bot for #webtech on freenode",
-  "author": "Josh Manders <josh@joshmanders.com> (http://www.joshmanders.com)",
-  "contributors": [
-    "Conrad Pankoff <deoxxa@fknsrs.biz> (http://www.fknsrs.biz)",
-    "Naomi Kyoto <nakyoto@gmail.com> (http://github.com/naomik)",
-    "Jonathan Ardis (http://github.com/Emn1ty)",
-    "Aaron Ahmed <gr33nmous3@gmail.com> (http://github.com/draceros)"
-  ],
+  "author": "#webtech on freenode (irc://irc.freenode.net/#webtech)",
   "keywords": [
     "irc",
     "bot",
@@ -16,10 +10,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/killswitch/dunn.git"
+    "url": "git://github.com/webtechirc/dunn.git"
   },
     "bugs": {
-    "url": "https://github.com/killswitch/dunn/issues"
+    "url": "https://github.com/webtechirc/dunn/issues"
   },
   "engines": {
     "node": "0.8.x",
