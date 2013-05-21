@@ -16,7 +16,7 @@ Plugin = exports.Plugin = function (irc) {
 Plugin.prototype.onMessage = function (msg) {
 	var user_nick = (this.irc.user(msg.prefix) || '').toLowerCase(),
 		sql = {
-			created_on: Date.create(new Date()).format('{yyyy}-{dd}-{dd} {HH}:{mm}:{ss}'),
+			created_on: Date.create(new Date()).format('{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}'),
 			nick: user_nick,
 			hostmask: msg.prefix.split('!~')[1],
 			channel: msg.arguments[0],
