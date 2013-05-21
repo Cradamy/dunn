@@ -69,5 +69,5 @@ Plugin.prototype.environment = function(irc, channel, nick, params, message, raw
 
 Plugin.prototype.restart = function(irc, channel, nick, params, message, raw) {
 	irc.send(channel, nick + ': Restarting, brb.');
-	exect('forever restart dunnbot.js');
+	exec('forever restart dunnbot.js');
 };
