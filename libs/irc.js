@@ -55,11 +55,11 @@ Server.prototype.initialize = function (config) {
 			database: config.mysql.database
 		});
 		connection.connect();
-		this.mysql = connection;
+		this.db = this.mysql = connection;
 	}
 	else
 	{
-		this.mysql = false;
+		this.db = this.mysql = false;
 	}
 
 	this.connection = null;
