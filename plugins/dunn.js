@@ -9,11 +9,15 @@
 * @Copyright Josh Manders 2012
 *
 */
+
+var exec = require('child_process').exec;
+
 Plugin = exports.Plugin = function (irc) {
 	this.ircObj = irc;
 	irc.addTrigger('about', this.about);
 	irc.addTrigger('code', this.code);
 	irc.addTrigger('env', this.environment);
+	irc.addTrigger('restart', this.restart, 1);
 };
 
 Plugin.prototype.onNumeric = function(irc) {
@@ -43,7 +47,7 @@ Plugin.prototype.about = function (irc, channel, nick, params, message, raw) {
 };
 
 Plugin.prototype.code = function (irc, channel, nick, params, message, raw) {
-	irc.send(channel, nick + ': You can view, and fork me code to contribute on GitHub at http://www.github.com/webtechirc/dunn.');
+	irc.send(channel, nick + ': You can view, and fork my code to contribute on GitHub at http://www.github.com/webtechirc/dunn.');
 };
 
 Plugin.prototype.environment = function(irc, channel, nick, params, message, raw) {
@@ -61,4 +65,9 @@ Plugin.prototype.environment = function(irc, channel, nick, params, message, raw
 		irc.send(channel, 'Loaded triggers are: ' + irc.command + Object.keys(irc.triggers).join(', ' + irc.command));
 		break;
 	}
+};
+
+Plugin.prototype.restart = function(irc, channel, nick, params, message, raw) {
+	irc.send(channel, nick + ': Restarting, brb.');
+	exect('forever restart dunnbot.js');
 };
