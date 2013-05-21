@@ -39,7 +39,7 @@ Plugin.prototype.onMessage = function (irc) {
 };
 
 Plugin.prototype.about = function (irc, channel, nick, params, message, raw) {
-	irc.send(channel, nick + ': My name is Dunn, I am written in Node.js and utilize MongoDB as my data storage. I was written by Killswitch.');
+	irc.send(channel, nick + ': My name is dunnBot, I am written in Node.js and I am a collective project by the channel #webtech on freenode.');
 };
 
 Plugin.prototype.code = function (irc, channel, nick, params, message, raw) {
