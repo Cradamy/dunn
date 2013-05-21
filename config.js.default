@@ -1,32 +1,15 @@
 var config = {
-	host: 'irc.freenode.net', //hostname of the IRC server
-	port: 6667, //port of the IRC server 
-	autoReconnect: true, //Automatically reconnects
-	nick: 'dunnBot', //Bot nick
-	identPass: 'Bot nickserv password', //IDENTIFY password for the nick
-	username: 'dunnBot', //the username
-	realname: 'Powered by #webtech', //"real" name
-	command: '.', //trigger command prefix
-	db: 'dunnBot', //MongoJS database name
-	channels: ['#yourchannel'], //channels to load
-	plugins: ['dunn', 'karma', 'log', 'environment', 'rage', 'seen', 'remind', 'quote', 'manage', 'wiki', 'duckduckgo', syndicate'], //plugins to load
-	admins: ['yournick', 'killswitch'], //admins of the bot
-	karma: {
-		threshold: 5, //minimum karma needed to deduct karma from others
-		trackNickChanges: false //tracks nick changes, could be potential for stealing karma
-	},
-	cleverdunn: {
-		nickSessionID: false, //Formulate a sessionid with the nick of the person speaking (known to break things)
-		log: 46969, //if defined, a HTTP server will run on this port showing all messages sent through cleverdunn
-		debug: false //Debugging
-	},
-	wiki: {
-		limit: 5 // limits the number of links returned from a wikipedia search
-	},
-	links: {
-		shortUrl: 'http://tinyurl.com/api-create.php?url=' // url for automatic shorturl generation
-	},
-	syndicate: "dunn.polarbearcollective.com"
+	host: 'irc.freenode.net',
+	port: 6667,
+	nick: 'dunnBot',
+	identPass: 'youridpasshere',
+	username: 'dunnBot',
+	realname: 'Powered by #webtech',
+	command: '.',
+	db: 'dunnBot',
+	channels: ['#yourchannel'],
+	plugins: ['dunn', 'example', 'karma', 'log', 'nsfw', 'triggers', 'rage', 'seen', 'remind'],
+	admins: ['yournick']
 };
 
 module.exports = config;

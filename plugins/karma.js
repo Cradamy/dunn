@@ -19,23 +19,10 @@ Date.prototype.KarmaLimit = function () {
 }
 
 Plugin = exports.Plugin = function (irc) {
-  this.config = irc.config.karma || {threshold: 5, trackNickChanges: false};
-
   irc.addTrigger('karma', this.karma);
   this.db = mongodb.connect(irc.database, ['karma']);
   this.irc = irc;
-  this.threshold = irc.config.karmaThreshold || this.config.threshold || 5;
-};
-
-Plugin.prototype.onNick = function(msg, newNick, oldNick) {
-  if(typeof this.config.trackNickChanges != "undefined" && this.config.trackNickChanges) {
-    karma.find({to: oldNick}, function(e, r) {
-      while(r.length) {
-        var k = r;
-        karma.save({to: newNick, from: k.from, channel: k.channel, action: k.action});
-      }
-    });
-  }
+  this.threshold = irc.config.karmaThreshold || 5;
 };
 
 Plugin.prototype.onMessage = function (msg) {
@@ -47,7 +34,7 @@ Plugin.prototype.onMessage = function (msg) {
       karma = this.db.karma,
       threshold = this.threshold;
   Object.keys(irc.users).forEach(function (user) {
-  if (user != nick)
+  if (user != irc.nick.toLowerCase() && user != nick)
     {
       users += ' ' + user;
     }
@@ -58,7 +45,7 @@ Plugin.prototype.onMessage = function (msg) {
   }
   if (to = message.match(/^(\w+)\+\+;?$/i)) {
     var user = to[1].toLowerCase();
-    if (user != nick && users.indexOf(user) != -1) {
+    if (user != botNick && user != nick && users.indexOf(user) != -1) {
       karma.find({ to: user, from: nick, channel: channel, action: 'give' }).sort({ date: -1 }).limit(1, function (err, check) {
         var KarmaLimit = new Date().KarmaLimit(),
             now = new Date();
@@ -69,14 +56,14 @@ Plugin.prototype.onMessage = function (msg) {
           }
         }
         karma.save({ to: user, from: nick, channel: channel, action: 'give', date: new Date() });
-        irc.send(channel, nick + ': Karma given to ' + ((user == botNick) ? 'Me :)' : user));
+        irc.send(channel, nick + ': Karma given to ' + user);
       });
     }
   }
 
   if (to = message.match(/^(\w+)\-\-;?$/i)) {
     var user = to[1].toLowerCase();
-    if (user != nick && users.indexOf(user) != -1) {
+    if (user != botNick && user != nick && users.indexOf(user) != -1) {
       karma.find({ to: user, from: nick, channel: channel, action: 'take' }).sort({ date: -1 }).limit(1, function (err, check) {
         var KarmaLimit = new Date().KarmaLimit(),
             now = new Date();
@@ -94,7 +81,7 @@ Plugin.prototype.onMessage = function (msg) {
               return;
             }
             karma.save({ to: user, from: nick, channel: channel, action: 'take', date: new Date() });
-            irc.send(channel, nick + ': Karma taken from ' + ((user == botNick )? 'Me :(' : user));
+            irc.send(channel, nick + ': Karma taken from ' + user);
           });
         });
       });
@@ -110,7 +97,7 @@ Plugin.prototype.karma = function (irc, channel, nick, params, message, raw) {
   
   db.karma.find({ to: nick.toLowerCase(), channel: channel, action: 'give' }, function (err, karma) {
     db.karma.find({ to: nick, channel: channel, action: 'take'}, function(err, karma2) {
-      irc.send(channel, nick + ': ' + ((nick == irc.nick.toLowerCase()) ? 'I' : 'You') + ' have ' + (karma.length - karma2.length) + ' total karma.');
+      irc.send(channel, nick + ': You have ' + (karma.length - karma2.length) + ' total karma.');
     });
   });
 };

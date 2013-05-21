@@ -7,9 +7,7 @@
     "Conrad Pankoff <deoxxa@fknsrs.biz> (http://www.fknsrs.biz)",
     "Naomi Kyoto <nakyoto@gmail.com> (http://github.com/naomik)",
     "Jonathan Ardis (http://github.com/Emn1ty)",
-    "Aaron Ahmed <gr33nmous3@gmail.com> (http://github.com/draceros)",
-    "Carlos Cardona <cgcardona@gmail.com> (http://github.com/cgcardona)",
-    "Olli K <olli@salaliitto.com> (http://github.com/gildean)"
+    "Aaron Ahmed <gr33nmous3@gmail.com> (http://github.com/draceros)"
   ],
   "keywords": [
     "irc",
@@ -28,8 +26,6 @@
     "npm": "1.x.x"
   },
   "dependencies": {
-    "mongojs": "0.4.x",
-    "commander": "*",
-    "cleverbot-node": "*"
+    "mongojs": "0.4.x"
   }
 }

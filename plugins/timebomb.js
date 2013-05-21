@@ -40,7 +40,6 @@ Plugin.prototype.timebomb = function (irc, channel, nick, params, message, raw) 
     } else {
       var dbase = self.db;
       dbase.timebomb.find({nick: params[0], channel: channel}).limit(1, function(err, result) {
-        if(err) return;
         if(result.length > 0) {
           irc.send(channel, "Already strapped a timebomb to "+params[0]);
         } else {
@@ -61,7 +60,7 @@ Plugin.prototype.timebomb = function (irc, channel, nick, params, message, raw) 
       });
     }
   } else {
-    irc.send(channel, "Usage .timebomb nick");
+    irc.send(channel, "Usage .timebomb nicke");
   }
 };
 

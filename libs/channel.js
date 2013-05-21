@@ -18,21 +18,17 @@ exports.initialize = function (irc) {
             nick;
 
         // TODO: support all channel prefixes - need to find proper documentation to list these
-        // Not sure if this actually "supports" it but well here!
-        // https://www.alien.net.au/irc/chantypes.html
-        if (!chan || ["!", "#", "&", "+", ".", "~"].indexOf(chan[0]) == -1) {
+        if (!chan || chan.charAt(0) !== '#') {
             return;
         }
         chan = chans[chan];
-        if(typeof chan != "undefined") {
-          for(var i=0; i<nicks.length; i++) {
-              nick = nicks[i].toLowerCase();
-              user = allusers[nick];
-              if (!user) {
-                  user = allusers[nick] = new _this.userObj(_this, nicks[i]);
-              }
-              user.join(chan.name);
-          }
+        for(var i=0; i<nicks.length; i++) {
+            nick = nicks[i].toLowerCase();
+            user = allusers[nick];
+            if (!user) {
+                user = allusers[nick] = new _this.userObj(_this, nicks[i]);
+            }
+            user.join(chan.name);
         }
     });
 };

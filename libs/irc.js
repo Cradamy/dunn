@@ -3,14 +3,10 @@ var sys = require('util'),
     events = require('events'),
     fs = require('fs'),
     path = require('path'),
-    user = require ('./user' ),
-    channel = require('./channel'),
-    httpGet = require('./httpget'),
-    api = require("./api");
+    user = require ('./user.js' ),
+    channel = require('./channel.js');
 
 var existsSync = fs.existsSync || path.existsSync;
-
-var self = this;
 
 var Server = exports.Server = function (config) {
   this.initialize(config);
@@ -19,12 +15,6 @@ var Server = exports.Server = function (config) {
 sys.inherits(Server, events.EventEmitter);
 
 Server.prototype.initialize = function (config) {
-  this.existsSync = existsSync;
-
-  //update this as you change the code pls.
-  this.majorVersion = "1.0.7";
-  this.minorVersion = "c9ac55f-git";
-
   this.host = config.host || '127.0.0.1';
   this.port = config.port || 6667;
   this.nick = config.nick || 'DunnBot';
@@ -35,11 +25,6 @@ Server.prototype.initialize = function (config) {
   this.database = config.db || 'dunn';
   this.admins = config.admins || [];
   this.userChannels = config.channels || [];
-  this.httpGet = httpGet;
-
-
-  this.reconnect = config.autoReconnect || true;
-
   
   // carry over config object to allow plugins to access it
   this.config = config || {};
@@ -57,8 +42,6 @@ Server.prototype.initialize = function (config) {
   this.triggers = [];
   this.messagehandlers = {};
   this.replies = [];
-
-  this.v2 = new api.Api(this);
 
   this.connection = null;
   this.buffer = "";
@@ -83,14 +66,14 @@ Server.prototype.initialize = function (config) {
    * Boot Plugins
    */
   this.plugins = [];
-  self = this;
+  var self = this;
   config.plugins.forEach(function(plugin) {
     self.loadPlugin(plugin);
   });
 };
 
 Server.prototype.sendHeap = function(err, send) {
-  var https = require("https")
+  var https = require("https"), that = this;
 
   var reqdata = "contents="+encodeURIComponent(err)+"&private=true&language=Plain+Text";
 
@@ -110,13 +93,13 @@ Server.prototype.sendHeap = function(err, send) {
       res.data += chunk;
     }).on("end", function() {
       var data = JSON.parse(res.data);
-      if(typeof send !== "string") self.heap.push(data.url);
+      if(typeof send != "string") that.heap.push(data.url);
       else {
-        self.send(send, "Error: "+data.url);
+        that.send(send, "Error: "+data.url);
       }
     });
   }).write(reqdata);
-}
+};
 
 Server.prototype.connect = function () {
   var c = this.connection = net.createConnection(this.port, this.host);
@@ -124,24 +107,16 @@ Server.prototype.connect = function () {
     c.setTimeout(this.timeout);
 
   this.addListener('connect', this.onConnect);
-  this.addListener('data', this.onReceive);
-  this.addListener('eof', this.onEOF);
-  this.addListener('timeout', this.onTimeout);
-  this.addListener('close', this.onClose);
+    this.addListener('data', this.onReceive);
+    this.addListener('eof', this.onEOF);
+    this.addListener('timeout', this.onTimeout);
+    this.addListener('close', this.onClose);
 };
 
-Server.prototype.disconnect = function (reason, reconnect) {
+Server.prototype.disconnect = function (reason) {
     if (this.connection.readyState !== 'closed') {
         this.connection.close();
         sys.puts('disconnected (' + reason + ')');
-
-        if((typeof reconnect === "undefined" || reconnect === true) && this.reconnect) {
-
-          var port = this.port, host = this.host, conn = this.connection, reconnect = function() {
-            conn.connect(port, host);
-          };
-          setTimeout(reconnect, 3000); //reconnect in 3 seconds;
-        }
     }
 };
 
@@ -172,9 +147,9 @@ Server.prototype.onReceive = function (chunk) {
 };
 
 Server.prototype.kick = function(channel, nick, reason) {
-  if(typeof channel === "undefined" || typeof nick === "undefined") return;
+  if(typeof channel == "undefined" || typeof nick == "undefined") return;
 
-  if(typeof reason === "undefined") reason = "";
+  if(typeof reason == "undefined") reason = "";
   else reason = " :"+reason;
 
   this.raw("KICK", channel + " " + nick + reason);
@@ -186,11 +161,14 @@ Server.prototype.ctcp = function(nick, target, msg, command) {
   this.emit('ctcp', nick, target, msg, command);
   this.emit('ctcp-'+command, nick, target, msg);
 
-  if(command === "PRIVMSG" && msg === "VERSION") {
-    var plugins = Object.keys(this.triggers);
+  if(command === "PRIVMSG" && msg == "VERSION") {
+    var plugins = [];
+    for (var trig in this.triggers) {
+      plugins.push(trig);
+    }
 
     this.raw("NOTICE", nick, ":\x01VERSION DunnBot, running ["+(plugins.join(", "))+"] plugins\x01");
-    this.emit("ctcp-version", [nick, target]);
+    this.emit("ctcp-version", nick, target);
   }
 };
 
@@ -214,7 +192,7 @@ Server.prototype.onMessage = function (msg) {
       this.raw('PONG', msg.arguments);
       break;
 
-    case (command === "NOTICE"):
+    case (command == "NOTICE"):
       if(msg.arguments[1][0] === "\x01" && msg.arguments[1].lastIndexOf('\x01') > 0) {
         this.ctcp(nick, target, msg.arguments[1], command);
       }
@@ -234,37 +212,33 @@ Server.prototype.onMessage = function (msg) {
       var params = msg.arguments[1].split(' '),
           cmd = params.shift();
       
-      if (cmd.substring(0, 1) === this.command) {
+      if (cmd.substring(0, 1) == this.command) {
         
         var trigger = cmd.substring(1);
 
-        if (typeof this.triggers[trigger] !== 'undefined') {
+        if (typeof this.triggers[trigger] != 'undefined') {
           var trig = this.triggers[trigger];
 
           if(trig.admin) {
-            if(this.admins.indexOf(nick.toLowerCase()) === -1) {
+            if(this.admins.indexOf(nick.toLowerCase()) == -1) {
               this.send(this.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase() + ": Insufficient permissions");
               return false;
             }
           }
 
-          if (typeof this.channels[msg.arguments[0]] !== "undefined") {
+          if (typeof this.channels[msg.arguments[0]] != "undefined") {
             //room message recieved
 
             try {
               trig.callback.apply(this.plugins[trig.plugin], [this, this.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase(), params, msg.arguments[1], msg.orig]);
             } catch(err) {
               this.sendHeap(err.stack, this.channels[msg.arguments[0]].name.toLowerCase());
+              return false;
             }
           } else {
             //PM recieved
-            try {
-              trig.callback.apply(this.plugins[trig.plugin], [this, nick.toLowerCase(), nick.toLowerCase(), params, msg.arguments[1], msg.orig]);
-            } catch(err) {
-              this.sendHeap(err.stack, this.channels[msg.arguments[0]].name.toLowerCase());
-            }
           }
-        } else if(trigger === "heaps") {
+        } else if(trigger == "heaps") {
           if(this.heap.length > 0) {
             this.send(this.channels[msg.arguments[0]].name.toLowerCase(), this.heap.join(" "));
             this.heap = [];
@@ -273,39 +247,25 @@ Server.prototype.onMessage = function (msg) {
           }
         }
       } else {
-
-        var msgHandlers = this.messagehandlers, msgTrigger, key;
- 
-        for (key in msgHandlers) {
-
-          var msgHandler = msgHandlers[key],
-              ttrigger = msgHandler.trigger,
-              _msg = msg.arguments[1],
-              match = false;
-
-          if (ttrigger instanceof RegExp) {
-            match = ttrigger.test(_msg);
-          } else {
-            match = _msg.toLowerCase().match(ttrigger);
-          }
-
+        var msgHandlers = this.messagehandlers, msgTrigger, match;
+        for (msgTrigger in msgHandlers) {
+          match = msg.arguments[1].toLowerCase().match(msgTrigger);
           if (match) {
- 
+            msgHandler = msgHandlers[msgTrigger];
+
             if (typeof this.channels[msg.arguments[0]] != "undefined") {
               //room message recieved
+
               try {
-                msgHandler.callback.apply(this, [this, this.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase(), match, msg.arguments[1], msg.orig]);
+                msgHandler.callback.apply(msgHandler.plugin, [this, this.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase(), match, msg.arguments[1], msg.orig]);
               } catch(err) {
                 this.sendHeap(err.stack, this.channels[msg.arguments[0]].name.toLowerCase());
+                return false;
               }
             } else {
               //PM recieved
-              try {
-                msgHandler.callback.apply(this, [this, nick.toLowerCase(), nick.toLowerCase(), match, msg.arguments[1], msg.orig]);
-              } catch(err) {
-                this.sendHeap(err.stack, this.channels[msg.arguments[0]].name.toLowerCase());
-              }
             }
+            msgHandlers = [];
           }
         }
       }
@@ -354,15 +314,11 @@ Server.prototype.onMessage = function (msg) {
       break;
 
     case (command === 'NICK'):
-      var oldNick = msg.prefix.split("!")[0].trim().toLowerCase();
-      user = this.users[oldNick];
-
       if (user) {
         user.update(msg.prefix);
-        this.users[msg.arguments[0]] = user;
       }
 
-      this.emit('nick', msg, msg.arguments[0], oldNick);
+      this.emit('nick', msg);
       break;
 
     case (/^\d+$/.test(command)):
@@ -460,10 +416,7 @@ Server.prototype.send = function (target, msg) {
     msg = Array.prototype.slice.call(arguments, 1).join(' ') + "\r\n";
 
     if (arguments.length > 1) {
-        while(msg.length) {
-          this.raw('PRIVMSG', target, ':' + msg.substr(0, 440));
-          msg = msg.substr(440);
-        }
+        this.raw('PRIVMSG', target, ':' + msg);
     }
 };
 
@@ -477,7 +430,7 @@ Server.prototype.addListener = function (ev, f) {
 };
 
 Server.prototype.addPluginListener = function (plugin, ev, f) {
-  if (typeof this.hooks[plugin] === 'undefined') {
+  if (typeof this.hooks[plugin] == 'undefined') {
         this.hooks[plugin] = [];
     }
 
@@ -494,15 +447,11 @@ Server.prototype.addPluginListener = function (plugin, ev, f) {
   return this.on(ev, callback);
 };
 
-Server.prototype.unloadPlugin = function (name, q) {
-  if((typeof q === "undefined" || q === false) && this.debug) {
-    sys.puts( "Unloading plugin " + name);
-  }
-
-  if (typeof this.plugins[name] !== 'undefined') {
+Server.prototype.unloadPlugin = function (name) {
+  if (typeof this.plugins[name] != 'undefined') {
     delete this.plugins[name];
 
-    if (typeof this.hooks[name] !== 'undefined') {
+    if (typeof this.hooks[name] != 'undefined') {
 
       for(var hook in this.hooks[name]) {
 
@@ -512,7 +461,7 @@ Server.prototype.unloadPlugin = function (name, q) {
 
     }
 
-    if (typeof this.replies[name] !== 'undefined') {
+    if (typeof this.replies[name] != 'undefined') {
 
       for(var reply in this.replies[name]) {
 
@@ -524,7 +473,7 @@ Server.prototype.unloadPlugin = function (name, q) {
 
     for(var trig in this.triggers) {
 
-      if (this.triggers[trig].plugin === name) {
+      if (this.triggers[trig].plugin == name) {
 
         delete this.triggers[trig];
 
@@ -532,8 +481,13 @@ Server.prototype.unloadPlugin = function (name, q) {
 
     }
 
-    if(typeof require.cache[path.resolve(__dirname, "../plugins/" + name + ".js")] != "undefined") {
-      delete require.cache[path.resolve(__dirname, "../plugins/" + name + ".js")];
+    if(typeof require.cache[__dirname.substr(0, __dirname.length-5) + "/plugins/" + name + ".js"] != "undefined") {
+      delete require.cache[__dirname.substr(0, __dirname.length-5) + "/plugins/" + name + ".js"]; //requires absolute path
+    }
+    
+    //windows
+    if(typeof require.cache[__dirname.substr(0, __dirname.length-5) + "\\plugins\\" + name + ".js"] != "undefined") {
+      delete require.cache[__dirname.substr(0, __dirname.length-5) + "\\plugins\\" + name + ".js"];
     }
   }
 
@@ -542,13 +496,12 @@ Server.prototype.unloadPlugin = function (name, q) {
 
 Server.prototype.loadPlugin = function (name) {
   
-  if(this.debug) {
-    sys.puts( "Loading plugin " + name);
-  }
+  console.log("loading plugin: " + name);
 
-  this.unloadPlugin(name, true);
+  this.unloadPlugin(name);
 
-  var path = __dirname + '/../plugins/' + name + '.js',
+  var that = this,
+    path = __dirname + '/../plugins/' + name + '.js',
     plugin;
   
   // load plugin
@@ -562,18 +515,18 @@ Server.prototype.loadPlugin = function (name) {
       return false;
     }
     // invoke
-    this.plugins[name] = new plugin.Plugin(this);
+    that.plugins[name] = new plugin.Plugin(that);
 
     // hooks
     ['connect', 'data', 'numeric', 'message', 'join', 'part', 'quit', 'nick', 'privateMessage'].forEach(function(event) {
       var onEvent = 'on' + event.charAt(0).toUpperCase() + event.substr(1),
         callback = this.plugins[name][onEvent];
 
-      if (typeof callback === 'function') {
+      if (typeof callback == 'function') {
         this.addPluginListener(name, event, callback);
       }
 
-    }, this);
+    }, that);
 
     return true;
   }
@@ -587,24 +540,19 @@ Server.prototype.loadPlugin = function (name) {
 };
 
 Server.prototype.addTrigger = function (trigger, callback, admin) {
-  if (typeof this.triggers[trigger] === 'undefined') {
-    if(typeof admin === "undefined") admin = 0;
+  if (typeof this.triggers[trigger] == 'undefined') {
+    if(typeof admin == "undefined") admin = 0;
     admin = parseInt(admin);
     this.triggers[trigger] = { plugin: trigger, callback: callback, admin: admin};
   }
 };
 
 Server.prototype.addMessageHandler = function (trigger, callback) {
-  // we can convert the callback into a str for a unique id
-  var keyFromFn = function(f) {
-    var strf = f.toString().replace(/\s+/, '');
-    return strf.slice(-25) + String(trigger);
-  };
-
-  var key = keyFromFn(callback); // same trigger, multiple cbs? no problem
-
-  if(typeof this.messagehandlers[key] === 'undefined') {
-    this.messagehandlers[key] = {trigger: trigger, callback: callback};
+  if (typeof this.messagehandlers[trigger] == 'undefined') {
+    this.messagehandlers[trigger] = { plugin: trigger, callback: callback};
   }
-
 };
+
+process.on('uncaughtException', function (error) {
+   console.log(error.stack); //prevents from crashing
+});

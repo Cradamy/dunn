@@ -35,9 +35,9 @@ var Quote = function (irc) {
         invalidAction = new ErrMsg('Invalid Action', 'Try again or try: ".quote help".', true),
         ircAdmins = irc.config.admins;
     
-    function has(ar, el) {
-        return ar.indexOf(el) > -1;
-    }
+    Array.prototype.has = function (el) {
+        return this.indexOf(el) > -1;
+    };
 
      // main function
     var quote = function (unnecessaryContext, channel, nick, params, message) {
@@ -80,7 +80,7 @@ var Quote = function (irc) {
 
     findAndVerifyUser = function (channel, nick, callback) {
         quoteUserDb.findOne({name: nick, channel: channel}, function (err, foundUser) {
-            if (!err && (foundUser && foundUser.admin || has(ircAdmins, nick))) {
+            if (!err && (foundUser && foundUser.admin || ircAdmins.has(nick))) {
                 callback(null, true);
             } else if (err) {
                 callback(err, false);
@@ -167,7 +167,8 @@ var Quote = function (irc) {
     },
 
     searchQuotesById = function (channel, nick, id) {
-        quotecoll.findOne({ idNumber: parseInt(id) }, function (err, found) {
+        var query = parseInt(id);
+        quotecoll.findOne({ idNumber: query }, function (err, found) {
             if (!err && found) {
                 self.emit('foundQuote', channel, nick, found);
             } else {
@@ -224,7 +225,7 @@ var Quote = function (irc) {
 
     addQuote = function (channel, nick, message) {
         quoteUserDb.findOne({name: nick, channel: channel}, function (err, user) {
-            if (!err && (user || has(ircAdmins, nick))) {
+            if (!err && (user || ircAdmins.has(nick))) {
                 var quoteduser = message[1].replace(':','').replace('<','').replace('>','').replace(' ',''),
                     searchname = quoteduser.toLowerCase(),
                     quoteMsg = message.slice(2).join(' ');
@@ -252,9 +253,9 @@ var Quote = function (irc) {
         var idNumber = parseInt(message[1]);
         if (!isNaN(idNumber)) {
             quoteUserDb.findOne({name: nick, channel: channel}, function (err, user) {
-                if (!err && (user || has(ircAdmins, nick))) {
+                if (!err && (user || ircAdmins.has(nick))) {
                     quotecoll.findOne({idNumber: idNumber}, function (err, found) {
-                        if (!err && found && (nick === found.owner || (user && user.admin) || has(ircAdmins, nick))) {
+                        if (!err && found && (nick === found.owner || user.admin || ircAdmins.has(nick))) {
                             quotecoll.remove({idNumber: idNumber}, function (err) {
                                 if (!err) {
                                     self.emit('confirmAction', channel, nick, idNumber, 'deleted', 'quote');
