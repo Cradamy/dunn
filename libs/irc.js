@@ -6,7 +6,8 @@ var sys = require('util'),
 	user = require ('./user.js' ),
 	channel = require('./channel.js'),
 	mysql = require('mysql'),
-	httpGet = require('./httpget');
+	httpGet = require('./httpget'),
+	sugar = require('sugar');
 
 var existsSync = fs.existsSync || path.existsSync;
 
