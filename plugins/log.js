@@ -22,8 +22,5 @@ Plugin.prototype.onMessage = function (msg) {
 			channel: msg.arguments[0],
 			message: msg.arguments[1]
 		};
-  	var query = this.irc.db.query('INSERT INTO logs SET ?', sql, function(err, result) {
-		
-	});
-	console.log(query.sql);
+  	this.irc.db.query('INSERT INTO logs SET ?', sql, function(err, result) {});
 };
