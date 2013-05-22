@@ -31,24 +31,17 @@ var memes = {
 Plugin = exports.Plugin = function (irc) {
   var self = this;
   for(var meme in memes) {
-    console.log("loading meme: " + meme);
     irc.addTrigger(meme, function(i,c,u,p,m) {
       var meme = m.split(" ")[0].replace(i.command, "");
       self.memeFunc(i,c,u,p,m,memes[meme]);
     });
   }
 
-  irc.addTrigger('meme', this.memeSwitch);
+  irc.addTrigger('meme', this.usage);
 };
 
-Plugin.prototype.memeSwitch = function(irc, channel, user, params, message) {
-  if(!params.length) {
-    return irc.send("Usage: "+irc.command+"meme "+Object.keys(memes).join("|")+' "line1" "line2", you can also use .[meme-name] "line1" "line2"');
-  }
-
-  var meme = params.shift();
-  if(memes[meme] !== undefined) return this.meme(irc, channel, user, params, message, memes[meme]);
-  else return irc.send("Meme " + meme + " not found");
+Plugin.prototype.usage = function(irc, channel, user, params, message) {
+    irc.send('Usage: ' + irc.command + '<meme_trigger> <line1> [line2]');
 }
 
 Plugin.prototype.getLines = function(params) {
