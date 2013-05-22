@@ -28,18 +28,25 @@ var memes = {
 };
 
 Plugin = exports.Plugin = function (irc) {
-	var self = this;
+	var self = this,
+		this.memeTriggers = [];
 	irc.addTrigger('meme', this.usage);
+	irc.addTrigger('memetriggers', this.triggers);
 	for(var meme in memes) {
 		irc.addTrigger(meme, function(i,c,u,p,m) {
 			var meme = m.split(" ")[0].replace(i.command, "");
 			self.memeFunc(i,c,u,p,m,memes[meme]);
+			this.memeTriggers[meme];
 		});
 	}
 };
 
 Plugin.prototype.usage = function(irc, channel, user, params, message) {
 	irc.send(channel, user + ': Usage: ' + irc.command + '<meme_trigger> <line1> [line2]');
+}
+
+Plugin.prototype.triggers = function(irc, channel, user, params, message) {
+	irc.send(channel, user + ': Meme Triggers: ' this.memeTriggers.join(', '));
 }
 
 Plugin.prototype.getLines = function(params) {
