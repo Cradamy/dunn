@@ -30,7 +30,7 @@ Plugin.prototype.seen = function (irc, channel, nick, params, message, raw) {
 	irc.db.query("SELECT created_on, nick, message FROM logs WHERE nick = '" + params[0] + "' ORDER BY log_id DESC LIMIT 1", function (err, result) {
 		if (result.length > 0)
 		{
-			irc.send(channel, nick + ': ' + result.nick + ' was last seen on ' + result.created_on + ' saying: ' + result.message);
+			irc.send(channel, nick + ': ' + params[0] + ' was last seen on ' + result[0].created_on + ' saying: ' + result[0].message);
 		}
 		else
 		{
