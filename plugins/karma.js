@@ -11,7 +11,6 @@
 
 Plugin = exports.Plugin = function (irc) {
 	this.irc = irc;
-	irc.addMessageHandler('^(\w+)\+\+;?$', this.give);
 };
 
 Plugin.prototype.onMessage = function(message) {
