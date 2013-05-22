@@ -14,6 +14,7 @@ var exec = require('child_process').exec;
 
 Plugin = exports.Plugin = function (irc) {
 	this.ircObj = irc;
+	irc.addMessageHandler('dunn dunn', this.sup);
 	irc.addTrigger('about', this.about);
 	irc.addTrigger('code', this.code);
 	irc.addTrigger('env', this.environment);
@@ -35,11 +36,8 @@ Plugin.prototype.onNumeric = function(irc) {
 	}
 };
 
-Plugin.prototype.onMessage = function (irc) {
-	if (irc.arguments[1].match(/^dunn dunn$/i))
-	{
-		this.ircObj.send(irc.arguments[0], 'dunnnnnnnnnn');
-	}
+Plugin.prototype.dunn = function (irc, channel, nick, params, message, raw) {
+	irc.send(channel, nick + ': dunnnnnnnnnn')
 };
 
 Plugin.prototype.about = function (irc, channel, nick, params, message, raw) {
