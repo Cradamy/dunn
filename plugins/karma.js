@@ -27,6 +27,7 @@ Plugin.prototype.onMessage = function(message) {
 
 Plugin.prototype.give = function (irc, channel, from, to, reason) {
 	var from_id = to_id = null;
+	console.log(irc);
 	if (from == to) {
 		irc.send(channel, from + ': Attempting to give yourself karma is a big no no.');
 	}
