@@ -13,7 +13,7 @@ Plugin = exports.Plugin = function (irc) {
 };
 
 Plugin.prototype.weather = function (irc, channel, nick, params, message) {
-    irc.httpGet('http://api.openweathermap.org/data/2.5/weather?q=' + message, function (err, res, result) {
+    irc.httpGet('http://api.openweathermap.org/data/2.5/weather?q=' + params[0], function (err, res, result) {
 		console.log(err, res, result);
 	});
 };
