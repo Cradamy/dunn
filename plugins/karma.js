@@ -14,9 +14,15 @@ Plugin = exports.Plugin = function (irc) {
 };
 
 Plugin.prototype.onMessage = function(message) {
-	console.log(message);
+	var nick = (this.irc.user(message.prefix) || '').toLowerCase(),
+		channel = message.arguments[0],
+		msg = message.arguments[1];
+	if (user = msg.match(/^(\w+)\+\+;?$/i))
+	{
+		this.give(channel, nick, user);
+	}
 };
 
 Plugin.prototype.give = function (channel, nick, user) {
-		irc.send(channel, nick + ': Karma has been given.');
+		irc.send(channel, nick + ': Karma has been given to ' + user + '.');
 };
