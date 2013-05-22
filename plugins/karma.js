@@ -23,9 +23,30 @@ Plugin.prototype.onMessage = function(message) {
 	}
 };
 
-Plugin.prototype.give = function (irc, channel, nick, user, reason) {
-		irc.db.query('SELECT * FROM users WHERE username = ? LIMIT 1', [user], function (err, result) {
-			console.log(result);
-		});
-		irc.send(channel, nick + ': Karma has been given to ' + user + ((reason === undefined) ? '.' : ' for ' + reason.replace('for', '').trim() + '.'));
+Plugin.prototype.give = function (irc, channel, from, to, reason) {
+	var from_id, to_id;
+	irc.db.query('SELECT user_id FROM users WHERE username = ? LIMIT 1', [from], function (err, result) {
+		if (!err && result)
+		{
+			from_id = result[0].user_id;
+		}
+	});
+	irc.db.query('SELECT user_id FROM users WHERE username = ? LIMIT 1', [to], function (err, result) {
+		if (!err && result)
+		{
+			to_id = result[0].user_id;
+		}
+	});
+	if (from_id === undefined)
+	{
+		irc.send(channel, from + ': Unable to give karma to ' + to + ' as you are not registered with me.'));
+	}
+	else if (to_id === undefined)
+	{
+		irc.send(channel, from + ': Unable to give karma to ' + to + ' as they are not registered with me.'));
+	}
+	else
+	{
+		irc.send(channel, from + ': Karma has been given to ' + to + ((reason === undefined) ? '.' : ' for ' + reason.replace('for', '').trim() + '.'));
+	}
 };
