@@ -28,17 +28,18 @@ var memes = {
 };
 
 Plugin = exports.Plugin = function (irc) {
-	this.memeTriggers = [];
-	var self = this;
+	var self = this,
+		memeTriggers = [];
 	irc.addTrigger('meme', this.usage);
 	irc.addTrigger('memetriggers', this.triggers);
 	for(var meme in memes) {
 		irc.addTrigger(meme, function(i,c,u,p,m) {
 			var meme = m.split(" ")[0].replace(i.command, "");
 			self.memeFunc(i,c,u,p,m,memes[meme]);
-			this.memeTriggers[meme];
+			memeTriggers[meme];
 		});
 	}
+	this.memeTriggers = memeTriggers;
 };
 
 Plugin.prototype.usage = function(irc, channel, user, params, message) {
