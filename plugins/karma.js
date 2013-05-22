@@ -30,7 +30,7 @@ Plugin.prototype.give = function (irc, channel, from, to, reason) {
 	if (from == to) {
 		irc.send(channel, from + ': Attempting to give yourself karma is a big no no.');
 	}
-	else if (to == irc.config.nick)
+	else if (to == irc.nick)
 	{
 		irc.send(channel, from + ': Although I appreciate the guesture it is of no use to me.');
 	}
