@@ -14,7 +14,7 @@ var exec = require('child_process').exec;
 
 Plugin = exports.Plugin = function (irc) {
 	this.ircObj = irc;
-	irc.addMessageHandler('dunn dunn', this.sup);
+	irc.addMessageHandler('dunn dunn', this.dunn);
 	irc.addTrigger('about', this.about);
 	irc.addTrigger('code', this.code);
 	irc.addTrigger('env', this.environment);
