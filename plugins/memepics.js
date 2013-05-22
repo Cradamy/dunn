@@ -96,13 +96,13 @@ Plugin.prototype.memeFunc = function (irc, channel, user, params, message, gener
   else
   {
     var msgs = this.getLines(params);
-	if (msgs.length < 1)
+	if (msgs[1] != '')
 	{
 		var text = '&text0=' + msgs[0] + '&text1=' + msgs[1];
 	}
 	else
 	{
-		var text = '&text0=&text1=' + msgs[1];
+		var text = '&text0=&text1=' + msgs[0];
 	}
     var url = 'http://version1.api.memegenerator.net/Instance_Create?username=w3bt3chirc&password=W3bT3ch1Rc507&languageCode=en&generatorID='+generatorID[0]+'&imageID='+generatorID[1]+text;
 
