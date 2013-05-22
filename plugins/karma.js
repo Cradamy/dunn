@@ -11,7 +11,7 @@
 
 Plugin = exports.Plugin = function (irc) {
 	this.irc = irc;
-	// irc.addMessageTrigger('^(\w+)\+\+;?$', this.give);
+	irc.addMessageTrigger('^(\w+)\+\+;?$', this.give);
 };
 
 Plugin.prototype.onMessage = function(message) {
@@ -20,5 +20,4 @@ Plugin.prototype.onMessage = function(message) {
 
 Plugin.prototype.give = function (channel, nick, user) {
 		irc.send(channel, nick + ': Karma has been given.');
-	});
 };
