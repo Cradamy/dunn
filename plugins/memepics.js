@@ -26,7 +26,7 @@ var memes = {
 	"y_u_no" : [2,166088],
 	"insanity_wolf" : [45, 20]
 };
-var memeTriggers;
+var memeTriggers = [];
 
 Plugin = exports.Plugin = function (irc) {
 	var self = this;
@@ -36,7 +36,7 @@ Plugin = exports.Plugin = function (irc) {
 		irc.addTrigger(meme, function(i,c,u,p,m) {
 			var meme = m.split(" ")[0].replace(i.command, "");
 			self.memeFunc(i,c,u,p,m,memes[meme]);
-			memeTriggers[meme];
+			memeTriggers.push(meme);
 		});
 	}
 };
