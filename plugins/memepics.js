@@ -28,6 +28,7 @@ var memes = {
 };
 
 Plugin = exports.Plugin = function (irc) {
+	var this.memeTriggers = [];
 	var self = this;
 	irc.addTrigger('meme', this.usage);
 	irc.addTrigger('memetriggers', this.triggers);
