@@ -27,8 +27,7 @@ Plugin.prototype.onMessage = function (msg) {
 };
 
 Plugin.prototype.seen = function (irc, channel, nick, params, message, raw) {
-	console.log(params, message);
-	irc.db.query("SELECT created_on, nick FROM logs WHERE nick = '" + params[1] + "' ORDER BY log_id DESC LIMIT 1", function (err, result) {
+	irc.db.query("SELECT created_on, nick FROM logs WHERE nick = '" + params[0] + "' ORDER BY log_id DESC LIMIT 1", function (err, result) {
 		console.log(result);
 	});
 };
