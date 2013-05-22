@@ -19,10 +19,10 @@ Plugin.prototype.onMessage = function(message) {
 		msg = message.arguments[1];
 	if (user = msg.match(/^(\w+)\+\+;?$/i))
 	{
-		this.give(channel, nick, user);
+		this.give(this.irc, channel, nick, user);
 	}
 };
 
-Plugin.prototype.give = function (channel, nick, user) {
+Plugin.prototype.give = function (irc, channel, nick, user) {
 		irc.send(channel, nick + ': Karma has been given to ' + user + '.');
 };
