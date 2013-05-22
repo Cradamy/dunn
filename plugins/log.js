@@ -27,7 +27,14 @@ Plugin.prototype.onMessage = function (msg) {
 };
 
 Plugin.prototype.seen = function (irc, channel, nick, params, message, raw) {
-	irc.db.query("SELECT created_on, nick FROM logs WHERE nick = '" + params[0] + "' ORDER BY log_id DESC LIMIT 1", function (err, result) {
-		console.log(result);
+	irc.db.query("SELECT created_on, nick, message FROM logs WHERE nick = '" + params[0] + "' ORDER BY log_id DESC LIMIT 1", function (err, result) {
+		if (!result.nick)
+		{
+			irc.send(channel, nick + ': ' + result.nick + ' was last seen on ' + result.created_on + ' saying: ' + result.message);
+		}
+		else
+		{
+			irc.send(channel, nick + ': I have not seen ' + params[0]);
+		}
 	});
 };
