@@ -24,25 +24,32 @@ Plugin.prototype.onMessage = function(message) {
 };
 
 Plugin.prototype.give = function (irc, channel, from, to, reason) {
-	var from_id = to_id  = undefined;
-	irc.db.query('SELECT user_id FROM users WHERE username = ? LIMIT 1', [from], function (err, result) {
+	var from_id = irc.db.query('SELECT user_id FROM users WHERE username = ? LIMIT 1', [from], function (err, result) {
 		if (result.length > 0)
 		{
-			from_id = result[0].user_id;
+			return result[0].user_id;
+		}
+		else
+		{
+			return undefined;
 		}
 	});
-	irc.db.query('SELECT user_id FROM users WHERE username = ? LIMIT 1', [to], function (err, result) {
+	var to_id = irc.db.query('SELECT user_id FROM users WHERE username = ? LIMIT 1', [to], function (err, result) {
 		if (result.length > 0)
 		{
-			to_id = result[0].user_id;
+			return result[0].user_id;
+		}
+		else
+		{
+			return undefined;
 		}
 	});
 	console.log(from_id, to_id);
-	if (from_id === undefined)
+	if (from_id == undefined)
 	{
 		irc.send(channel, from + ': Unable to give karma to ' + to + ' as you are not registered with me.');
 	}
-	else if (to_id === undefined)
+	else if (to_id == undefined)
 	{
 		irc.send(channel, from + ': Unable to give karma to ' + to + ' as they are not registered with me.');
 	}
