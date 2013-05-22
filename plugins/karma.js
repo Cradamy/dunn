@@ -27,11 +27,10 @@ Plugin.prototype.onMessage = function(message) {
 
 Plugin.prototype.give = function (irc, channel, from, to, reason) {
 	var from_id = to_id = null;
-	console.log(irc);
 	if (from == to) {
 		irc.send(channel, from + ': Attempting to give yourself karma is a big no no.');
 	}
-	else if (to == irc.config.botNick)
+	else if (to == irc.config.nick)
 	{
 		irc.send(channel, from + ': Although I appreciate the guesture it is of no use to me.');
 	}
@@ -71,7 +70,7 @@ Plugin.prototype.take = function (irc, channel, from, to, reason) {
 	if (from == to) {
 		irc.send(channel, from + ': You can not take karma from yourself. Why you would want to do that is beyond me though.');
 	}
-	else if (to == irc.config.botNick)
+	else if (to == irc.config.nick)
 	{
 		irc.send(channel, from + ': Well that is kind of rude of you to try and do.');
 	}
