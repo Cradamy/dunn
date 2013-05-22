@@ -70,7 +70,7 @@ Plugin.prototype.take = function (irc, channel, from, to, reason) {
 	if (from == to) {
 		irc.send(channel, from + ': You can not take karma from yourself. Why you would want to do that is beyond me though.');
 	}
-	else if (to == irc.config.nick)
+	else if (to == irc.nick.toLowerCase())
 	{
 		irc.send(channel, from + ': Well that is kind of rude of you to try and do.');
 	}
