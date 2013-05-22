@@ -97,7 +97,7 @@ Plugin.prototype.memeFunc = function (irc, channel, user, params, message, gener
   {
     var msgs = this.getLines(params);
 	console.log(msgs);
-	if (msgs[1] != '')
+	if (msgs[1] != undefined)
 	{
 		var text = '&text0=' + msgs[0] + '&text1=' + msgs[1];
 	}
