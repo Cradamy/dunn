@@ -39,11 +39,11 @@ Plugin.prototype.give = function (irc, channel, from, to, reason) {
 	});
 	if (from_id === undefined)
 	{
-		irc.send(channel, from + ': Unable to give karma to ' + to + ' as you are not registered with me.'));
+		irc.send(channel, from + ': Unable to give karma to ' + to + ' as you are not registered with me.');
 	}
 	else if (to_id === undefined)
 	{
-		irc.send(channel, from + ': Unable to give karma to ' + to + ' as they are not registered with me.'));
+		irc.send(channel, from + ': Unable to give karma to ' + to + ' as they are not registered with me.');
 	}
 	else
 	{
