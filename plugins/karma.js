@@ -37,7 +37,7 @@ Plugin.prototype.give = function (irc, channel, from, to, reason) {
 			to_id =  result[0].user_id;
 		}
 	});
-	console.log(from_id._callback, to_id);
+	console.log(from_id, to_id);
 	if (from_id == null)
 	{
 		irc.send(channel, from + ': Unable to give karma to ' + to + ' as you are not registered with me.');
