@@ -46,7 +46,8 @@ Plugin.prototype.usage = function(irc, channel, user, params, message) {
 }
 
 Plugin.prototype.triggers = function(irc, channel, user, params, message) {
-	irc.send(channel, user + ': Meme Triggers: ' memeTriggers.join(', '));
+	console.log(memeTriggers);
+	// irc.send(channel, user + ': Meme Triggers: ' memeTriggers.join(', '));
 }
 
 Plugin.prototype.getLines = function(params) {
