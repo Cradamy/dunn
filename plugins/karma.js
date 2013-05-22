@@ -21,7 +21,7 @@ Plugin.prototype.onMessage = function(message) {
 		this.give(this.irc, channel.toLowerCase(), nick.toLowerCase(), user[1].toLowerCase(), user[2]);
 	}
 	else if (user = msg.match(/^(\w+)\-\-;?(.+)?$/i)) {
-		this.give(this.irc, channel.toLowerCase(), nick.toLowerCase(), user[1].toLowerCase(), user[2]);
+		this.take(this.irc, channel.toLowerCase(), nick.toLowerCase(), user[1].toLowerCase(), user[2]);
 	}
 };
 
