@@ -27,62 +27,72 @@ Plugin.prototype.onMessage = function(message) {
 
 Plugin.prototype.give = function (irc, channel, from, to, reason) {
 	var from_id = to_id = null;
-	irc.db.query('SELECT user_id FROM users WHERE username = ? LIMIT 1', [from], function (err, result) {
-		if (result.length > 0) {
-			from_id = result[0].user_id;
-		}
-		irc.db.query('SELECT user_id FROM users WHERE username = ? LIMIT 1', [to], function (err, result) {
+	if (from == to) {
+		irc.send(channel, from + ': Attempting to give yourself karma is a big no no.');
+	}
+	else {
+		irc.db.query('SELECT user_id FROM users WHERE username = ? LIMIT 1', [from], function (err, result) {
 			if (result.length > 0) {
-				to_id = result[0].user_id;
+				from_id = result[0].user_id;
 			}
-			if (from_id == null) {
-				irc.send(channel, from + ': Unable to give karma to ' + to + ' as you are not registered with me.');
-			}
-			else if (to_id == null) {
-				irc.send(channel, from + ': Unable to give karma to ' + to + ' as they are not registered with me.');
-			}
-			else {
-				irc.db.query('INSERT INTO karma SET ?', {
-					created_on: Date.create(new Date()).format('{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}'),
-					from_user_id: from_id,
-					to_user_id: to_id,
-					action: 'give',
-					reason: ((reason === undefined) ? '' : reason.replace('for', '').trim())
-				}, function (err, result) {
-					irc.send(channel, from + ': Karma has been given to ' + to + ((reason === undefined) ? '.' : ' for ' + reason.replace('for', '').trim() + '.'));
-				});
-			}
+			irc.db.query('SELECT user_id FROM users WHERE username = ? LIMIT 1', [to], function (err, result) {
+				if (result.length > 0) {
+					to_id = result[0].user_id;
+				}
+				if (from_id == null) {
+					irc.send(channel, from + ': Unable to give karma to ' + to + ' as you are not registered with me.');
+				}
+				else if (to_id == null) {
+					irc.send(channel, from + ': Unable to give karma to ' + to + ' as they are not registered with me.');
+				}
+				else {
+					irc.db.query('INSERT INTO karma SET ?', {
+						created_on: Date.create(new Date()).format('{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}'),
+						from_user_id: from_id,
+						to_user_id: to_id,
+						action: 'give',
+						reason: ((reason === undefined) ? '' : reason.replace('for', '').trim())
+					}, function (err, result) {
+						irc.send(channel, from + ': Karma has been given to ' + to + ((reason === undefined) ? '.' : ' for ' + reason.replace('for', '').trim() + '.'));
+					});
+				}
+			});
 		});
-	});
+	}
 };
 
 Plugin.prototype.take = function (irc, channel, from, to, reason) {
 	var from_id = to_id = null;
-	irc.db.query('SELECT user_id FROM users WHERE username = ? LIMIT 1', [from], function (err, result) {
-		if (result.length > 0) {
-			from_id = result[0].user_id;
-		}
-		irc.db.query('SELECT user_id FROM users WHERE username = ? LIMIT 1', [to], function (err, result) {
+	if (from == to) {
+		irc.send(channel, from + ': You can not take karma from yourself. Why you would want to do that is beyond me though.');
+	}
+	else {
+		irc.db.query('SELECT user_id FROM users WHERE username = ? LIMIT 1', [from], function (err, result) {
 			if (result.length > 0) {
-				to_id = result[0].user_id;
+				from_id = result[0].user_id;
 			}
-			if (from_id == null) {
-				irc.send(channel, from + ': Unable to take karma from ' + to + ' as you are not registered with me.');
-			}
-			else if (to_id == null) {
-				irc.send(channel, from + ': Unable to take karma from ' + to + ' as they are not registered with me.');
-			}
-			else {
-				irc.db.query('INSERT INTO karma SET ?', {
-					created_on: Date.create(new Date()).format('{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}'),
-					from_user_id: from_id,
-					to_user_id: to_id,
-					action: 'take',
-					reason: ((reason === undefined) ? '' : reason.replace('for', '').trim())
-				}, function (err, result) {
-					irc.send(channel, from + ': Karma has been taken from ' + to + ((reason === undefined) ? '.' : ' for ' + reason.replace('for', '').trim() + '.'));
-				});
-			}
+			irc.db.query('SELECT user_id FROM users WHERE username = ? LIMIT 1', [to], function (err, result) {
+				if (result.length > 0) {
+					to_id = result[0].user_id;
+				}
+				if (from_id == null) {
+					irc.send(channel, from + ': Unable to take karma from ' + to + ' as you are not registered with me.');
+				}
+				else if (to_id == null) {
+					irc.send(channel, from + ': Unable to take karma from ' + to + ' as they are not registered with me.');
+				}
+				else {
+					irc.db.query('INSERT INTO karma SET ?', {
+						created_on: Date.create(new Date()).format('{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}'),
+						from_user_id: from_id,
+						to_user_id: to_id,
+						action: 'take',
+						reason: ((reason === undefined) ? '' : reason.replace('for', '').trim())
+					}, function (err, result) {
+						irc.send(channel, from + ': Karma has been taken from ' + to + ((reason === undefined) ? '.' : ' for ' + reason.replace('for', '').trim() + '.'));
+					});
+				}
+			});
 		});
-	});
+	}
 };
