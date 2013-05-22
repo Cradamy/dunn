@@ -24,9 +24,5 @@ Plugin.prototype.onMessage = function(message) {
 };
 
 Plugin.prototype.give = function (irc, channel, nick, user, reason) {
-		if ((reason !== undefined) && (reason.substr(0,3) === 'for'))
-		{
-			reason = reason.replace('for', '');
-		}
-		irc.send(channel, nick + ': Karma has been given to ' + user + ((reason === undefined) ? '.' : ' for ' + reason.trim() + '.'));
+		irc.send(channel, nick + ': Karma has been given to ' + user + ((reason === undefined) ? '.' : ' for ' + reason.replace('for', '').trim() + '.'));
 };
