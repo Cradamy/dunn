@@ -18,6 +18,7 @@ Plugin = exports.Plugin = function (irc) {
 	irc.addTrigger('about', this.about);
 	irc.addTrigger('code', this.code);
 	irc.addTrigger('env', this.environment);
+	irc.addTrigger('register', this.register);
 	irc.addTrigger('restart', this.restart, 1);
 };
 
@@ -63,6 +64,10 @@ Plugin.prototype.environment = function(irc, channel, nick, params, message, raw
 		irc.send(channel, 'Loaded triggers are: ' + irc.command + Object.keys(irc.triggers).join(', ' + irc.command));
 		break;
 	}
+};
+
+Plugin.prototype.register = function(irc, channel, nick, params, message, raw) {
+	console.log(params);
 };
 
 Plugin.prototype.restart = function(irc, channel, nick, params, message, raw) {
