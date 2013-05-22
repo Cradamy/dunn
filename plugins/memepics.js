@@ -26,10 +26,10 @@ var memes = {
 	"y_u_no" : [2,166088],
 	"insanity_wolf" : [45, 20]
 };
+var memeTriggers;
 
 Plugin = exports.Plugin = function (irc) {
-	var self = this,
-		memeTriggers = [];
+	var self = this;
 	irc.addTrigger('meme', this.usage);
 	irc.addTrigger('memetriggers', this.triggers);
 	for(var meme in memes) {
@@ -39,7 +39,6 @@ Plugin = exports.Plugin = function (irc) {
 			memeTriggers[meme];
 		});
 	}
-	this.memeTriggers = memeTriggers;
 };
 
 Plugin.prototype.usage = function(irc, channel, user, params, message) {
@@ -47,7 +46,7 @@ Plugin.prototype.usage = function(irc, channel, user, params, message) {
 }
 
 Plugin.prototype.triggers = function(irc, channel, user, params, message) {
-	irc.send(channel, user + ': Meme Triggers: ' this.memeTriggers.join(', '));
+	irc.send(channel, user + ': Meme Triggers: ' memeTriggers.join(', '));
 }
 
 Plugin.prototype.getLines = function(params) {
