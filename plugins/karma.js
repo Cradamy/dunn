@@ -17,12 +17,12 @@ Plugin.prototype.onMessage = function(message) {
 	var nick = (this.irc.user(message.prefix) || '').toLowerCase(),
 		channel = message.arguments[0],
 		msg = message.arguments[1];
-	if (user = msg.match(/^(\w+)\+\+;? (.+)?$/i))
+	if (user = msg.match(/^(\w+)\+\+;?(.+)?$/i))
 	{
 		this.give(this.irc, channel, nick, user[1], user[2]);
 	}
 };
 
 Plugin.prototype.give = function (irc, channel, nick, user, reason) {
-		irc.send(channel, nick + ': Karma has been given to ' + user + ' for the reason: ' + (!reason.length ? 'None given' : reason) + '.');
+		irc.send(channel, nick + ': Karma has been given to ' + user + ' for the reason: ' + (!reason.length ? 'None given' : reason.trim()) + '.');
 };
