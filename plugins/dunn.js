@@ -68,17 +68,16 @@ Plugin.prototype.environment = function(irc, channel, nick, params, message, raw
 
 Plugin.prototype.register = function(irc, channel, nick, params, message, raw) {
 	var hostmask = raw.split(' ')[0].split('!~')[1];
-	console.log(hostmask);
 	if (params[0] == 'help') {
 		irc.send(channel, nick + ': Usage: ' + irc.command + 'register <you@example.com> -- This will register you for things that require authentication.')
 	}
 	else {
-		irc.db.query('SELECT username, hostmask FROM users WHERE hostmask = ? LIMIT 1', [hostmaks], function (err, result) {
+		irc.db.query('SELECT username, hostmask FROM users WHERE hostmask = ? LIMIT 1', [hostmask], function (err, result) {
 			if (result.length > 0) {
 				irc.send(channel, nick + ': Sorry your hostmask is already registered to ' + result[0].username);
 			}
 			else {
-				irc.db.query('INSERT INTO users SET ?', {username: nick, hostmask: hostmask, email: ''}, function (err, result) {
+				irc.db.query('INSERT INTO users SET ?', {username: nick, hostmask: hostmask, email: params[0]}, function (err, result) {
 					if (!err)
 					{
 						irc.send(channel, nick + ': You have been registered.');
