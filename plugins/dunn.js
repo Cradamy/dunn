@@ -68,7 +68,7 @@ Plugin.prototype.environment = function(irc, channel, nick, params, message, raw
 
 Plugin.prototype.register = function(irc, channel, nick, params, message, raw) {
 	var hostmask = raw.split(' ')[0].split('!~')[1];
-	if (params[0] == 'help') {
+	if (params[0] == 'help' || params.length < 1) {
 		irc.send(channel, nick + ': Usage: ' + irc.command + 'register <you@example.com> -- This will register you for things that require authentication.')
 	}
 	else {
