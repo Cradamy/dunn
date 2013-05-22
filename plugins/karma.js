@@ -19,10 +19,13 @@ Plugin.prototype.onMessage = function(message) {
 		msg = message.arguments[1];
 	if (user = msg.match(/^(\w+)\+\+;?(.+)?$/i))
 	{
-		this.give(this.irc, channel, nick, user[1], user[2]);
+		this.give(this.irc, channel.toLowerCase(), nick.toLowerCase(), user[1].toLowerCase(), user[2]);
 	}
 };
 
 Plugin.prototype.give = function (irc, channel, nick, user, reason) {
+		irc.db.query('SELECT * FROM users WHERE username = ? LIMIT 1', [user], function (err, result) {
+			console.log(result);
+		});
 		irc.send(channel, nick + ': Karma has been given to ' + user + ((reason === undefined) ? '.' : ' for ' + reason.replace('for', '').trim() + '.'));
 };
