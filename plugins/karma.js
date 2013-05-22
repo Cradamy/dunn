@@ -24,9 +24,8 @@ Plugin.prototype.onMessage = function(message) {
 };
 
 Plugin.prototype.give = function (irc, channel, from, to, reason) {
-	var from_id, to_id;
+	var from_id = to_id  = undefined;
 	irc.db.query('SELECT user_id FROM users WHERE username = ? LIMIT 1', [from], function (err, result) {
-		console.log(err, result);
 		if (result.length > 0)
 		{
 			from_id = result[0].user_id;
