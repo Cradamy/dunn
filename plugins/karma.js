@@ -42,7 +42,15 @@ Plugin.prototype.give = function (irc, channel, from, to, reason) {
 				irc.send(channel, from + ': Unable to give karma to ' + to + ' as they are not registered with me.');
 			}
 			else {
-				irc.send(channel, from + ': Karma has been given to ' + to + ((reason === undefined) ? '.' : ' for ' + reason.replace('for', '').trim() + '.'));
+				irc.db.query('INSERT INTO karma SET ?', {
+					created_on: Date.create(new Date()).format('{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}'),
+					from_user_id: from_id,
+					to_user_id: to_id,
+					action: 'give',
+					reason: ((reason === undefined) ? '' : reason.replace('for', '').trim())
+				}, function (err, result) {
+					irc.send(channel, from + ': Karma has been given to ' + to + ((reason === undefined) ? '.' : ' for ' + reason.replace('for', '').trim() + '.'));
+				});
 			}
 		});
 	});
@@ -65,7 +73,15 @@ Plugin.prototype.take = function (irc, channel, from, to, reason) {
 				irc.send(channel, from + ': Unable to take karma from ' + to + ' as they are not registered with me.');
 			}
 			else {
-				irc.send(channel, from + ': Karma has been taken from ' + to + ((reason === undefined) ? '.' : ' for ' + reason.replace('for', '').trim() + '.'));
+				irc.db.query('INSERT INTO karma SET ?', {
+					created_on: Date.create(new Date()).format('{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}'),
+					from_user_id: from_id,
+					to_user_id: to_id,
+					action: 'take',
+					reason: ((reason === undefined) ? '' : reason.replace('for', '').trim())
+				}, function (err, result) {
+					irc.send(channel, from + ': Karma has been taken from ' + to + ((reason === undefined) ? '.' : ' for ' + reason.replace('for', '').trim() + '.'));
+				});
 			}
 		});
 	});
