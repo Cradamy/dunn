@@ -30,6 +30,10 @@ Plugin.prototype.give = function (irc, channel, from, to, reason) {
 	if (from == to) {
 		irc.send(channel, from + ': Attempting to give yourself karma is a big no no.');
 	}
+	else if (to == irc.config.botNick)
+	{
+		irc.send(channel, from + ': Although I appreciate the guesture it is of no use to me.');
+	}
 	else {
 		irc.db.query('SELECT user_id FROM users WHERE username = ? LIMIT 1', [from], function (err, result) {
 			if (result.length > 0) {
@@ -65,6 +69,10 @@ Plugin.prototype.take = function (irc, channel, from, to, reason) {
 	var from_id = to_id = null;
 	if (from == to) {
 		irc.send(channel, from + ': You can not take karma from yourself. Why you would want to do that is beyond me though.');
+	}
+	else if (to == irc.config.botNick)
+	{
+		irc.send(channel, from + ': Well that is kind of rude of you to try and do.');
 	}
 	else {
 		irc.db.query('SELECT user_id FROM users WHERE username = ? LIMIT 1', [from], function (err, result) {
