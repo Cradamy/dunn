@@ -83,8 +83,8 @@ Plugin.prototype.getLines = function(params) {
   {
     var paramsString = params.join(' ');
     var splitParams = paramsString.split('.');
-    msg1 = splitParams[0].trim();
-    msg2 = splitParams[1].trim();
+    msg1 = splitParams[0];
+    msg2 = splitParams[1];
   }
 
   return [msg1,msg2];
