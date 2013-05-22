@@ -13,5 +13,7 @@ Plugin = exports.Plugin = function (irc) {
 };
 
 Plugin.prototype.weather = function (irc, channel, nick, params, message) {
-    irc.send(channel, nick + ': Why don\'t you look outside, jesus.');
+    irc.httpGet('http://api.openweathermap.org/data/2.5/weather?q=' + message, function (err, res, result) {
+		console.log(err, res, result);
+	});
 };
