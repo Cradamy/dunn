@@ -1,13 +1,12 @@
-
 /*
- * @Plugin        DuckDuckGo
- * @Description   Use the duckduckgo api
- * @Trigger       .ddg
+ * @Plugin        	DuckDuckGo
+ * @Description   	Use the duckduckgo api
+ * @Trigger       	.ddg
  *
- * @Author        Olli K
- * @Website       github.com/gildean
- * @License       MIT
- * @Copyright     -
+ * @Author        	Olli K
+ * @Website      	github.com/gildean
+ * @License       	MIT
+ * @Copyright    	-
  *
  */
 

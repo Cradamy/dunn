@@ -83,11 +83,11 @@ Plugin.prototype.getLines = function(params) {
   {
     var paramsString = params.join(' ');
     var splitParams = paramsString.split('.');
-    msg1 = splitParams[0];
-    msg2 = splitParams[1];
+    msg1 = splitParams[0].trim();
+    msg2 = splitParams[1].trim();
   }
 
-  return [msg1.trim(),msg2.trim()];
+  return [msg1,msg2];
 }
 
 Plugin.prototype.memeFunc = function (irc, channel, user, params, message, generatorID) {

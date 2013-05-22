@@ -1,14 +1,14 @@
 /*
- * @Plugin        links
- * @Description   gets title to a link automagically
- * @Trigger       -
+ * @Plugin        	links
+ * @Description   	gets title to a link automagically
+ * @Trigger       	none
  *
- * @Author        Olli K
- * @Website       github.com/gildean
- * @License       MIT
- * @Copyright     -
+ * @Author        	Olli K
+ * @Website       	github.com/gildean
+ * @License      	MIT
+ * @Copyright     	-
  *
-*/
+ */
 
 var util = require('util');
 var events = require('events');

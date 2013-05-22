@@ -1,10 +1,11 @@
 /*
- * @Plugin        Weather
- * @Description   Gets weather based on given zipcode
- * @Trigger       .weather
+ * @Plugin			Weather
+ * @Description		Gets weather from openweathermap.org
+ * @Trigger			.weather
  *
- * @Author        Emn1ty (Jonathan Ardis)
- * @Copyright     Jonathan Ardis 2012
+ * @Author 			Killswitch (Josh Manders)
+ * @Website 		http://www.joshmanders.com
+ * @Copyright 		Josh Manders 2013
  *
  */
 

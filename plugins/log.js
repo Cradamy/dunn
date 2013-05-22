@@ -1,13 +1,13 @@
 /*
-* @Plugin Log
-* @Description Logs the channel.
-* @Trigger none
-*
-* @Author Killswitch (Josh Manders)
-* @Website http://www.joshmanders.com
-* @Copyright Josh Manders 2013
-*
-*/
+ * @Plugin 			Log
+ * @Description 	Logs the channel.
+ * @Trigger 		none
+ *
+ * @Author 			Killswitch (Josh Manders)
+ * @Website 		http://www.joshmanders.com
+ * @Copyright 		Josh Manders 2013
+ *
+ */
 
 Plugin = exports.Plugin = function (irc) {
 	this.irc = irc;
