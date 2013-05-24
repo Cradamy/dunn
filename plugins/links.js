@@ -1,12 +1,12 @@
 /*
- * @Plugin        	links
- * @Description   	gets title to a link automagically
- * @Trigger       	none
+ * @Plugin          links
+ * @Description     gets title to a link automagically
+ * @Trigger         none
  *
- * @Author        	Olli K
- * @Website       	github.com/gildean
- * @License      	MIT
- * @Copyright     	-
+ * @Author          Olli K
+ * @Website         github.com/gildean
+ * @License         MIT
+ * @Copyright       -
  *
  */
 
@@ -23,8 +23,8 @@ function Links(irc) {
     function sendToIrc(err, title, channel) {
         if (!err && title) {
             irc.send(channel, title);
-        } else {
-            irc.send(channel, err || 'Error getting link title');
+        } else if (err) {
+            irc.send(channel, err);
         }
     }
     
@@ -39,7 +39,7 @@ function Links(irc) {
         var req = irc.httpGet(message, function (err, response, answer) {
             if (!err && answer) {
                 self.emit('gotTitle', response, answer, channel, shortLink);
-            } else {
+            } else if (err) {
                 self.emit('sendToIrc', err.message, null, channel);
             }
         });
@@ -49,7 +49,7 @@ function Links(irc) {
         var req = irc.httpGet(shortU + message, function (err, response, answer) {
             if (!err && answer) {
                 self.emit('getPageTitle', message, channel, answer);
-            } else {
+            } else if (err) {
                 self.emit('sendToIrc', err.message, null, channel);
             }
         });
