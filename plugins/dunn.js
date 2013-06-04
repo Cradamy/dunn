@@ -19,7 +19,7 @@ Plugin = exports.Plugin = function (irc) {
 	irc.addTrigger('code', this.code);
 	irc.addTrigger('env', this.environment);
 	irc.addTrigger('register', this.register);
-	irc.addTrigger('restart', this.restart, 1);
+	irc.addTrigger('restart', this.restart, 'admin');
 };
 
 Plugin.prototype.onNumeric = function(irc) {
