@@ -96,5 +96,7 @@ Plugin.prototype.restart = function(irc, channel, nick, params, message, raw) {
 
 Plugin.prototype.topic = function(irc, channel, nick, params, message, raw) {
 	var topic = 'Welcome to #webtech - Certified Web Ninjas || {topic} || Pastebin: http://refheap.com || JavaScript: http://jsfiddle.net || Github: https://github.com/webtechirc || Promo Code "SSDTWEET" for $10 credit at digitalocean.com';
-	irc.raw('TOPIC', channel + ' ' + topic.replace('{topic}', message));
+	console.log(topic);
+	console.log(topic.replace('{topic}', message));
+	irc.raw('TOPIC', channel + ' ' + topic);
 };
