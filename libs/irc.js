@@ -26,6 +26,7 @@ Server.prototype.initialize = function (config) {
 	this.command = config.command || '.';
 	this.alias = config.alias || '?';
 	this.admins = config.admins || [];
+	this.ops = config.ops || [];
 	this.userChannels = config.channels || [];
 
 	// carry over config object to allow plugins to access it
