@@ -241,8 +241,15 @@ Server.prototype.sendHeap = function(err, send) {
 				if (typeof this.triggers[trigger] != 'undefined') {
 					var trig = this.triggers[trigger];
 
-					if(trig.admin) {
+					if(trig.user_status == 'admin') {
 						if(this.admins.indexOf(nick.toLowerCase()) == -1) {
+							this.send(this.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase() + ": Insufficient permissions");
+							return false;
+						}
+					}
+					
+					if(trig.user_status == 'op') {
+						if(this.ops.indexOf(nick.toLowerCase()) == -1) {
 							this.send(this.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase() + ": Insufficient permissions");
 							return false;
 						}
@@ -561,11 +568,12 @@ Server.prototype.sendHeap = function(err, send) {
 
 				};
 
-				Server.prototype.addTrigger = function (trigger, callback, admin) {
+				Server.prototype.addTrigger = function (trigger, callback, user_status) {
 					if (typeof this.triggers[trigger] == 'undefined') {
-						if(typeof admin == "undefined") admin = 0;
-						admin = parseInt(admin);
-						this.triggers[trigger] = { plugin: trigger, callback: callback, admin: admin};
+						if(typeof user_status == "undefined") {
+							user_status = 'user';
+						}
+						this.triggers[trigger] = { plugin: trigger, callback: callback, user_status: user_status };
 					}
 				};
 
