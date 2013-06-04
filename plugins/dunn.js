@@ -101,7 +101,7 @@ Plugin.prototype.topic = function(irc, channel, nick, params, message, raw) {
 };
 
 Plugin.prototype.kick = function(irc, channel, nick, params, message, raw) {
-	var topic = 'Welcome to #webtech - Certified Web Ninjas || {topic} || Pastebin: http://refheap.com || JavaScript: http://jsfiddle.net || Github: https://github.com/webtechirc || Promo Code "SSDTWEET" for $10 credit at digitalocean.com';
-	console.log(params);
+	var user = params.shift();
+	console.log(user, params);
 	//irc.raw('KICK', channel, ':' + params.join(' '));
 };
