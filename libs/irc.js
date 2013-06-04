@@ -449,6 +449,10 @@ Server.prototype.sendHeap = function(err, send) {
 			this.raw('PRIVMSG', target, ':' + msg);
 		}
 	};
+	
+	Server.prototype.topic = function (target, topic) {
+		irc.raw('TOPIC', target, ':' + topic);
+	};
 
 	Server.prototype.addListener = function (ev, f) {
 		var that = this;
