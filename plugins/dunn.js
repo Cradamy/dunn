@@ -20,6 +20,8 @@ Plugin = exports.Plugin = function (irc) {
 	irc.addTrigger('env', this.environment);
 	irc.addTrigger('register', this.register);
 	irc.addTrigger('restart', this.restart, 'admin');
+	irc.addTrigger('topic', this.topic, 'op');
+	this.default_topic = 'Welcome to #webtech - Certified Web Ninjas || {topic} || Pastebin: http://refheap.com || JavaScript: http://jsfiddle.net || Github: https://github.com/webtechirc || Promo Code "SSDTWEET" for $10 credit at digitalocean.com';
 };
 
 Plugin.prototype.onNumeric = function(irc) {
@@ -91,4 +93,8 @@ Plugin.prototype.register = function(irc, channel, nick, params, message, raw) {
 Plugin.prototype.restart = function(irc, channel, nick, params, message, raw) {
 	irc.send(channel, nick + ': Restarting, brb.');
 	exec('forever restart dunnbot.js');
+};
+
+Plugin.prototype.topic = function(irc, channel, nick, params, message, raw) {
+	irc.raw('TOPIC', channel + this.default_topic.replace('{topic}', message));
 };
