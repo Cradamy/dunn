@@ -102,6 +102,5 @@ Plugin.prototype.topic = function(irc, channel, nick, params, message, raw) {
 
 Plugin.prototype.kick = function(irc, channel, nick, params, message, raw) {
 	var user = params.shift();
-	console.log(user, params);
-	//irc.raw('KICK', channel, ':' + params.join(' '));
+	irc.raw('KICK', channel, user + ' :' + params.join(' '));
 };
