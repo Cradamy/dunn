@@ -96,5 +96,5 @@ Plugin.prototype.restart = function(irc, channel, nick, params, message, raw) {
 };
 
 Plugin.prototype.topic = function(irc, channel, nick, params, message, raw) {
-	irc.raw('TOPIC', channel + this.default_topic.replace('{topic}', message));
+	irc.raw('TOPIC', channel + ' ' + this.default_topic.replace('{topic}', message));
 };
