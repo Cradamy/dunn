@@ -16,5 +16,6 @@ module.exports = {
 	}, 
 	channels: ['#webtech'], //channels to load
 	plugins: ['dunn', 'log', 'duckduckgo', 'links', 'pinky', 'rimshot', 'search', 'sup', 'weather'], //plugins to load
-	admins: ['killswitch'] //admins of the bot
+	admins: ['killswitch'], //admins of the bot
+	ops: ['killswitch', 'migs', 'daekano', 'oojacoboo'] // channel ops
 };
