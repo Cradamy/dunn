@@ -75,24 +75,24 @@ Server.prototype.initialize = function (config) {
 
 	this.httpGet = httpGet;
 
-/*
-* Hook for User/Channel inits
-*/
-if (typeof channel.initialize === "function") {
-	channel.initialize(this);
-}
-if (typeof user.initialize === "function") {
-	user.initialize(this);
-}
+	/*
+	* Hook for User/Channel inits
+	*/
+	if (typeof channel.initialize === "function") {
+		channel.initialize(this);
+	}
+	if (typeof user.initialize === "function") {
+		user.initialize(this);
+	}
 
-/*
-* Boot Plugins
-*/
-this.plugins = [];
-var self = this;
-config.plugins.forEach(function(plugin) {
-	self.loadPlugin(plugin);
-});
+	/*
+	* Boot Plugins
+	*/
+	this.plugins = [];
+	var self = this;
+	config.plugins.forEach(function(plugin) {
+		self.loadPlugin(plugin);
+	});
 };
 
 Server.prototype.sendHeap = function(err, send) {
@@ -248,7 +248,7 @@ Server.prototype.sendHeap = function(err, send) {
 							return false;
 						}
 					}
-					
+
 					if(trig.user_status == 'op') {
 						if(this.ops.indexOf(nick.toLowerCase()) == -1) {
 							this.send(this.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase() + ": Insufficient permissions");
