@@ -14,12 +14,50 @@ exports.attach = function (irc) {
   irc.server = server;
 
   //
+  // Block/unblock IP addresses with this middleware
+  //
+  app.use(function (req, res, next) {
+    irc.db.query(
+      'SELECT api_access.status FROM api_access WHERE api_access.ip_address = ? LIMIT 1',
+      [ ipAddress(req) ],
+      function (err, result) {
+        if (err) {
+          //
+          // if (err.code === 'ER_NO_DB_ERR') { /* implement default behavior */ }
+          //
+          return res.json(500, { ok: false, message: err.message });
+        }
+
+        if (result.length) {
+          return res.json(403, { ok: false, message: 'Access denied, asshole!' });
+        }
+        next();
+      }
+    )
+  });
+  app.use(app.router);
+
+  //
   // Use this to add an http endpoint to the HTTP API
   //
   irc.addEndpoint = function (route, fn) {
-    app.all(route, express.bodyParser, function (req, res) {
+    app.get(route, express.bodyParser(), function (req, res) {
+
+      var options = {};
+
+      copy(req.body);
+      copy(req.query);
+      copy(req.params);
+      function copy(o) {
+        Object.keys(o).forEach(function (k) {
+          if (typeof options[k] === 'undefined') {
+            options[k] = o[k];
+          }
+        });
+      }
+
       try {
-        fn(irc, req.params);
+        fn(irc, options);
       }
       catch (err) {
         res.json(500, { ok: false, message: err.message });
@@ -32,36 +70,12 @@ exports.attach = function (irc) {
   //
   // Add a basic endpoint for doing /say's
   //
-  irc.addEndpoint('/say', function (irc, params) {
-    if (!params.channel || !params.message) {
+  irc.addEndpoint('/say', function (irc, opts) {
+    if (!opts.channel || !opts.message) {
       throw new Error('Required parameters: `channel` and `message`');
     }
 
-    irc.send(channel, params.message);
-  });
-
-  //
-  // Block/unblock IP addresses with this middleware
-  //
-  // TODO: This needs to use irc.db but I'm terrible at this stuff!!!
-  // Killswitch halp
-  //
-
-  app.use(function (req, res, next) {
-    irc.db.query(
-      'SELECT api_access.status FROM api_access WHERE api_access.ip_address = ? LIMIT 1',
-      [ ipAddress(req) ],
-      function (err, result) {
-        if (err) {
-          return res.json(500, { ok: false, message: err.message });
-        }
-
-        if (result.length) {
-          return res.json(403, { ok: false, message: 'Access denied, asshole!' });
-        }
-        next();
-      }
-    )
+    irc.send('#' + opts.channel, opts.message);
   });
 
   //
