@@ -7,6 +7,7 @@ var sys = require('util'),
 	channel = require('./channel.js'),
 	mysql = require('mysql'),
 	httpGet = require('./httpget'),
+	httpServer = require('./http-server'),
 	sugar = require('sugar');
 
 var existsSync = fs.existsSync || path.existsSync;
@@ -75,6 +76,8 @@ Server.prototype.initialize = function (config) {
 
 	this.httpGet = httpGet;
 
+  httpServer.attach(this);
+
 	/*
 	* Hook for User/Channel inits
 	*/
@@ -93,6 +96,8 @@ Server.prototype.initialize = function (config) {
 	config.plugins.forEach(function(plugin) {
 		self.loadPlugin(plugin);
 	});
+
+  this.server.listen(this.config.http && this.config.http.port || 8080);
 };
 
 Server.prototype.sendHeap = function(err, send) {
