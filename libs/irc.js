@@ -96,8 +96,6 @@ Server.prototype.initialize = function (config) {
 	config.plugins.forEach(function(plugin) {
 		self.loadPlugin(plugin);
 	});
-
-  this.server.listen(this.config.http && this.config.http.port || 8080);
 };
 
 Server.prototype.sendHeap = function(err, send) {
