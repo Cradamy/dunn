@@ -7,6 +7,7 @@ var sys = require('util'),
 	channel = require('./channel.js'),
 	mysql = require('mysql'),
 	httpGet = require('./httpget'),
+	httpServer = require('./http-server'),
 	sugar = require('sugar');
 
 var existsSync = fs.existsSync || path.existsSync;
@@ -75,24 +76,28 @@ Server.prototype.initialize = function (config) {
 
 	this.httpGet = httpGet;
 
-/*
-* Hook for User/Channel inits
-*/
-if (typeof channel.initialize === "function") {
-	channel.initialize(this);
-}
-if (typeof user.initialize === "function") {
-	user.initialize(this);
-}
+  httpServer.attach(this);
 
-/*
-* Boot Plugins
-*/
-this.plugins = [];
-var self = this;
-config.plugins.forEach(function(plugin) {
-	self.loadPlugin(plugin);
-});
+	/*
+	* Hook for User/Channel inits
+	*/
+	if (typeof channel.initialize === "function") {
+		channel.initialize(this);
+	}
+	if (typeof user.initialize === "function") {
+		user.initialize(this);
+	}
+
+	/*
+	* Boot Plugins
+	*/
+	this.plugins = [];
+	var self = this;
+	config.plugins.forEach(function(plugin) {
+		self.loadPlugin(plugin);
+	});
+
+  this.server.listen(this.config.http && this.config.http.port || 8080);
 };
 
 Server.prototype.sendHeap = function(err, send) {
@@ -248,7 +253,7 @@ Server.prototype.sendHeap = function(err, send) {
 							return false;
 						}
 					}
-					
+
 					if(trig.user_status == 'op') {
 						if(this.ops.indexOf(nick.toLowerCase()) == -1) {
 							this.send(this.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase() + ": Insufficient permissions");
