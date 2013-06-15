@@ -123,7 +123,7 @@ exports.attach = function(irc) {
                 irc.send(channel, nick + ': huh? Known commands: `block [ip]`, `unblock [ip]`');
                 break;
         }
-    });
+    }, 'op');
 
     //
     // Stupid helper for extracting IP addresses from the req object
