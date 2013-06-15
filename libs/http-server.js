@@ -72,9 +72,9 @@ exports.attach = function (irc) {
     // Hacky DIY routes
     //
     var argv = message.split(' '),
-        addr = argv[1];
+        addr = argv[2];
 
-    switch (argv[0]) {
+    switch (argv[1]) {
       case 'block':
         return irc.db.query(
           'INSERT INTO api_access VALUES (?, ?, ?)',
