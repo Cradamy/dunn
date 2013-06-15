@@ -91,7 +91,7 @@ exports.attach = function (irc) {
     switch (argv[1]) {
       case 'block':
         return irc.db.query(
-          "INSERT INTO api_access VALUES ('', ?, ?, ?)",
+          "INSERT INTO api_access VALUES (?, ?, ?)",
           [ addr, 'blocked', nick ],
           function (err) {
             if (err) {
