@@ -28,6 +28,7 @@ Server.prototype.initialize = function (config) {
 	this.alias = config.alias || '?';
 	this.admins = config.admins || [];
 	this.ops = config.ops || [];
+	this.devs = config.devs || [];
 	this.userChannels = config.channels || [];
 
 	// carry over config object to allow plugins to access it
@@ -258,6 +259,13 @@ Server.prototype.sendHeap = function(err, send) {
 							return false;
 						}
 					}
+					
+					if(trig.user_status == 'dev') {
+						if(this.devs.indexOf(nick.toLowerCase()) == -1) {
+							this.send(this.channels[msg.arguments[0]].name.toLowerCase(), nick.toLowerCase() + ": Insufficient permissions");
+							return false;
+						}
+					}
 
 					if (typeof this.channels[msg.arguments[0]] != "undefined") {
 						//room message recieved
@@ -457,7 +465,6 @@ Server.prototype.sendHeap = function(err, send) {
 		msg = Array.prototype.slice.call(arguments, 1).join(' ') + "\r\n";
 
 		if (arguments.length > 1) {
-			// "PRIVMSG #" channel_name + " :\u0001" + "ACTION " + msg + "\u0001"
 			this.raw('PRIVMSG', target, ':\u0001' + 'ACTION ' + msg + '\u0001');
 		}
 	};
@@ -537,8 +544,6 @@ Server.prototype.sendHeap = function(err, send) {
 			};
 
 			Server.prototype.loadPlugin = function (name) {
-
-				console.log("loading plugin: " + name);
 
 				this.unloadPlugin(name);
 
