@@ -452,6 +452,15 @@ Server.prototype.sendHeap = function(err, send) {
 			this.raw('PRIVMSG', target, ':' + msg);
 		}
 	};
+	
+	Server.prototype.action = function (target, msg) {
+		msg = Array.prototype.slice.call(arguments, 1).join(' ') + "\r\n";
+
+		if (arguments.length > 1) {
+			// "PRIVMSG #" channel_name + " :\u0001" + "ACTION " + msg + "\u0001"
+			this.raw('PRIVMSG', target, ':\u0001' + 'ACTION ' + msg + '\u0001');
+		}
+	};
 
 	Server.prototype.addListener = function (ev, f) {
 		var that = this;

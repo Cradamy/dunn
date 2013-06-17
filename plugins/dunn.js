@@ -102,8 +102,15 @@ Plugin.prototype.topic = function(irc, channel, nick, params, message, raw) {
 };
 
 Plugin.prototype.kick = function(irc, channel, nick, params, message, raw) {
-	var user = params.shift();
-	irc.raw('KICK', channel, user + ' :' + params.join(' '));
+	//var user = params.shift();
+	//irc.raw('KICK', channel, user + ' :' + params.join(' '));
+	irc.kick(channel, params.shift(), params.join(' '));
+};
+
+Plugin.prototype.dance = function(irc, channel, nick, params, message, raw) {
+	//var user = params.shift();
+	//irc.raw('KICK', channel, user + ' :' + params.join(' '));
+	irc.action(channel, 'does a little dance, makes a little love, GET DOWN TONIGHT!');
 };
 
 Plugin.prototype.speak = function(irc, params) {

@@ -73,6 +73,7 @@ exports.attach = function(irc) {
             }
 
             try {
+				
                 callback(irc, options);
             } catch (err) {
                 res.json(500, {
