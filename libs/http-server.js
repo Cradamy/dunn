@@ -30,7 +30,6 @@ exports.attach = function(irc) {
                     message: err.message
                 });
             }
-			console.log(result.status);
             if (result.length < 1) {
 				irc.db.query("INSERT INTO api_access VALUES ('', ?, ?)", [ipAddress(req), 'open'], function (error) {
 					if (error) {
@@ -42,7 +41,7 @@ exports.attach = function(irc) {
 				});
 			}
 			
-			else if ((result.length > 0) && (result.status == 'blocked')) {
+			else if ((result.length > 0) && (result[0].status == 'blocked')) {
                 return res.json(403, {
                     ok: false,
                     message: 'Access denied!'
