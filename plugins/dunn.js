@@ -19,6 +19,7 @@ Plugin = exports.Plugin = function (irc) {
 	irc.addTrigger('code', this.code);
 	irc.addTrigger('env', this.environment);
 	irc.addTrigger('register', this.register);
+	irc.addTrigger('dance', this.dance);
 	irc.addTrigger('restart', this.restart, 'admin');
 	irc.addTrigger('topic', this.topic, 'op');
 	irc.addTrigger('kick', this.kick, 'op');
@@ -102,8 +103,6 @@ Plugin.prototype.topic = function(irc, channel, nick, params, message, raw) {
 };
 
 Plugin.prototype.kick = function(irc, channel, nick, params, message, raw) {
-	//var user = params.shift();
-	//irc.raw('KICK', channel, user + ' :' + params.join(' '));
 	irc.kick(channel, params.shift(), params.join(' '));
 };
 
