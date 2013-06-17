@@ -45,7 +45,7 @@ exports.attach = function(irc) {
     //
     // Use this to add an http endpoint to the HTTP API
     //
-    irc.addEndpoint = function(route, fn) {
+    irc.addEndpoint = function(route, callback) {
         app.get(route, express.bodyParser(), function(req, res) {
 
             var options = {};
@@ -63,7 +63,7 @@ exports.attach = function(irc) {
             }
 
             try {
-                fn(irc, options);
+                callback(irc, options);
             } catch (err) {
                 res.json(500, {
                     ok: false,
@@ -76,54 +76,6 @@ exports.attach = function(irc) {
             });
         });
     }
-
-    //
-    // Add a basic endpoint for doing /say's
-    //
-    irc.addEndpoint('/say', function(irc, opts) {
-        if (!opts.channel || !opts.message) {
-            throw new Error('Required parameters: `channel` and `message`');
-        }
-
-        irc.send('#' + opts.channel, opts.message);
-    });
-
-    //
-    // http trigger for managing blocked and unblocked IPs (and other things too)
-    //
-    irc.addTrigger('http', function(irc, channel, nick, params, message) {
-        //
-        // Hacky DIY routes
-        //
-        var argv = message.split(' '),
-            addr = argv[2];
-
-        switch (argv[1]) {
-            case 'block':
-                return irc.db.query("INSERT INTO api_access VALUES ('', ?, ?)", [addr, 'blocked'],
-
-                function(err) {
-                    if (err) {
-                        return irc.send(channel, nick + ': Error: ' + err.message);
-                    }
-                    irc.send(channel, nick + ': blocked ' + addr);
-                });
-                break;
-            case 'unblock':
-                return irc.db.query('DELETE FROM api_access WHERE ip_address = ?', [addr],
-
-                function(err) {
-                    if (err) {
-                        return irc.send(channel, nick + ': Error: ' + err.message);
-                    }
-                    irc.send(channel, nick + ': unblocked ' + addr);
-                });
-                break;
-            default:
-                irc.send(channel, nick + ': huh? Known commands: `block [ip]`, `unblock [ip]`');
-                break;
-        }
-    }, 'op');
 
     //
     // Stupid helper for extracting IP addresses from the req object

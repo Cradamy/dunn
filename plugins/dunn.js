@@ -22,6 +22,7 @@ Plugin = exports.Plugin = function (irc) {
 	irc.addTrigger('restart', this.restart, 'admin');
 	irc.addTrigger('topic', this.topic, 'op');
 	irc.addTrigger('kick', this.kick, 'op');
+	irc.addEndpoint('/speak', this.speak);
 };
 
 Plugin.prototype.onNumeric = function(irc) {
@@ -103,4 +104,12 @@ Plugin.prototype.topic = function(irc, channel, nick, params, message, raw) {
 Plugin.prototype.kick = function(irc, channel, nick, params, message, raw) {
 	var user = params.shift();
 	irc.raw('KICK', channel, user + ' :' + params.join(' '));
+};
+
+Plugin.prototype.speak = function(irc, params) {
+    if (!params.channel || !params.message) {
+        throw new Error('Required parameters: `channel` and `message`');
+    }
+
+    irc.send('#' + params.channel, params.message);
 };
