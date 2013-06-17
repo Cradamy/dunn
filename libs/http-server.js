@@ -42,7 +42,7 @@ exports.attach = function(irc) {
 				});
 			}
 			
-			if (result.status == 'blocked') {
+			else if ((result.length > 0) && (result.status == 'blocked')) {
                 return res.json(403, {
                     ok: false,
                     message: 'Access denied!'
