@@ -30,7 +30,7 @@ exports.attach = function(irc) {
                     message: err.message
                 });
             }
-			console.log(result);
+			console.log(result.status);
             if (result.length < 1) {
 				irc.db.query("INSERT INTO api_access VALUES ('', ?, ?)", [ipAddress(req), 'open'], function (error) {
 					if (error) {
