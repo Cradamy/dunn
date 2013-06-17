@@ -30,11 +30,11 @@ exports.attach = function(irc) {
                     message: err.message
                 });
             }
-
+			console.log(result);
             if (result.length) {
                 return res.json(403, {
                     ok: false,
-                    message: 'Access denied, asshole!'
+                    message: 'Access denied!'
                 });
             }
             next();
