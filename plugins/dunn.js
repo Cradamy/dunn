@@ -21,6 +21,7 @@ Plugin = exports.Plugin = function (irc) {
 	irc.addTrigger('register', this.register);
 	irc.addTrigger('dance', this.dance);
 	irc.addTrigger('restart', this.restart, 'admin');
+	irc.addTrigger('update', this.update, 'admin');
 	irc.addTrigger('topic', this.topic, 'op');
 	irc.addTrigger('kick', this.kick, 'op');
 	irc.addEndpoint('/speak', this.speak);
@@ -95,6 +96,11 @@ Plugin.prototype.register = function(irc, channel, nick, params, message, raw) {
 Plugin.prototype.restart = function(irc, channel, nick, params, message, raw) {
 	irc.send(channel, nick + ': Restarting, brb.');
 	exec('forever restart dunnbot.js');
+};
+
+Plugin.prototype.update = function(irc, channel, nick, params, message, raw) {
+	irc.send(channel, nick + ': Updating and restarting, brb.');
+	exec('git pull && forever restart dunnbot.js');
 };
 
 Plugin.prototype.topic = function(irc, channel, nick, params, message, raw) {
