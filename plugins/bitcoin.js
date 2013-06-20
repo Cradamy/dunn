@@ -16,8 +16,14 @@ Plugin = exports.Plugin = function (irc) {
 };
 
 Plugin.prototype.bitcoin = function (irc, channel, nick, params, message, raw) {
-	irc.httpGet('https://data.mtgox.com/api/2/BTCUSD/money/ticker', function (err, res, result) {
+
+  var currency = params[0] || 'USD';
+
+  irc.httpGet('https://data.mtgox.com/api/2/BTC'+currency+'/money/ticker', function (err, res, result) {
 		var ticker = JSON.parse(result);
-		irc.send(channel, nick + ': Current: ' + ticker.data.buy.display_short + ' - High: ' + ticker.data.high.display_short + ' - Low: ' + ticker.data.low.display_short + ' - Volume: ' + ticker.data.vol.display_short);
-	});
+		if (ticker.result == 'success')
+    {
+      irc.send(channel, nick + ': Current: ' + ticker.data.buy.display_short + ' - High: ' + ticker.data.high.display_short + ' - Low: ' + ticker.data.low.display_short + ' - Volume: ' + ticker.data.vol.display_short);
+	  }
+  });
 };
