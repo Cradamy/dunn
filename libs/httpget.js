@@ -44,11 +44,20 @@ var https = require('https');
  * Export a callback function
  */
 
-module.exports = function (options, cb) {
+module.exports = function (getOptions, cb) {
     "use strict";
     var i = 0;
-    var hGet;
-    if (typeof(options) === 'string' && options.toLowerCase().indexOf('s') === 4 || typeof(options) === 'object' && options.port === 443) {
+    var hGet, opts, getUrl;
+    if (typeof(getOptions) === 'string') {
+        getUrl = url.parse(getOptions);
+        opts = {
+            host: getUrl.host,
+            path: getUrl.path
+        };
+    } else {
+        opts = getOptions;
+    }
+    if ((getUrl && getUrl.protocol === 'https:') || opts.port === 443) {
         hGet = https.get;
     } else {
         hGet = http.get;
@@ -56,15 +65,18 @@ module.exports = function (options, cb) {
     (function req(options) {
         hGet(options, function (res) {
             var data = '';
-            var getHost;
+            var getHost, newUrl;
             // check for a redirect
             if (res.statusCode > 300 && res.statusCode < 400 && res.headers.location && i < 5) {
                 i += 1;
-                if (url.parse(res.headers.location).hostname) {
-                    return req(res.headers.location);
+                newUrl = url.parse(res.headers.location);
+                if (newUrl.hostname) {
+                    options.host = options.hostname = newUrl.hostname;
+                    options.path = newUrl.path;
+                    return req(options);
                 } else {
-                    getHost = (typeof(options) === 'string') ? url.parse(options).hostname : options.hostname || options.host;
-                    return req(getHost + res.headers.location);
+                    options.path = newUrl.path;
+                    return req(options);
                 }
             } else if (i === 5) {
                 return cb(new Error('Redirect loop'), res, null);
@@ -80,5 +92,5 @@ module.exports = function (options, cb) {
         }).on('error', function (err) {
             return cb(err, null, null);
         });
-    }(options));
+    }(opts));
 };
