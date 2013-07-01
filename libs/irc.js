@@ -49,8 +49,7 @@ Server.prototype.initialize = function (config) {
 	this.replies = [];
 
 	// MySQL connection stuffs
-	if (config.mysql.host != '' || config.mysql.port != '' || config.mysql.user != '' || config.mysql.password != '' || config.mysql.database != '')
-	{
+	if (config.mysql && config.mysql.host && config.mysql.port && config.mysql.user && config.mysql.password && config.mysql.database) {
 		var connection = mysql.createConnection({
 			host: config.mysql.host,
 			port: config.mysql.port,
@@ -60,9 +59,7 @@ Server.prototype.initialize = function (config) {
 		});
 		connection.connect();
 		this.db = this.mysql = connection;
-	}
-	else
-	{
+	} else {
 		this.db = this.mysql = false;
 	}
 

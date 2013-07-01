@@ -12,6 +12,8 @@
 
 var util = require('util');
 var events = require('events');
+var url = require('url');
+var ent = require('ent');
 
 function Links(irc) {
     "use strict";
@@ -31,12 +33,27 @@ function Links(irc) {
     function parseTitle(response, message, channel, shortLink) {
         var title = (message.match(titleRegex)) ? message.match(titleRegex)[0].replace('<title>', '').replace('</title>', '') : '';
         var data = (response.statusCode > 299) ? 'Error ' + response.statusCode + ' ' + title : title;
-        var msg = (shortLink) ? data + ' || ' + shortLink : data;
+        var msg = (shortLink) ? ent.decode(data) + ' || ' + shortLink : ent.decode(data);
         self.emit('sendToIrc', null, msg, channel);
     }
 
     function getPageTitle(message, channel, shortLink) {
-        var req = irc.httpGet(message, function (err, response, answer) {
+        var getUrl = url.parse(message);
+        var opts = {
+            hostname: getUrl.host,
+            path: getUrl.path,
+            headers: { 'user-agent': 'Mozilla/5.0' }
+        };
+        if (!getUrl.port) {
+            if (getUrl.protocol === 'https:') {
+                opts.port = 443;
+            } else {
+                opts.port = 80;
+            }
+        } else {
+            opts.port = getUrl.port;
+        }
+        var req = irc.httpGet(opts, function (err, response, answer) {
             if (!err && answer) {
                 self.emit('gotTitle', response, answer, channel, shortLink);
             } else if (err) {
