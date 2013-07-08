@@ -24,6 +24,7 @@ Plugin = exports.Plugin = function (irc) {
 	irc.addTrigger('update', this.update, 'admin');
 	irc.addTrigger('topic', this.topic, 'op');
 	irc.addTrigger('kick', this.kick, 'op');
+	irc.addTrigger('boot', this.kick, 'op');
 	irc.addEndpoint('/speak', this.speak);
 };
 
