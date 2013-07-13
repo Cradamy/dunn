@@ -171,12 +171,23 @@ Server.prototype.sendHeap = function(err, send) {
 	};
 
 	Server.prototype.kick = function(channel, nick, reason) {
-		if(typeof channel == "undefined" || typeof nick == "undefined") return;
+		if(typeof channel == 'undefined' || typeof nick == 'undefined') return;
 
-		if(typeof reason == "undefined") reason = "";
-		else reason = " :"+reason;
+		if(typeof reason == 'undefined') reason = '';
+		else reason = ' :' + reason;
 
-		this.raw("KICK", channel + " " + nick + reason);
+		this.raw('KICK', channel + ' ' + nick + reason);
+	};
+	
+	Server.prototype.ban = function(channel, nick, reason) {
+		if(typeof channel == 'undefined' || typeof nick == 'undefined') return;
+
+		if(typeof reason == 'undefined') reason = '';
+		else reason = ' :' + reason;
+		
+		console.log(this.userObj);
+
+		// this.raw('MODE', channel + ' +b ' + nick + reason);
 	};
 
 	Server.prototype.ctcp = function(nick, target, msg, command) {

@@ -19,11 +19,11 @@ Plugin = exports.Plugin = function (irc) {
 	irc.addTrigger('code', this.code);
 	irc.addTrigger('env', this.environment);
 	irc.addTrigger('register', this.register);
-	irc.addTrigger('dance', this.dance);
 	irc.addTrigger('restart', this.restart, 'admin');
 	irc.addTrigger('update', this.update, 'admin');
 	irc.addTrigger('topic', this.topic, 'op');
 	irc.addTrigger('kick', this.kick, 'op');
+	irc.addTrigger('ban', this.ban, 'op');
 	irc.addEndpoint('/speak', this.speak);
 };
 
@@ -112,10 +112,11 @@ Plugin.prototype.kick = function(irc, channel, nick, params, message, raw) {
 	irc.kick(channel, params.shift(), params.join(' '));
 };
 
-Plugin.prototype.dance = function(irc, channel, nick, params, message, raw) {
+Plugin.prototype.ban = function(irc, channel, nick, params, message, raw) {
 	//var user = params.shift();
 	//irc.raw('KICK', channel, user + ' :' + params.join(' '));
-	irc.action(channel, 'does a little dance, makes a little love, GET DOWN TONIGHT!');
+	// irc.action(channel, 'does a little dance, makes a little love, GET DOWN TONIGHT!');
+	irc.ban();
 };
 
 Plugin.prototype.speak = function(irc, params) {
