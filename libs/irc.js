@@ -185,7 +185,7 @@ Server.prototype.sendHeap = function(err, send) {
 		if(typeof reason == 'undefined') reason = '';
 		else reason = ' :' + reason;
 		
-		console.log(this.user);
+		console.log(this.users);
 
 		// this.raw('MODE', channel + ' +b ' + nick + reason);
 	};
