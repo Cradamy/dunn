@@ -18,7 +18,7 @@ Plugin.prototype.weather = function (irc, channel, nick, params, message) {
 		var forcast = JSON.parse(result);
 		if (!forcast.message)
 		{
-			irc.send(channel, nick + ': ' + forcast.name + ': ' + forcast.weather[0].main + ', ' + forcast.main.temp + 'F (High: ' + forcast.main.temp_max + 'F - Low: ' + forcast.main.temp_min + 'F), Humidity ' + forcast.main.humidity + '%, Wind: ' + forcast.wind.speed + 'MPH');
+			irc.send(channel, nick + ': ' + forcast.name + ': ' + forcast.weather[0].main + ', ' + forcast.main.temp + 'F ' + Math.round((forecast.main.temp-32)*5/9) + 'C (High: ' + forcast.main.temp_max + 'F ' + Math.round((forecast.main.temp_max-32)*5/9) + 'C - Low: ' + forcast.main.temp_min + 'F ' + Math.round((forecast.main.temp-32)*5/9)) + 'C, Humidity ' + forcast.main.humidity + '%, Wind: ' + forcast.wind.speed + 'MPH');
 		}
 		else
 		{
